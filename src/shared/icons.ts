@@ -96,6 +96,35 @@ export const OPENCODE_PROVIDER_ICON: ProviderIconSvg = {
   ],
 };
 
+export const MIMO_PROVIDER_ICON: ProviderIconSvg = {
+  kind: 'composite',
+  viewBox: '0 0 300 300',
+  children: [
+    {
+      tag: 'g',
+      attributes: {
+        class: 'claudian-provider-icon-variant claudian-provider-icon-variant--light',
+        transform: 'translate(30 0)',
+      },
+      children: [
+        { tag: 'path', attributes: { d: 'M180 240H60V120H180V240Z', fill: '#FF6B35' } },
+        { tag: 'path', attributes: { d: 'M180 60H60V240H180V60ZM240 300H0V0H240V300Z', fill: '#211E1E' } },
+      ],
+    },
+    {
+      tag: 'g',
+      attributes: {
+        class: 'claudian-provider-icon-variant claudian-provider-icon-variant--dark',
+        transform: 'translate(30 0)',
+      },
+      children: [
+        { tag: 'path', attributes: { d: 'M180 240H60V120H180V240Z', fill: '#FF8C5A' } },
+        { tag: 'path', attributes: { d: 'M180 60H60V240H180V60ZM240 300H0V0H240V300Z', fill: '#F1ECEC' } },
+      ],
+    },
+  ],
+};
+
 export const PI_PROVIDER_ICON: ProviderIconSvg = {
   kind: 'composite',
   viewBox: '0 0 800 800',

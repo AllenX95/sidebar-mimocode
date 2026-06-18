@@ -1,10 +1,10 @@
 {
-  "id": "realclaudian",
-  "name": "Claudian",
-  "version": "2.0.24",
+  "id": "obsidian-mimo",
+  "name": "Obsidian MiMo",
+  "version": "1.0.0",
   "minAppVersion": "1.7.2",
-  "description": "Embeds Claude Code, Codex, and other coding agents as AI collaborators in your vault. Your vault becomes their working directory, giving them capabilities for file reads and writes, search, bash commands, and multi-step workflows.",
-  "author": "Yishen Tu",
-  "authorUrl": "https://github.com/YishenTu",
+  "description": "Embeds MiMo-Code CLI Agent as an AI collaborator in your vault. Your vault becomes the working directory, giving MiMo-Code capabilities for file reads and writes, search, bash commands, and multi-step workflows.",
+  "author": "AllenX95",
+  "authorUrl": "https://github.com/AllenX95",
   "isDesktopOnly": true
 }

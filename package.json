@@ -1,7 +1,7 @@
 {
-  "name": "claudian",
-  "version": "2.0.24",
-  "description": "Claudian - Claude Code embedded in Obsidian sidebar",
+  "name": "obsidian-mimo",
+  "version": "1.0.0",
+  "description": "Obsidian MiMo - MiMo-Code CLI Agent embedded in Obsidian sidebar",
   "main": "main.js",
   "engines": {
     "node": ">=24 <25"
@@ -20,13 +20,14 @@
     "version": "node scripts/sync-version.js && git add manifest.json"
   },
   "keywords": [
-    "claude-code",
+    "mimo-code",
     "obsidian",
     "obsidian-plugin",
     "productivity",
-    "ide"
+    "ide",
+    "ai-agent"
   ],
-  "author": "Yishen Tu",
+  "author": "AllenX95",
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -47,7 +48,6 @@
     "typescript": "^6.0.2"
   },
   "dependencies": {
-    "@anthropic-ai/claude-agent-sdk": "^0.3.159",
     "@codemirror/state": "^6.5.0",
     "@codemirror/view": "^6.38.6",
     "@modelcontextprotocol/sdk": "~1.29.0",

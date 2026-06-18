@@ -35,7 +35,7 @@ export const DEFAULT_CLAUDIAN_SETTINGS: ClaudianSettings = {
 
   providerConfigs: getBuiltInProviderDefaultConfigs(),
 
-  settingsProvider: 'claude',
+  settingsProvider: 'mimo',
   savedProviderModel: {},
   savedProviderEffort: {},
   savedProviderServiceTier: {},

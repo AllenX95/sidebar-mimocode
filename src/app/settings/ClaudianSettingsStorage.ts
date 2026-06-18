@@ -3,7 +3,6 @@ import {
   LEGACY_CLAUDIAN_SETTINGS_PATH,
 } from '../../core/bootstrap/StoragePaths';
 import {
-  normalizeHiddenCommandList,
   normalizeHiddenProviderCommands,
 } from '../../core/providers/commands/hiddenCommands';
 import {
@@ -18,25 +17,12 @@ import {
   type ClaudianSettings,
   type EnvironmentScope,
   type EnvSnippet,
-  type HiddenProviderCommands,
   type ProviderConfigMap,
 } from '../../core/types/settings';
 import {
-  getClaudeProviderSettings,
-  updateClaudeProviderSettings,
-} from '../../providers/claude/settings';
-import {
-  getCodexProviderSettings,
-  updateCodexProviderSettings,
-} from '../../providers/codex/settings';
-import {
-  getOpencodeProviderSettings,
-  updateOpencodeProviderSettings,
-} from '../../providers/opencode/settings';
-import {
-  getPiProviderSettings,
-  updatePiProviderSettings,
-} from '../../providers/pi/settings';
+  getMimoProviderSettings,
+  updateMimoProviderSettings,
+} from '../../providers/mimo/settings';
 import { DEFAULT_CLAUDIAN_SETTINGS } from './defaultSettings';
 
 export {
@@ -45,26 +31,6 @@ export {
 };
 
 export type StoredClaudianSettings = ClaudianSettings;
-
-const LEGACY_TOP_LEVEL_PROVIDER_FIELDS = [
-  'claudeSafeMode',
-  'codexSafeMode',
-  'claudeCliPath',
-  'claudeCliPathsByHost',
-  'codexCliPath',
-  'codexCliPathsByHost',
-  'codexReasoningSummary',
-  'loadUserClaudeSettings',
-  'codexEnabled',
-  'lastClaudeModel',
-  'enableChrome',
-  'enableBangBash',
-  'enableOpus1M',
-  'enableSonnet1M',
-  'environmentVariables',
-  'lastEnvHash',
-  'lastCodexEnvHash',
-] as const;
 
 const LEGACY_STRIPPED_SETTING_FIELDS = [
   'activeConversationId',
@@ -75,7 +41,6 @@ const LEGACY_STRIPPED_SETTING_FIELDS = [
   'allowedExportPaths',
   'enableBlocklist',
   'blockedCommands',
-  ...LEGACY_TOP_LEVEL_PROVIDER_FIELDS,
   'openInMainTab',
 ] as const;
 
@@ -130,42 +95,6 @@ function normalizeProviderConfigs(value: unknown): ProviderConfigMap {
     }
   }
   return result;
-}
-
-const HOST_SCOPED_PROVIDER_CONFIG_FIELDS: Record<string, string[]> = {
-  claude: ['cliPathsByHost'],
-  codex: ['cliPathsByHost', 'installationMethodsByHost', 'wslDistroOverridesByHost'],
-  opencode: ['cliPathsByHost'],
-  pi: ['cliPathsByHost'],
-};
-
-function hasHostScopedProviderConfigNormalization(
-  original: ProviderConfigMap,
-  normalized: unknown,
-): boolean {
-  if (!normalized || typeof normalized !== 'object' || Array.isArray(normalized)) {
-    return false;
-  }
-
-  const normalizedConfigs = normalized as ProviderConfigMap;
-  for (const [providerId, fields] of Object.entries(HOST_SCOPED_PROVIDER_CONFIG_FIELDS)) {
-    const originalConfig = original[providerId];
-    const normalizedConfig = normalizedConfigs[providerId];
-    if (!originalConfig || !normalizedConfig) {
-      continue;
-    }
-
-    for (const field of fields) {
-      if (
-        field in originalConfig
-        && JSON.stringify(originalConfig[field]) !== JSON.stringify(normalizedConfig[field])
-      ) {
-        return true;
-      }
-    }
-  }
-
-  return false;
 }
 
 function isEnvironmentScope(value: unknown): value is EnvironmentScope {
@@ -252,25 +181,6 @@ function normalizeEnvSnippets(value: unknown): EnvSnippet[] {
   return snippets;
 }
 
-function hasLegacyTopLevelProviderFields(stored: Record<string, unknown>): boolean {
-  return LEGACY_TOP_LEVEL_PROVIDER_FIELDS.some((key) => key in stored);
-}
-
-function mergeLegacyClaudeHiddenCommands(
-  hiddenProviderCommands: HiddenProviderCommands,
-  legacyHiddenSlashCommands: unknown,
-): HiddenProviderCommands {
-  const legacyCommands = normalizeHiddenCommandList(legacyHiddenSlashCommands);
-  if (legacyCommands.length === 0 || hiddenProviderCommands.claude) {
-    return hiddenProviderCommands;
-  }
-
-  return {
-    ...hiddenProviderCommands,
-    claude: legacyCommands,
-  };
-}
-
 export class ClaudianSettingsStorage {
   constructor(private adapter: VaultFileAdapter) {}
 
@@ -282,10 +192,7 @@ export class ClaudianSettingsStorage {
 
     const content = await this.adapter.read(settingsPath);
     const stored = JSON.parse(content) as Record<string, unknown>;
-    const hiddenProviderCommands = mergeLegacyClaudeHiddenCommands(
-      normalizeHiddenProviderCommands(stored.hiddenProviderCommands),
-      stored.hiddenSlashCommands,
-    );
+    const hiddenProviderCommands = normalizeHiddenProviderCommands(stored.hiddenProviderCommands);
     const envSnippets = normalizeEnvSnippets(stored.envSnippets);
     const customModelAliases = normalizeModelAliases(stored.customModelAliases);
     const providerConfigs = normalizeProviderConfigs(stored.providerConfigs);
@@ -317,32 +224,15 @@ export class ClaudianSettingsStorage {
       ...legacyNormalized,
     };
 
-    updateClaudeProviderSettings(
+    updateMimoProviderSettings(
       merged,
-      getClaudeProviderSettings(legacyProviderSettings),
-    );
-    updateCodexProviderSettings(
-      merged,
-      getCodexProviderSettings(legacyProviderSettings),
-    );
-    updateOpencodeProviderSettings(
-      merged,
-      getOpencodeProviderSettings(legacyProviderSettings),
-    );
-    updatePiProviderSettings(
-      merged,
-      getPiProviderSettings(legacyProviderSettings),
-    );
-    const didNormalizeHostScopedProviderConfigs = hasHostScopedProviderConfigNormalization(
-      providerConfigs,
-      merged.providerConfigs,
+      getMimoProviderSettings(legacyProviderSettings),
     );
 
     if (
       settingsPath !== CLAUDIAN_SETTINGS_PATH
       || (
-      hasLegacyTopLevelProviderFields(stored)
-      || 'show1MModel' in stored
+      'show1MModel' in stored
       || 'slashCommands' in stored
       || 'hiddenSlashCommands' in stored
       || 'activeConversationId' in stored
@@ -356,7 +246,6 @@ export class ClaudianSettingsStorage {
         'customModelAliases' in stored
         && JSON.stringify(customModelAliases) !== JSON.stringify(stored.customModelAliases ?? {})
       )
-      || didNormalizeHostScopedProviderConfigs
       )
     ) {
       await this.save(merged);
@@ -394,17 +283,12 @@ export class ClaudianSettingsStorage {
       return;
     }
 
-    const current = await this.load();
-    updateClaudeProviderSettings(
-      current,
-      { lastModel: model },
-    );
-    await this.save(current);
+    await this.update({ model });
   }
 
   async setLastEnvHash(hash: string): Promise<void> {
     const current = await this.load();
-    updateClaudeProviderSettings(
+    updateMimoProviderSettings(
       current,
       { environmentHash: hash },
     );
