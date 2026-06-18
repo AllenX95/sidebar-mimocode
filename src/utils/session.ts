@@ -1,5 +1,5 @@
 /**
- * Claudian - Session Utilities
+ * SidebarMimocode - Session Utilities
  *
  * Session recovery and history reconstruction.
  */

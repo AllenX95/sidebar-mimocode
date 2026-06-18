@@ -1,11 +1,11 @@
 import { QueryBackedTitleGenerationService } from '../../../core/auxiliary/QueryBackedTitleGenerationService';
-import type ClaudianPlugin from '../../../main';
+import type SidebarMimocodePlugin from '../../../main';
 import { decodeMimoModelId } from '../models';
 import { MimoAuxQueryRunner } from '../runtime/MimoAuxQueryRunner';
 import { mimoChatUIConfig } from '../ui/MimoChatUIConfig';
 
 export class MimoTitleGenerationService extends QueryBackedTitleGenerationService {
-  constructor(plugin: ClaudianPlugin) {
+  constructor(plugin: SidebarMimocodePlugin) {
     super({
       createRunner: () => new MimoAuxQueryRunner(plugin, {
         agentProfile: 'passive',

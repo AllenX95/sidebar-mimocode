@@ -70,11 +70,10 @@
     }
   },
   "settings": {
-    "title": "Claudian Settings",
+    "title": "Sidebar MiMo-Code Settings",
     "tabs": {
       "general": "General",
-      "claude": "Claude",
-      "codex": "Codex"
+      "mimo": "MiMo-Code"
     },
     "display": "Display",
     "conversations": "Conversations",
@@ -84,7 +83,7 @@
     "models": "Models",
     "experimental": "Experimental",
     "userName": {
-      "name": "What should Claudian call you?",
+      "name": "What should Sidebar MiMo-Code call you?",
       "desc": "Your name for personalized greetings (leave empty for generic greetings)"
     },
     "excludedTags": {
@@ -93,7 +92,7 @@
     },
     "mediaFolder": {
       "name": "Media folder",
-      "desc": "Folder containing attachments/images. When notes use ![[image.jpg]], Claude will look here. Leave empty for vault root."
+      "desc": "Folder containing attachments/images. When notes use ![[image.jpg]], MiMo-Code will look here. Leave empty for vault root."
     },
     "systemPrompt": {
       "name": "Custom system prompt",
@@ -106,7 +105,7 @@
     "titleModel": {
       "name": "Title generation model",
       "desc": "Model used for auto-generating conversation titles.",
-      "auto": "Auto (Haiku)"
+      "auto": "Auto (MiMo-Code)"
     },
     "navMappings": {
       "name": "Vim-style navigation mappings",
@@ -154,24 +153,16 @@
     },
     "slashCommands": {
       "name": "Commands and Skills",
-      "desc": "Manage vault-level commands and skills stored in .claude/commands/ and .claude/skills/. Triggered by /name."
+      "desc": "Manage vault-level commands and skills stored in .opencode/commands/ and .opencode/skills/. Triggered by /name."
     },
     "hiddenSlashCommands": {
       "name": "Hidden Commands and Skills",
-      "desc": "Hide specific commands and skills from the dropdown. Useful for hiding Claude Code entries that are not relevant to Claudian. Enter names without the leading slash, one per line.",
+      "desc": "Hide specific commands and skills from the dropdown. Useful for hiding MiMo-Code entries that are not relevant to Sidebar MiMo-Code. Enter names without the leading slash, one per line.",
       "placeholder": "commit\nbuild\ntest"
-    },
-    "mcpServers": {
-      "name": "MCP Servers",
-      "desc": "Manage vault-level MCP server configurations stored in .claude/mcp.json. Servers with context-saving mode require @mention to activate."
-    },
-    "plugins": {
-      "name": "Claude Code Plugins",
-      "desc": "Manage Claude Code plugins discovered from ~/.claude/plugins. Enabled plugins are stored per vault in .claude/settings.json."
     },
     "subagents": {
       "name": "Subagents",
-      "desc": "Manage vault-level subagents stored in .claude/agents/. Each Markdown file defines one custom agent.",
+      "desc": "Manage vault-level subagents stored in .mimocode/agent/. Each Markdown file defines one custom agent.",
       "noAgents": "No subagents configured. Click + to create one.",
       "deleteConfirm": "Delete subagent \"{name}\"?",
       "saveFailed": "Failed to save subagent: {message}",
@@ -208,22 +199,10 @@
       }
     },
     "safety": "Safety",
-    "loadUserSettings": {
-      "name": "Load user Claude settings",
-      "desc": "Load ~/.claude/settings.json. When enabled, user's Claude Code permission rules may bypass Safe mode."
-    },
-    "claudeSafeMode": {
-      "name": "Safe mode",
-      "desc": "Permission mode used when the Safe toggle is active."
-    },
-    "codexSafeMode": {
-      "name": "Safe mode",
-      "desc": "Sandbox mode used when the Safe toggle is active."
-    },
     "environment": "Environment",
     "customVariables": {
       "name": "Custom variables",
-      "desc": "Environment variables for Claude SDK (KEY=VALUE format, one per line). Shell export prefix supported."
+      "desc": "Environment variables for MiMo-Code CLI (KEY=VALUE format, one per line). Shell export prefix supported."
     },
     "envSnippets": {
       "name": "Snippets",
@@ -256,22 +235,10 @@
       "desc": "Set context window sizes for your custom models. Leave empty to use the default (200k tokens).",
       "invalid": "Invalid format. Use: 256k, 1m, or exact count (1000-10000000)."
     },
-    "enableOpus1M": {
-      "name": "Opus 1M context window",
-      "desc": "Show Opus 1M in the model selector. Included with Max, Team, and Enterprise plans. API and Pro users need extra usage."
-    },
-    "enableSonnet1M": {
-      "name": "Sonnet 1M context window",
-      "desc": "Show Sonnet 1M in the model selector. Requires extra usage on Max, Team, and Enterprise plans. API and Pro users need extra usage."
-    },
     "customModels": {
       "name": "Custom models",
-      "desc": "Append additional Claude model IDs to the picker, one per line. Environment model overrides still replace the picker.",
-      "placeholder": "claude-opus-4-6\nclaude-opus-4-6[1m]\nclaude-opus-4-5-20251101"
-    },
-    "enableChrome": {
-      "name": "Enable Chrome extension",
-      "desc": "Allow Claude to interact with Chrome via the claude-in-chrome extension. Requires the extension to be installed. Requires session restart."
+      "desc": "Append additional MiMo-Code model IDs to the picker, one per line. Environment model overrides still replace the picker.",
+      "placeholder": "xiaomi/mimo-v2.5-pro-ultraspeed\nmimo/mimo-auto"
     },
     "enableBangBash": {
       "name": "Enable bash mode (!)",
@@ -282,12 +249,12 @@
     },
     "maxTabs": {
       "name": "Maximum chat tabs",
-      "desc": "Maximum number of concurrent chat tabs (3-10). Each tab uses a separate Claude session.",
+      "desc": "Maximum number of concurrent chat tabs (3-10). Each tab uses a separate MiMo-Code session.",
       "warning": "More than 5 tabs may impact performance and memory usage."
     },
     "enableAutoScroll": {
       "name": "Auto-scroll during streaming",
-      "desc": "Automatically scroll to the bottom as Claude streams responses. Disable to stay at the top and read from the beginning."
+      "desc": "Automatically scroll to the bottom as MiMo-Code streams responses. Disable to stay at the top and read from the beginning."
     },
     "deferMathRenderingDuringStreaming": {
       "name": "Defer math rendering during streaming",
@@ -298,17 +265,17 @@
       "desc": "Show Write and Edit diffs expanded when they first appear."
     },
     "chatViewPlacement": {
-      "name": "Open Claudian in",
+      "name": "Open Sidebar MiMo-Code in",
       "desc": "Choose where the chat panel opens when it is created",
       "rightSidebar": "Right sidebar",
       "leftSidebar": "Left sidebar",
       "mainTab": "Main editor tab"
     },
     "cliPath": {
-      "name": "Claude CLI path",
-      "desc": "Custom path to Claude Code CLI. Leave empty for auto-detection.",
-      "descWindows": "For the native installer, use claude.exe. For npm/pnpm/yarn or other package manager installs, use the cli-wrapper.cjs path (not claude.cmd).",
-      "descUnix": "Paste the output of \"which claude\" — works for both native and npm/pnpm/yarn installs.",
+      "name": "MiMo-Code CLI path",
+      "desc": "Custom path to MiMo-Code CLI. Leave empty for auto-detection.",
+      "descWindows": "Use the full path to mimo.cmd, for example C:\\Users\\<name>\\AppData\\Roaming\\npm\\mimo.cmd.",
+      "descUnix": "Paste the output of \"which mimo\".",
       "validation": {
         "notExist": "Path does not exist",
         "isDirectory": "Path is a directory, not a file"

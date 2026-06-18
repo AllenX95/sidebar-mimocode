@@ -1,15 +1,15 @@
 export function updateContextRowHasContent(contextRowEl: HTMLElement): void {
-  const editorIndicator = contextRowEl.querySelector('.claudian-selection-indicator');
-  const browserIndicator = contextRowEl.querySelector('.claudian-browser-selection-indicator');
-  const canvasIndicator = contextRowEl.querySelector('.claudian-canvas-indicator');
-  const fileIndicator = contextRowEl.querySelector('.claudian-file-indicator');
-  const imagePreview = contextRowEl.querySelector('.claudian-image-preview');
+  const editorIndicator = contextRowEl.querySelector('.sidebar-mimocode-selection-indicator');
+  const browserIndicator = contextRowEl.querySelector('.sidebar-mimocode-browser-selection-indicator');
+  const canvasIndicator = contextRowEl.querySelector('.sidebar-mimocode-canvas-indicator');
+  const fileIndicator = contextRowEl.querySelector('.sidebar-mimocode-file-indicator');
+  const imagePreview = contextRowEl.querySelector('.sidebar-mimocode-image-preview');
 
-  const hasEditorSelection = !!editorIndicator && !editorIndicator.hasClass('claudian-hidden');
-  const hasBrowserSelection = !!browserIndicator && !browserIndicator.hasClass('claudian-hidden');
-  const hasCanvasSelection = !!canvasIndicator && !canvasIndicator.hasClass('claudian-hidden');
-  const hasFileChips = !!fileIndicator && fileIndicator.hasClass('claudian-visible-flex');
-  const hasImageChips = !!imagePreview && imagePreview.hasClass('claudian-visible-flex');
+  const hasEditorSelection = !!editorIndicator && !editorIndicator.hasClass('sidebar-mimocode-hidden');
+  const hasBrowserSelection = !!browserIndicator && !browserIndicator.hasClass('sidebar-mimocode-hidden');
+  const hasCanvasSelection = !!canvasIndicator && !canvasIndicator.hasClass('sidebar-mimocode-hidden');
+  const hasFileChips = !!fileIndicator && fileIndicator.hasClass('sidebar-mimocode-visible-flex');
+  const hasImageChips = !!imagePreview && imagePreview.hasClass('sidebar-mimocode-visible-flex');
 
   contextRowEl.classList.toggle(
     'has-content',

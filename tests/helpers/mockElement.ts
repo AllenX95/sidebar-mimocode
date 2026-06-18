@@ -68,30 +68,30 @@ export interface MockElement {
 }
 
 const CLASS_DISPLAY: Record<string, string> = {
-  'claudian-browser-selection-indicator': 'block',
-  'claudian-canvas-indicator': 'block',
-  'claudian-context-meter': 'flex',
-  'claudian-file-indicator': 'none',
-  'claudian-image-preview': 'none',
-  'claudian-mcp-selector': 'flex',
-  'claudian-mode-selector': 'flex',
-  'claudian-permission-toggle': 'flex',
-  'claudian-selection-indicator': 'block',
-  'claudian-service-tier-toggle': 'flex',
-  'claudian-status-panel-bash': 'block',
-  'claudian-status-panel-bash-content': 'block',
-  'claudian-status-panel-bash-entry-content': 'block',
-  'claudian-status-panel-content': 'block',
-  'claudian-status-panel-todos': 'block',
-  'claudian-tab-content': 'flex',
-  'claudian-thinking-budget': 'flex',
-  'claudian-thinking-effort': 'flex',
+  'sidebar-mimocode-browser-selection-indicator': 'block',
+  'sidebar-mimocode-canvas-indicator': 'block',
+  'sidebar-mimocode-context-meter': 'flex',
+  'sidebar-mimocode-file-indicator': 'none',
+  'sidebar-mimocode-image-preview': 'none',
+  'sidebar-mimocode-mcp-selector': 'flex',
+  'sidebar-mimocode-mode-selector': 'flex',
+  'sidebar-mimocode-permission-toggle': 'flex',
+  'sidebar-mimocode-selection-indicator': 'block',
+  'sidebar-mimocode-service-tier-toggle': 'flex',
+  'sidebar-mimocode-status-panel-bash': 'block',
+  'sidebar-mimocode-status-panel-bash-content': 'block',
+  'sidebar-mimocode-status-panel-bash-entry-content': 'block',
+  'sidebar-mimocode-status-panel-content': 'block',
+  'sidebar-mimocode-status-panel-todos': 'block',
+  'sidebar-mimocode-tab-content': 'flex',
+  'sidebar-mimocode-thinking-budget': 'flex',
+  'sidebar-mimocode-thinking-effort': 'flex',
 };
 
 const DISPLAY_CLASSES = new Set([
-  'claudian-hidden',
-  'claudian-visible-block',
-  'claudian-visible-flex',
+  'sidebar-mimocode-hidden',
+  'sidebar-mimocode-visible-block',
+  'sidebar-mimocode-visible-flex',
   ...Object.keys(CLASS_DISPLAY),
 ]);
 
@@ -105,9 +105,9 @@ export function createMockEl(tag = 'div'): any {
   let textContent = '';
 
   const resolveDisplay = (): string | null => {
-    if (classes.has('claudian-hidden')) return 'none';
-    if (classes.has('claudian-visible-flex')) return 'flex';
-    if (classes.has('claudian-visible-block')) return 'block';
+    if (classes.has('sidebar-mimocode-hidden')) return 'none';
+    if (classes.has('sidebar-mimocode-visible-flex')) return 'flex';
+    if (classes.has('sidebar-mimocode-visible-block')) return 'block';
 
     for (const [cls, display] of Object.entries(CLASS_DISPLAY)) {
       if (classes.has(cls)) return display;

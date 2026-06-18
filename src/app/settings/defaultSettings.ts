@@ -1,13 +1,14 @@
 import { getDefaultHiddenProviderCommands } from '../../core/providers/commands/hiddenCommands';
-import { type ClaudianSettings } from '../../core/types/settings';
+import { type SidebarMimocodeSettings } from '../../core/types/settings';
 import { getBuiltInProviderDefaultConfigs } from '../../providers/defaultProviderConfigs';
+import { MIMO_SYNTHETIC_MODEL_ID } from '../../providers/mimo/models';
 
-export const DEFAULT_CLAUDIAN_SETTINGS: ClaudianSettings = {
+export const DEFAULT_SIDEBAR_MIMOCODE_SETTINGS: SidebarMimocodeSettings = {
   userName: '',
 
   permissionMode: 'yolo',
 
-  model: 'haiku',
+  model: MIMO_SYNTHETIC_MODEL_ID,
   thinkingBudget: 'off',
   effortLevel: 'high',
   serviceTier: 'default',

@@ -19,7 +19,7 @@ export const mimoProviderRegistration: ProviderRegistration = {
   createRuntime: ({ plugin }) => new MimoChatRuntime(plugin),
   createTitleGenerationService: (plugin) => new MimoTitleGenerationService(plugin),
   displayName: 'MiMo-Code',
-  environmentKeyPatterns: [/^MIMO_/i],
+  environmentKeyPatterns: [/^MIMOCODE_/i, /^MIMO_/i],
   historyService: new MimoConversationHistoryService(),
   isEnabled: (settings) => getMimoProviderSettings(settings).enabled,
   settingsReconciler: mimoSettingsReconciler,

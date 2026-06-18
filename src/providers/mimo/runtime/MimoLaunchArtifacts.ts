@@ -1,7 +1,7 @@
 import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
-import { CLAUDIAN_STORAGE_PATH } from '../../../core/bootstrap/StoragePaths';
+import { SIDEBAR_MIMOCODE_STORAGE_PATH } from '../../../core/bootstrap/StoragePaths';
 import {
   buildSystemPrompt,
   computeSystemPromptKey,
@@ -73,7 +73,7 @@ export async function prepareMimoLaunchArtifacts(
 ): Promise<MimoLaunchArtifacts> {
   const artifactsDir = path.join(
     params.workspaceRoot,
-    CLAUDIAN_STORAGE_PATH,
+    SIDEBAR_MIMOCODE_STORAGE_PATH,
     params.artifactsSubdir ?? 'mimo',
   );
   const systemPromptPath = path.join(artifactsDir, 'system.md');
@@ -86,7 +86,7 @@ export async function prepareMimoLaunchArtifacts(
       ? params.systemPromptText
       : computeSystemPromptKey(requireSettings(params)));
   const baseConfig = await loadMimoBaseConfig(
-    params.runtimeEnv.MIMO_CONFIG,
+    params.runtimeEnv.MIMOCODE_CONFIG,
     params.workspaceRoot,
   );
   const configContent = `${JSON.stringify(

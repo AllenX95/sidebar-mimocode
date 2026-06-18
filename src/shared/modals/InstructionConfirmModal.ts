@@ -1,5 +1,5 @@
 /**
- * Claudian - Instruction modal
+ * SidebarMimocode - Instruction modal
  *
  * Unified modal that handles all instruction mode states:
  * - Loading (initial processing)
@@ -58,35 +58,35 @@ export class InstructionModal extends Modal {
 
   onOpen() {
     const { contentEl } = this;
-    contentEl.addClass('claudian-instruction-modal');
+    contentEl.addClass('sidebar-mimocode-instruction-modal');
     this.setTitle('Add custom instruction');
 
     // User input section (always visible)
-    const inputSection = contentEl.createDiv({ cls: 'claudian-instruction-section' });
-    const inputLabel = inputSection.createDiv({ cls: 'claudian-instruction-label' });
+    const inputSection = contentEl.createDiv({ cls: 'sidebar-mimocode-instruction-section' });
+    const inputLabel = inputSection.createDiv({ cls: 'sidebar-mimocode-instruction-label' });
     inputLabel.setText('Your input:');
-    const inputText = inputSection.createDiv({ cls: 'claudian-instruction-original' });
+    const inputText = inputSection.createDiv({ cls: 'sidebar-mimocode-instruction-original' });
     inputText.setText(this.rawInstruction);
 
     // Main content section (changes based on state)
-    this.contentSectionEl = contentEl.createDiv({ cls: 'claudian-instruction-content-section' });
+    this.contentSectionEl = contentEl.createDiv({ cls: 'sidebar-mimocode-instruction-content-section' });
 
     // Loading state
-    this.loadingEl = this.contentSectionEl.createDiv({ cls: 'claudian-instruction-loading' });
-    this.loadingEl.createDiv({ cls: 'claudian-instruction-spinner' });
+    this.loadingEl = this.contentSectionEl.createDiv({ cls: 'sidebar-mimocode-instruction-loading' });
+    this.loadingEl.createDiv({ cls: 'sidebar-mimocode-instruction-spinner' });
     this.loadingEl.createSpan({ text: 'Processing your instruction...' });
 
     // Clarification state (hidden initially)
-    this.clarificationEl = this.contentSectionEl.createDiv({ cls: 'claudian-instruction-clarification-section' });
-    this.clarificationEl.addClass('claudian-hidden');
-    this.clarificationTextEl = this.clarificationEl.createDiv({ cls: 'claudian-instruction-clarification' });
+    this.clarificationEl = this.contentSectionEl.createDiv({ cls: 'sidebar-mimocode-instruction-clarification-section' });
+    this.clarificationEl.addClass('sidebar-mimocode-hidden');
+    this.clarificationTextEl = this.clarificationEl.createDiv({ cls: 'sidebar-mimocode-instruction-clarification' });
 
-    const responseSection = this.clarificationEl.createDiv({ cls: 'claudian-instruction-section' });
-    const responseLabel = responseSection.createDiv({ cls: 'claudian-instruction-label' });
+    const responseSection = this.clarificationEl.createDiv({ cls: 'sidebar-mimocode-instruction-section' });
+    const responseLabel = responseSection.createDiv({ cls: 'sidebar-mimocode-instruction-label' });
     responseLabel.setText('Your response:');
 
     this.responseTextarea = new TextAreaComponent(responseSection);
-    this.responseTextarea.inputEl.addClass('claudian-instruction-response-textarea');
+    this.responseTextarea.inputEl.addClass('sidebar-mimocode-instruction-response-textarea');
     this.responseTextarea.inputEl.rows = 3;
     this.responseTextarea.inputEl.placeholder = 'Provide more details...';
 
@@ -99,24 +99,24 @@ export class InstructionModal extends Modal {
     });
 
     // Confirmation state (hidden initially)
-    this.confirmationEl = this.contentSectionEl.createDiv({ cls: 'claudian-instruction-confirmation-section' });
-    this.confirmationEl.addClass('claudian-hidden');
+    this.confirmationEl = this.contentSectionEl.createDiv({ cls: 'sidebar-mimocode-instruction-confirmation-section' });
+    this.confirmationEl.addClass('sidebar-mimocode-hidden');
 
     // Refined instruction display/edit
-    const refinedSection = this.confirmationEl.createDiv({ cls: 'claudian-instruction-section' });
-    const refinedLabel = refinedSection.createDiv({ cls: 'claudian-instruction-label' });
+    const refinedSection = this.confirmationEl.createDiv({ cls: 'sidebar-mimocode-instruction-section' });
+    const refinedLabel = refinedSection.createDiv({ cls: 'sidebar-mimocode-instruction-label' });
     refinedLabel.setText('Refined snippet:');
 
-    this.refinedDisplayEl = refinedSection.createDiv({ cls: 'claudian-instruction-refined' });
-    this.editContainerEl = refinedSection.createDiv({ cls: 'claudian-instruction-edit-container' });
-    this.editContainerEl.addClass('claudian-hidden');
+    this.refinedDisplayEl = refinedSection.createDiv({ cls: 'sidebar-mimocode-instruction-refined' });
+    this.editContainerEl = refinedSection.createDiv({ cls: 'sidebar-mimocode-instruction-edit-container' });
+    this.editContainerEl.addClass('sidebar-mimocode-hidden');
 
     this.editTextarea = new TextAreaComponent(this.editContainerEl);
-    this.editTextarea.inputEl.addClass('claudian-instruction-edit-textarea');
+    this.editTextarea.inputEl.addClass('sidebar-mimocode-instruction-edit-textarea');
     this.editTextarea.inputEl.rows = 4;
 
     // Buttons (changes based on state)
-    this.buttonsEl = contentEl.createDiv({ cls: 'claudian-instruction-buttons' });
+    this.buttonsEl = contentEl.createDiv({ cls: 'sidebar-mimocode-instruction-buttons' });
     this.updateButtons();
 
     this.showState('loading');
@@ -156,7 +156,7 @@ export class InstructionModal extends Modal {
   showClarificationLoading() {
     this.isSubmitting = true;
     if (this.loadingEl) {
-      this.loadingEl.querySelector('.claudian-instruction-spinner');
+      this.loadingEl.querySelector('.sidebar-mimocode-instruction-spinner');
       const text = this.loadingEl.querySelector('span');
       if (text) text.textContent = 'Processing...';
     }
@@ -167,13 +167,13 @@ export class InstructionModal extends Modal {
     this.state = state;
 
     if (this.loadingEl) {
-      this.loadingEl.toggleClass('claudian-hidden', state !== 'loading');
+      this.loadingEl.toggleClass('sidebar-mimocode-hidden', state !== 'loading');
     }
     if (this.clarificationEl) {
-      this.clarificationEl.toggleClass('claudian-hidden', state !== 'clarification');
+      this.clarificationEl.toggleClass('sidebar-mimocode-hidden', state !== 'clarification');
     }
     if (this.confirmationEl) {
-      this.confirmationEl.toggleClass('claudian-hidden', state !== 'confirmation');
+      this.confirmationEl.toggleClass('sidebar-mimocode-hidden', state !== 'confirmation');
     }
 
     this.updateButtons();
@@ -185,7 +185,7 @@ export class InstructionModal extends Modal {
 
     const cancelBtn = this.buttonsEl.createEl('button', {
       text: 'Cancel',
-      cls: 'claudian-instruction-btn claudian-instruction-reject-btn',
+      cls: 'sidebar-mimocode-instruction-btn sidebar-mimocode-instruction-reject-btn',
       attr: { 'aria-label': 'Cancel' }
     });
     cancelBtn.addEventListener('click', () => this.handleReject());
@@ -193,7 +193,7 @@ export class InstructionModal extends Modal {
     if (this.state === 'clarification') {
       const submitBtn = this.buttonsEl.createEl('button', {
         text: 'Submit',
-        cls: 'claudian-instruction-btn claudian-instruction-accept-btn',
+        cls: 'sidebar-mimocode-instruction-btn sidebar-mimocode-instruction-accept-btn',
         attr: { 'aria-label': 'Submit response' }
       });
       submitBtn.addEventListener('click', () => {
@@ -202,14 +202,14 @@ export class InstructionModal extends Modal {
     } else if (this.state === 'confirmation') {
       this.editBtnEl = this.buttonsEl.createEl('button', {
         text: 'Edit',
-        cls: 'claudian-instruction-btn claudian-instruction-edit-btn',
+        cls: 'sidebar-mimocode-instruction-btn sidebar-mimocode-instruction-edit-btn',
         attr: { 'aria-label': 'Edit instruction' }
       });
       this.editBtnEl.addEventListener('click', () => this.toggleEdit());
 
       const acceptBtn = this.buttonsEl.createEl('button', {
         text: 'Accept',
-        cls: 'claudian-instruction-btn claudian-instruction-accept-btn',
+        cls: 'sidebar-mimocode-instruction-btn sidebar-mimocode-instruction-accept-btn',
         attr: { 'aria-label': 'Accept instruction' }
       });
       acceptBtn.addEventListener('click', () => this.handleAccept());
@@ -236,8 +236,8 @@ export class InstructionModal extends Modal {
     this.isEditing = !this.isEditing;
 
     if (this.isEditing) {
-      this.refinedDisplayEl?.addClass('claudian-hidden');
-      this.editContainerEl?.removeClass('claudian-hidden');
+      this.refinedDisplayEl?.addClass('sidebar-mimocode-hidden');
+      this.editContainerEl?.removeClass('sidebar-mimocode-hidden');
       if (this.editBtnEl) this.editBtnEl.setText('Preview');
       this.editTextarea?.inputEl.focus();
     } else {
@@ -245,9 +245,9 @@ export class InstructionModal extends Modal {
       this.refinedInstruction = edited;
       if (this.refinedDisplayEl) {
         this.refinedDisplayEl.setText(edited);
-        this.refinedDisplayEl.removeClass('claudian-hidden');
+        this.refinedDisplayEl.removeClass('sidebar-mimocode-hidden');
       }
-      this.editContainerEl?.addClass('claudian-hidden');
+      this.editContainerEl?.addClass('sidebar-mimocode-hidden');
       if (this.editBtnEl) this.editBtnEl.setText('Edit');
     }
   }

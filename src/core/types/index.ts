@@ -10,20 +10,20 @@ export {
   type SessionMetadata,
   type StreamChunk,
   type UsageInfo,
-  VIEW_TYPE_CLAUDIAN,
+  VIEW_TYPE_SIDEBAR_MIMOCODE,
 } from './chat';
 export { type ProviderId } from './provider';
 
 // Settings and command types
 export {
   type ApprovalDecision,
-  type ClaudianSettings,
   type EnvironmentScope,
   type EnvSnippet,
   type HostnameCliPaths,
   type InstructionRefineResult,
   type KeyboardNavigationSettings,
   type PermissionMode,
+  type SidebarMimocodeSettings,
   type SlashCommand,
 } from './settings';
 

@@ -6,30 +6,30 @@ import { BrowserSelectionController } from '@/features/chat/controllers/BrowserS
 
 function createMockIndicator() {
   const indicatorEl = createMockEl();
-  indicatorEl.addClass('claudian-browser-selection-indicator');
-  indicatorEl.addClass('claudian-hidden');
+  indicatorEl.addClass('sidebar-mimocode-browser-selection-indicator');
+  indicatorEl.addClass('sidebar-mimocode-hidden');
   return indicatorEl;
 }
 
 function createMockContextRow(browserIndicator: HTMLElement) {
   const editorIndicator = createMockEl();
-  editorIndicator.addClass('claudian-selection-indicator');
-  editorIndicator.addClass('claudian-hidden');
+  editorIndicator.addClass('sidebar-mimocode-selection-indicator');
+  editorIndicator.addClass('sidebar-mimocode-hidden');
   const canvasIndicator = createMockEl();
-  canvasIndicator.addClass('claudian-canvas-indicator');
-  canvasIndicator.addClass('claudian-hidden');
+  canvasIndicator.addClass('sidebar-mimocode-canvas-indicator');
+  canvasIndicator.addClass('sidebar-mimocode-hidden');
   const fileIndicator = createMockEl();
-  fileIndicator.addClass('claudian-file-indicator');
-  fileIndicator.addClass('claudian-hidden');
+  fileIndicator.addClass('sidebar-mimocode-file-indicator');
+  fileIndicator.addClass('sidebar-mimocode-hidden');
   const imagePreview = createMockEl();
-  imagePreview.addClass('claudian-image-preview');
-  imagePreview.addClass('claudian-hidden');
+  imagePreview.addClass('sidebar-mimocode-image-preview');
+  imagePreview.addClass('sidebar-mimocode-hidden');
   const elements: Record<string, any> = {
-    '.claudian-selection-indicator': editorIndicator,
-    '.claudian-browser-selection-indicator': browserIndicator,
-    '.claudian-canvas-indicator': canvasIndicator,
-    '.claudian-file-indicator': fileIndicator,
-    '.claudian-image-preview': imagePreview,
+    '.sidebar-mimocode-selection-indicator': editorIndicator,
+    '.sidebar-mimocode-browser-selection-indicator': browserIndicator,
+    '.sidebar-mimocode-canvas-indicator': canvasIndicator,
+    '.sidebar-mimocode-file-indicator': fileIndicator,
+    '.sidebar-mimocode-image-preview': imagePreview,
   };
   const contextRow = createMockEl();
   const toggle = contextRow.classList.toggle;

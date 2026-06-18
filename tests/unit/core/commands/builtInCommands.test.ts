@@ -182,41 +182,43 @@ describe('builtInCommands', () => {
       expect(commands.length).toBe(BUILT_IN_COMMANDS.length);
     });
 
-    it('returns all commands for claude provider', () => {
-      const commands = getBuiltInCommandsForDropdown('claude');
-      expect(commands.length).toBe(BUILT_IN_COMMANDS.length);
+    it('returns commands supported by MiMo-Code capabilities', () => {
+      const commands = getBuiltInCommandsForDropdown('mimo');
+      expect(commands.length).toBe(3);
       expect(commands.map(c => c.name)).toContain('clear');
       expect(commands.map(c => c.name)).toContain('add-dir');
       expect(commands.map(c => c.name)).toContain('resume');
-      expect(commands.map(c => c.name)).toContain('fork');
+      expect(commands.map(c => c.name)).not.toContain('fork');
     });
 
-    it('returns all capability-supported commands for codex provider', () => {
-      const commands = getBuiltInCommandsForDropdown('codex');
+    it('uses an explicit capability object for command filtering', () => {
+      const commands = getBuiltInCommandsForDropdown({
+        supportsFork: true,
+        supportsNativeHistory: false,
+      });
       const names = commands.map(c => c.name);
       expect(names).toContain('clear');
       expect(names).toContain('add-dir');
-      expect(names).toContain('resume');
+      expect(names).not.toContain('resume');
       expect(names).toContain('fork');
     });
 
-    it('returns only commands supported by codex capabilities', () => {
-      const commands = getBuiltInCommandsForDropdown('codex');
-      expect(commands.length).toBe(4);
-      expect(commands.map(c => c.name)).toEqual(['clear', 'add-dir', 'resume', 'fork']);
+    it('returns only commands supported by MiMo-Code', () => {
+      const commands = getBuiltInCommandsForDropdown('mimo');
+      expect(commands.map(c => c.name)).toEqual(['clear', 'add-dir', 'resume']);
     });
   });
 
   describe('isBuiltInCommandSupported', () => {
     it('returns true for universal commands on any provider', () => {
       const clearCmd = BUILT_IN_COMMANDS.find((c) => c.name === 'clear')!;
-      expect(isBuiltInCommandSupported(clearCmd, 'claude')).toBe(true);
-      expect(isBuiltInCommandSupported(clearCmd, 'codex')).toBe(true);
+      expect(isBuiltInCommandSupported(clearCmd, 'mimo')).toBe(true);
+      expect(isBuiltInCommandSupported(clearCmd, 'removed-provider')).toBe(true);
     });
 
     it('returns false for provider-restricted commands on other providers', () => {
       const resumeCmd = BUILT_IN_COMMANDS.find((c) => c.name === 'resume')!;
-      expect(isBuiltInCommandSupported(resumeCmd, 'claude')).toBe(true);
+      expect(isBuiltInCommandSupported(resumeCmd, 'mimo')).toBe(true);
       expect(isBuiltInCommandSupported(
         resumeCmd,
         { supportsNativeHistory: false, supportsFork: true },

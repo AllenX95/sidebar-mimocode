@@ -5,8 +5,8 @@ export interface MimoMode {
 }
 
 export const MIMO_BUILD_MODE_ID = 'build';
-export const MIMO_YOLO_MODE_ID = 'claudian-yolo';
-export const MIMO_SAFE_MODE_ID = 'claudian-safe';
+export const MIMO_YOLO_MODE_ID = 'sidebar-mimocode-yolo';
+export const MIMO_SAFE_MODE_ID = 'sidebar-mimocode-safe';
 export const MIMO_PLAN_MODE_ID = 'plan';
 
 export const MIMO_FALLBACK_MODES: ReadonlyArray<MimoMode> = Object.freeze([

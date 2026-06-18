@@ -4,20 +4,20 @@ import { CanvasSelectionController } from '@/features/chat/controllers/CanvasSel
 
 function createMockIndicator() {
   const indicator = createMockEl();
-  indicator.addClass('claudian-canvas-indicator');
-  indicator.addClass('claudian-hidden');
+  indicator.addClass('sidebar-mimocode-canvas-indicator');
+  indicator.addClass('sidebar-mimocode-hidden');
   return indicator;
 }
 
 function createMockContextRow() {
   const elements: Record<string, any> = {
-    '.claudian-selection-indicator': createMockEl(),
-    '.claudian-canvas-indicator': createMockIndicator(),
-    '.claudian-file-indicator': null,
-    '.claudian-image-preview': null,
+    '.sidebar-mimocode-selection-indicator': createMockEl(),
+    '.sidebar-mimocode-canvas-indicator': createMockIndicator(),
+    '.sidebar-mimocode-file-indicator': null,
+    '.sidebar-mimocode-image-preview': null,
   };
-  elements['.claudian-selection-indicator'].addClass('claudian-selection-indicator');
-  elements['.claudian-selection-indicator'].addClass('claudian-hidden');
+  elements['.sidebar-mimocode-selection-indicator'].addClass('sidebar-mimocode-selection-indicator');
+  elements['.sidebar-mimocode-selection-indicator'].addClass('sidebar-mimocode-hidden');
 
   const contextRow = createMockEl();
   const toggle = contextRow.classList.toggle;
@@ -152,9 +152,9 @@ describe('CanvasSelectionController', () => {
 
   it('keeps context row visible when editor selection indicator is visible', () => {
     const editorIndicator = createMockEl();
-    editorIndicator.addClass('claudian-selection-indicator');
+    editorIndicator.addClass('sidebar-mimocode-selection-indicator');
     contextRowEl.querySelector.mockImplementation((selector: string) => {
-      if (selector === '.claudian-selection-indicator') return editorIndicator;
+      if (selector === '.sidebar-mimocode-selection-indicator') return editorIndicator;
       return null;
     });
 

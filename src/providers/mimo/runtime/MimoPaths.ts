@@ -2,12 +2,13 @@ import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
 
-const MIMO_APP_NAME = 'mimo';
-const DEFAULT_DATABASE_NAME = 'mimo.db';
-const DATABASE_NAME_PATTERN = /^mimo(?:-[a-z0-9._-]+)?\.db$/i;
+const MIMO_APP_NAME = 'mimocode';
+const DEFAULT_DATABASE_NAME = 'mimocode.db';
+const DATABASE_NAME_PATTERN = /^mimocode(?:-[a-z0-9._-]+)?\.db$/i;
 
 export function resolveMimoDataDir(
   env: NodeJS.ProcessEnv = process.env,
+  platform: NodeJS.Platform = process.platform,
 ): string {
   const xdgDataHome = env.XDG_DATA_HOME?.trim();
   if (xdgDataHome) {
@@ -15,9 +16,13 @@ export function resolveMimoDataDir(
   }
 
   const home = env.HOME || os.homedir();
-  if (process.platform === 'win32') {
+  if (platform === 'win32') {
     const appData = env.APPDATA || env.LOCALAPPDATA || path.join(home, 'AppData', 'Roaming');
     return path.join(appData, MIMO_APP_NAME);
+  }
+
+  if (platform === 'darwin') {
+    return path.join(home, 'Library', 'Application Support', MIMO_APP_NAME);
   }
 
   return path.join(home, '.local', 'share', MIMO_APP_NAME);
@@ -25,16 +30,17 @@ export function resolveMimoDataDir(
 
 export function resolveMimoDatabasePath(
   env: NodeJS.ProcessEnv = process.env,
+  platform: NodeJS.Platform = process.platform,
 ): string | null {
-  const override = env.MIMO_DB?.trim();
+  const override = env.MIMOCODE_DB?.trim();
   if (override) {
     if (override === ':memory:' || path.isAbsolute(override)) {
       return override;
     }
-    return path.join(resolveMimoDataDir(env), override);
+    return path.join(resolveMimoDataDir(env, platform), override);
   }
 
-  const candidates = getMimoDatabasePathCandidates(env);
+  const candidates = getMimoDatabasePathCandidates(env, platform);
   for (const candidate of candidates) {
     if (fs.existsSync(candidate)) {
       return candidate;
@@ -47,6 +53,7 @@ export function resolveMimoDatabasePath(
 export function resolveExistingMimoDatabasePath(
   preferredPath?: string | null,
   env: NodeJS.ProcessEnv = process.env,
+  platform: NodeJS.Platform = process.platform,
 ): string | null {
   const preferred = preferredPath?.trim();
   if (preferred) {
@@ -58,7 +65,7 @@ export function resolveExistingMimoDatabasePath(
     }
   }
 
-  const resolved = resolveMimoDatabasePath(env);
+  const resolved = resolveMimoDatabasePath(env, platform);
   if (resolved && (resolved === ':memory:' || fs.existsSync(resolved))) {
     return resolved;
   }
@@ -68,14 +75,11 @@ export function resolveExistingMimoDatabasePath(
 
 function getMimoDatabasePathCandidates(
   env: NodeJS.ProcessEnv,
+  platform: NodeJS.Platform,
 ): string[] {
   const candidates: string[] = [];
   const seen = new Set<string>();
-  const home = env.HOME || os.homedir();
-  const dataDirs = [
-    resolveMimoDataDir(env),
-    path.join(home, 'Library', 'Application Support', MIMO_APP_NAME),
-  ];
+  const dataDirs = [resolveMimoDataDir(env, platform)];
 
   for (const dataDir of dataDirs) {
     pushCandidate(candidates, seen, path.join(dataDir, DEFAULT_DATABASE_NAME));

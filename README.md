@@ -1,75 +1,63 @@
-# Obsidian MiMo
+# Sidebar MiMo-Code
 
-An Obsidian plugin that embeds [MiMo-Code](https://github.com/XiaomiMiMo/MiMo-Code) CLI Agent in your vault. Your vault becomes the agent's working directory — file read/write, search, bash, and multi-step workflows all work out of the box.
+Sidebar MiMo-Code embeds the [MiMo-Code](https://github.com/XiaomiMiMo/MiMo-Code) CLI agent in an Obsidian sidebar. The active vault is the agent working directory, so MiMo-Code can read, write, search, and run approved commands against vault content.
 
-Based on [Claudian](https://github.com/yishentu/claudian) by Yishen Tu (MIT License).
+## Features
 
-## Features & Usage
+- Sidebar chat with streaming, cancellation, resume, and native MiMo-Code history reload
+- Safe, YOLO, and Plan modes
+- Inline editing with a diff preview
+- Image attachments, instruction mode (`#`), slash commands, skills, and custom subagents
+- Multiple chat tabs and automatic conversation titles
 
-Open the chat sidebar from the ribbon icon or command palette. Select text and use the hotkey for inline edit. Everything works like your familiar MiMo-Code agent — talk to the agent, and it reads, writes, edits, and searches files in your vault.
-
-**Inline Edit** — Select text or start at the cursor position + hotkey to edit directly in notes with word-level diff preview.
-
-**Slash Commands & Skills** — Type `/` or `$` for reusable prompt templates or Skills from user- and vault-level scopes.
-
-**`@mention`** - Type `@` to mention anything you want the agent to work with, vault files, subagents, MCP servers, or files in external directories.
-
-**Plan Mode** — Toggle via `Shift+Tab`. The agent explores and designs before implementing, then presents a plan for approval.
-
-**Instruction Mode (`#`)** — Refined custom instructions added from the chat input.
-
-**MCP Servers** — Connect external tools via Model Context Protocol (stdio, SSE, HTTP).
-
-**Multi-Tab & Conversations** — Multiple chat tabs, conversation history, fork, resume, and compact.
+Forking and in-app MCP management are not currently supported. MCP server mentions are therefore not exposed in MiMo-Code chats.
 
 ## Requirements
 
-- [MiMo-Code CLI](https://github.com/XiaomiMiMo/MiMo-Code) installed
-- MiMo-Code configured with API keys for your preferred LLM provider
-- Obsidian v1.7.2+
-- Desktop only (macOS, Linux, Windows)
+- Obsidian Desktop 1.7.2 or newer
+- MiMo-Code CLI 0.1.1 (`npm install -g @mimo-ai/cli`)
+- API credentials configured for the model provider used by MiMo-Code
 
 ## Installation
 
-### From GitHub Release
+### GitHub release
 
-1. Download `main.js`, `manifest.json`, and `styles.css` from the latest release
-2. Create a folder called `obsidian-mimo` in your vault's plugins folder:
-   ```
-   <your-vault>/.obsidian/plugins/obsidian-mimo/
-   ```
-3. Place the downloaded files in that folder
-4. Enable the plugin in Obsidian → Settings → Community plugins
+1. Download `main.js`, `manifest.json`, and `styles.css` from the release.
+2. Create `<your-vault>/.obsidian/plugins/sidebar-mimocode/`.
+3. Copy the three files into that directory.
+4. Enable **Sidebar MiMo-Code** under Obsidian → Settings → Community plugins.
 
-### From Source
+### From source
 
 ```bash
-git clone https://github.com/AllenX95/obsidian-mimo.git
-cd obsidian-mimo
-npm install
+git clone https://github.com/AllenX95/sidebar-mimocode.git
+cd sidebar-mimocode
+npm ci
 npm run build
 ```
 
-Copy `main.js`, `manifest.json`, and `styles.css` to your vault's plugins folder.
+Copy `main.js`, `manifest.json`, and `styles.css` to `<your-vault>/.obsidian/plugins/sidebar-mimocode/`.
 
 ## Configuration
 
-1. Install MiMo-Code CLI: `npm install -g @mimo-ai/cli`
-2. Configure MiMo-Code with your API keys (see [MiMo-Code documentation](https://github.com/XiaomiMiMo/MiMo-Code))
-3. Open Obsidian → Settings → Obsidian MiMo → Enable the plugin
-4. The plugin will auto-detect the `mimo` binary
+1. Run MiMo-Code once and configure its model provider credentials.
+2. Open Obsidian → Settings → Sidebar MiMo-Code.
+3. Enable MiMo-Code and confirm the detected `mimo` executable.
+
+Custom subagents created by the plugin are stored under `.mimocode/agent/`. MiMo-Code data is read from its platform data directory, or from `MIMOCODE_DB` when configured.
 
 ## Development
 
 ```bash
-npm install
-npm run dev
+npm ci
+npm run typecheck
+npm run lint
+npm run test
+npm run build
 ```
 
-This will watch for changes and copy the built files to your Obsidian vault plugin folder.
+Set `OBSIDIAN_VAULT` in `.env.local` to copy development builds to `.obsidian/plugins/sidebar-mimocode/`.
 
 ## License
 
-MIT License - See [LICENSE](LICENSE) for details.
-
-Based on [Claudian](https://github.com/yishentu/claudian) by Yishen Tu.
+MIT.

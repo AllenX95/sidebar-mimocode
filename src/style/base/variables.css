@@ -1,46 +1,46 @@
 /* Brand & semantic color tokens */
-.claudian-container {
-  --claudian-brand: #D97757;
-  --claudian-brand-rgb: 217, 119, 87;
-  --claudian-brand-claude: #D97757;
-  --claudian-brand-claude-rgb: 217, 119, 87;
-  --claudian-brand-codex: #d0d0d0;
-  --claudian-brand-codex-rgb: 208, 208, 208;
-  --claudian-brand-opencode: #B8B8B8;
-  --claudian-brand-opencode-rgb: 184, 184, 184;
-  --claudian-brand-pi: #ffffff;
-  --claudian-brand-pi-rgb: 255, 255, 255;
-  --claudian-error: #dc3545;
-  --claudian-error-rgb: 220, 53, 69;
-  --claudian-compact: #5bc0de;
+.sidebar-mimocode-container {
+  --sidebar-mimocode-brand: #D97757;
+  --sidebar-mimocode-brand-rgb: 217, 119, 87;
+  --sidebar-mimocode-brand-claude: #D97757;
+  --sidebar-mimocode-brand-claude-rgb: 217, 119, 87;
+  --sidebar-mimocode-brand-codex: #d0d0d0;
+  --sidebar-mimocode-brand-codex-rgb: 208, 208, 208;
+  --sidebar-mimocode-brand-opencode: #B8B8B8;
+  --sidebar-mimocode-brand-opencode-rgb: 184, 184, 184;
+  --sidebar-mimocode-brand-pi: #ffffff;
+  --sidebar-mimocode-brand-pi-rgb: 255, 255, 255;
+  --sidebar-mimocode-error: #dc3545;
+  --sidebar-mimocode-error-rgb: 220, 53, 69;
+  --sidebar-mimocode-compact: #5bc0de;
 }
 
-body.theme-light .claudian-container {
-  --claudian-brand-codex: #000000;
-  --claudian-brand-codex-rgb: 0, 0, 0;
-  --claudian-brand-opencode: #707070;
-  --claudian-brand-opencode-rgb: 112, 112, 112;
-  --claudian-brand-pi: #000000;
-  --claudian-brand-pi-rgb: 0, 0, 0;
+body.theme-light .sidebar-mimocode-container {
+  --sidebar-mimocode-brand-codex: #000000;
+  --sidebar-mimocode-brand-codex-rgb: 0, 0, 0;
+  --sidebar-mimocode-brand-opencode: #707070;
+  --sidebar-mimocode-brand-opencode-rgb: 112, 112, 112;
+  --sidebar-mimocode-brand-pi: #000000;
+  --sidebar-mimocode-brand-pi-rgb: 0, 0, 0;
 }
 
 /* Active-provider alias for single-provider surfaces. */
-.claudian-container[data-provider="claude"] {
-  --claudian-brand: var(--claudian-brand-claude);
-  --claudian-brand-rgb: var(--claudian-brand-claude-rgb);
+.sidebar-mimocode-container[data-provider="claude"] {
+  --sidebar-mimocode-brand: var(--sidebar-mimocode-brand-claude);
+  --sidebar-mimocode-brand-rgb: var(--sidebar-mimocode-brand-claude-rgb);
 }
 
-.claudian-container[data-provider="codex"] {
-  --claudian-brand: var(--claudian-brand-codex);
-  --claudian-brand-rgb: var(--claudian-brand-codex-rgb);
+.sidebar-mimocode-container[data-provider="codex"] {
+  --sidebar-mimocode-brand: var(--sidebar-mimocode-brand-codex);
+  --sidebar-mimocode-brand-rgb: var(--sidebar-mimocode-brand-codex-rgb);
 }
 
-.claudian-container[data-provider="opencode"] {
-  --claudian-brand: var(--claudian-brand-opencode);
-  --claudian-brand-rgb: var(--claudian-brand-opencode-rgb);
+.sidebar-mimocode-container[data-provider="opencode"] {
+  --sidebar-mimocode-brand: var(--sidebar-mimocode-brand-opencode);
+  --sidebar-mimocode-brand-rgb: var(--sidebar-mimocode-brand-opencode-rgb);
 }
 
-.claudian-container[data-provider="pi"] {
-  --claudian-brand: var(--claudian-brand-pi);
-  --claudian-brand-rgb: var(--claudian-brand-pi-rgb);
+.sidebar-mimocode-container[data-provider="pi"] {
+  --sidebar-mimocode-brand: var(--sidebar-mimocode-brand-pi);
+  --sidebar-mimocode-brand-rgb: var(--sidebar-mimocode-brand-pi-rgb);
 }

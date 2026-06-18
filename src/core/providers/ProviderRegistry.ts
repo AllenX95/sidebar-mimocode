@@ -1,4 +1,4 @@
-import type ClaudianPlugin from '../../main';
+import type SidebarMimocodePlugin from '../../main';
 import type { ChatRuntime } from '../runtime/ChatRuntime';
 import { decodeProviderModelSelectionId } from './modelSelection';
 import {
@@ -48,7 +48,7 @@ export class ProviderRegistry {
     return this.getProviderRegistration(providerId).createRuntime(options);
   }
 
-  static createTitleGenerationService(plugin: ClaudianPlugin, providerId?: ProviderId): TitleGenerationService {
+  static createTitleGenerationService(plugin: SidebarMimocodePlugin, providerId?: ProviderId): TitleGenerationService {
     if (!providerId) {
       return new RoutedTitleGenerationService(plugin);
     }
@@ -69,11 +69,11 @@ export class ProviderRegistry {
     });
   }
 
-  static createInstructionRefineService(plugin: ClaudianPlugin, providerId: ProviderId = DEFAULT_CHAT_PROVIDER_ID): InstructionRefineService {
+  static createInstructionRefineService(plugin: SidebarMimocodePlugin, providerId: ProviderId = DEFAULT_CHAT_PROVIDER_ID): InstructionRefineService {
     return this.getProviderRegistration(providerId).createInstructionRefineService(plugin);
   }
 
-  static createInlineEditService(plugin: ClaudianPlugin, providerId: ProviderId = DEFAULT_CHAT_PROVIDER_ID): InlineEditService {
+  static createInlineEditService(plugin: SidebarMimocodePlugin, providerId: ProviderId = DEFAULT_CHAT_PROVIDER_ID): InlineEditService {
     return this.getProviderRegistration(providerId).createInlineEditService(plugin);
   }
 
@@ -210,7 +210,7 @@ interface ActiveTitleGeneration {
 class RoutedTitleGenerationService implements TitleGenerationService {
   private readonly activeGenerations = new Map<string, ActiveTitleGeneration>();
 
-  constructor(private readonly plugin: ClaudianPlugin) {}
+  constructor(private readonly plugin: SidebarMimocodePlugin) {}
 
   async generateTitle(
     conversationId: string,

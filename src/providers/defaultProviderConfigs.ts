@@ -3,6 +3,6 @@ import { DEFAULT_MIMO_PROVIDER_SETTINGS } from './mimo/settings';
 
 export function getBuiltInProviderDefaultConfigs(): ProviderConfigMap {
   return {
-    mimo: { ...DEFAULT_MIMO_PROVIDER_SETTINGS },
+    mimo: structuredClone(DEFAULT_MIMO_PROVIDER_SETTINGS),
   };
 }

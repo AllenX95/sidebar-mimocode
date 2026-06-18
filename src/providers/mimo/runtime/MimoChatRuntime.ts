@@ -36,8 +36,7 @@ import type {
   StreamChunk,
   ToolCallInfo,
 } from '../../../core/types';
-import type ClaudianPlugin from '../../../main';
-import { getEnhancedPath } from '../../../utils/env';
+import type SidebarMimocodePlugin from '../../../main';
 import { getVaultPath } from '../../../utils/path';
 import {
   AcpClientConnection,
@@ -73,10 +72,10 @@ import {
   decodeMimoModelId,
   encodeMimoModelId,
   isMimoModelSelectionId,
-  normalizeMimoDiscoveredModels,
-  normalizeMimoModelVariants,
   MIMO_DEFAULT_THINKING_LEVEL,
   MIMO_SYNTHETIC_MODEL_ID,
+  normalizeMimoDiscoveredModels,
+  normalizeMimoModelVariants,
   resolveMimoBaseModelRawId,
 } from '../models';
 import {
@@ -90,6 +89,7 @@ import { createMimoToolStreamAdapter } from '../normalization/mimoToolNormalizat
 import { getMimoProviderSettings, updateMimoProviderSettings } from '../settings';
 import { getMimoState, type MimoProviderState } from '../types';
 import { buildMimoPromptBlocks, buildMimoPromptText } from './buildMimoPrompt';
+import { buildMimoProcessEnvironment } from './MimoEnvironment';
 import { prepareMimoLaunchArtifacts } from './MimoLaunchArtifacts';
 import { buildMimoRuntimeEnv } from './MimoRuntimeEnvironment';
 
@@ -170,7 +170,7 @@ export class MimoChatRuntime implements ChatRuntime {
   private unregisterTransportClose: (() => void) | null = null;
 
   constructor(
-    private readonly plugin: ClaudianPlugin,
+    private readonly plugin: SidebarMimocodePlugin,
   ) {}
 
   getCapabilities(): Readonly<ProviderCapabilities> {
@@ -344,6 +344,15 @@ export class MimoChatRuntime implements ChatRuntime {
     const expectedSessionId = this.sessionId;
     let shouldBootstrapHistory = previousMessages.length > 0
       && (!expectedSessionId || this.sessionInvalidated);
+
+    if (!getMimoProviderSettings(this.plugin.settings).enabled) {
+      yield {
+        type: 'error',
+        content: 'MiMo-Code is disabled. Enable it in Settings → Sidebar MiMo-Code → Enable MiMo-Code.',
+      };
+      yield { type: 'done' };
+      return;
+    }
 
     if (!(await this.ensureReady())) {
       yield { type: 'error', content: 'Failed to start MiMo-Code. Check the CLI path and login state.' };
@@ -587,15 +596,7 @@ export class MimoChatRuntime implements ChatRuntime {
     cwd: string;
     runtimeEnv: NodeJS.ProcessEnv;
   }): Promise<void> {
-    const processEnv: NodeJS.ProcessEnv = {
-      ...process.env,
-      ...params.runtimeEnv,
-      MIMO_CONFIG: params.configPath,
-      PATH: getEnhancedPath(
-        params.runtimeEnv.PATH,
-        path.isAbsolute(params.command) ? params.command : undefined,
-      ),
-    };
+    const processEnv = buildMimoProcessEnvironment(params);
 
     this.process = new AcpSubprocess({
       args: ['acp', `--cwd=${params.cwd}`],
@@ -619,7 +620,7 @@ export class MimoChatRuntime implements ChatRuntime {
 
     this.connection = new AcpClientConnection({
       clientInfo: {
-        name: 'claudian',
+        name: 'sidebar-mimocode',
         version: this.plugin.manifest?.version ?? '0.0.0',
       },
       delegate: {

@@ -1,3 +1,4 @@
+# Repository development automation only. The plugin runtime provider is MiMo-Code.
 name: Claude Code
 
 on:

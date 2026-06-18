@@ -1,5 +1,5 @@
 /**
- * Claudian - Editor Context Utilities
+ * SidebarMimocode - Editor Context Utilities
  *
  * Editor cursor and selection context for inline editing.
  */

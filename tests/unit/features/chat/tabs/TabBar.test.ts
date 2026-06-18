@@ -35,7 +35,7 @@ describe('TabBar', () => {
 
       new TabBar(containerEl, callbacks);
 
-      expect(containerEl._classList.has('claudian-tab-badges')).toBe(true);
+      expect(containerEl._classList.has('sidebar-mimocode-tab-badges')).toBe(true);
     });
   });
 
@@ -124,7 +124,7 @@ describe('TabBar', () => {
       badge.dispatchEvent('dblclick', event);
 
       expect(badge.textContent).toBe('My Conversation');
-      expect(badge.hasClass('claudian-tab-badge-expanded')).toBe(true);
+      expect(badge.hasClass('sidebar-mimocode-tab-badge-expanded')).toBe(true);
       expect(badge.getAttribute('data-title-expanded')).toBe('true');
       expect(event.preventDefault).toHaveBeenCalled();
       expect(event.stopPropagation).toHaveBeenCalled();
@@ -132,7 +132,7 @@ describe('TabBar', () => {
       badge.dispatchEvent('dblclick', { preventDefault: jest.fn(), stopPropagation: jest.fn() });
 
       expect(badge.textContent).toBe('2');
-      expect(badge.hasClass('claudian-tab-badge-expanded')).toBe(false);
+      expect(badge.hasClass('sidebar-mimocode-tab-badge-expanded')).toBe(false);
       expect(badge.getAttribute('data-title-expanded')).toBe('false');
     });
 
@@ -166,7 +166,7 @@ describe('TabBar', () => {
       tabBar.update([createTabBarItem({ id: 'tab-1', index: 1, title: 'Renamed Title' })]);
 
       expect(containerEl._children[0].textContent).toBe('Renamed Title');
-      expect(containerEl._children[0].hasClass('claudian-tab-badge-expanded')).toBe(true);
+      expect(containerEl._children[0].hasClass('sidebar-mimocode-tab-badge-expanded')).toBe(true);
     });
 
     it('should preserve horizontal scroll position across tab bar updates', () => {
@@ -220,7 +220,7 @@ describe('TabBar', () => {
 
       tabBar.update([createTabBarItem({ isActive: false, isStreaming: false, needsAttention: false })]);
 
-      expect(containerEl._children[0]._classList.has('claudian-tab-badge-idle')).toBe(true);
+      expect(containerEl._children[0]._classList.has('sidebar-mimocode-tab-badge-idle')).toBe(true);
     });
 
     it('should apply active class for active tab', () => {
@@ -230,7 +230,7 @@ describe('TabBar', () => {
 
       tabBar.update([createTabBarItem({ isActive: true })]);
 
-      expect(containerEl._children[0]._classList.has('claudian-tab-badge-active')).toBe(true);
+      expect(containerEl._children[0]._classList.has('sidebar-mimocode-tab-badge-active')).toBe(true);
     });
 
     it('should apply streaming class for streaming tab', () => {
@@ -240,7 +240,7 @@ describe('TabBar', () => {
 
       tabBar.update([createTabBarItem({ isStreaming: true })]);
 
-      expect(containerEl._children[0]._classList.has('claudian-tab-badge-streaming')).toBe(true);
+      expect(containerEl._children[0]._classList.has('sidebar-mimocode-tab-badge-streaming')).toBe(true);
     });
 
     it('should apply attention class for tab needing attention', () => {
@@ -250,7 +250,7 @@ describe('TabBar', () => {
 
       tabBar.update([createTabBarItem({ needsAttention: true })]);
 
-      expect(containerEl._children[0]._classList.has('claudian-tab-badge-attention')).toBe(true);
+      expect(containerEl._children[0]._classList.has('sidebar-mimocode-tab-badge-attention')).toBe(true);
     });
 
     it('should prioritize active over attention', () => {
@@ -260,8 +260,8 @@ describe('TabBar', () => {
 
       tabBar.update([createTabBarItem({ isActive: true, needsAttention: true })]);
 
-      expect(containerEl._children[0]._classList.has('claudian-tab-badge-active')).toBe(true);
-      expect(containerEl._children[0]._classList.has('claudian-tab-badge-attention')).toBe(false);
+      expect(containerEl._children[0]._classList.has('sidebar-mimocode-tab-badge-active')).toBe(true);
+      expect(containerEl._children[0]._classList.has('sidebar-mimocode-tab-badge-attention')).toBe(false);
     });
 
     it('should prioritize attention over streaming', () => {
@@ -271,8 +271,8 @@ describe('TabBar', () => {
 
       tabBar.update([createTabBarItem({ isStreaming: true, needsAttention: true })]);
 
-      expect(containerEl._children[0]._classList.has('claudian-tab-badge-attention')).toBe(true);
-      expect(containerEl._children[0]._classList.has('claudian-tab-badge-streaming')).toBe(false);
+      expect(containerEl._children[0]._classList.has('sidebar-mimocode-tab-badge-attention')).toBe(true);
+      expect(containerEl._children[0]._classList.has('sidebar-mimocode-tab-badge-streaming')).toBe(false);
     });
 
     it('should prioritize active over streaming', () => {
@@ -282,8 +282,8 @@ describe('TabBar', () => {
 
       tabBar.update([createTabBarItem({ isActive: true, isStreaming: true })]);
 
-      expect(containerEl._children[0]._classList.has('claudian-tab-badge-active')).toBe(true);
-      expect(containerEl._children[0]._classList.has('claudian-tab-badge-streaming')).toBe(false);
+      expect(containerEl._children[0]._classList.has('sidebar-mimocode-tab-badge-active')).toBe(true);
+      expect(containerEl._children[0]._classList.has('sidebar-mimocode-tab-badge-streaming')).toBe(false);
     });
   });
 
@@ -347,11 +347,11 @@ describe('TabBar', () => {
       const callbacks = createMockCallbacks();
       const tabBar = new TabBar(containerEl, callbacks);
 
-      expect(containerEl._classList.has('claudian-tab-badges')).toBe(true);
+      expect(containerEl._classList.has('sidebar-mimocode-tab-badges')).toBe(true);
 
       tabBar.destroy();
 
-      expect(containerEl._classList.has('claudian-tab-badges')).toBe(false);
+      expect(containerEl._classList.has('sidebar-mimocode-tab-badges')).toBe(false);
     });
   });
 });

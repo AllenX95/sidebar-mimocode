@@ -70,11 +70,10 @@
     }
   },
   "settings": {
-    "title": "Claudian 設定",
+    "title": "Sidebar MiMo-Code 設定",
     "tabs": {
       "general": "一般",
-      "claude": "Claude",
-      "codex": "Codex"
+      "mimo": "MiMo-Code"
     },
     "display": "表示",
     "conversations": "会話",
@@ -84,7 +83,7 @@
     "models": "モデル",
     "experimental": "実験的機能",
     "userName": {
-      "name": "Claudian はどのように呼びますか？",
+      "name": "Sidebar MiMo-Code はどのように呼びますか？",
       "desc": "パーソナライズされた挨拶に使用する名前（空欄で一般の挨拶）"
     },
     "excludedTags": {
@@ -93,7 +92,7 @@
     },
     "mediaFolder": {
       "name": "メディアフォルダ",
-      "desc": "添付ファイル/画像を格納するフォルダ。ノートが ![[image.jpg]] を使用する場合、Claude はここで探します。空欄でリポジトリのルートを使用。"
+      "desc": "添付ファイル/画像を格納するフォルダ。ノートが ![[image.jpg]] を使用する場合、MiMo-Code はここで探します。空欄でリポジトリのルートを使用。"
     },
     "systemPrompt": {
       "name": "カスタムシステムプロンプト",
@@ -106,7 +105,7 @@
     "titleModel": {
       "name": "タイトル生成モデル",
       "desc": "会話タイトルを自動生成するために使用されるモデル。",
-      "auto": "自動 (Haiku)"
+      "auto": "自動 (MiMo-Code)"
     },
     "navMappings": {
       "name": "Vimスタイルナビゲーションマッピング",
@@ -154,24 +153,16 @@
     },
     "slashCommands": {
       "name": "コマンドとスキル",
-      "desc": ".claude/commands/ と .claude/skills/ に保存された Vault レベルのコマンドとスキルを管理します。/名前 でトリガーされます。"
+      "desc": ".opencode/commands/ と .opencode/skills/ に保存された Vault レベルのコマンドとスキルを管理します。/名前 でトリガーされます。"
     },
     "hiddenSlashCommands": {
       "name": "非表示のコマンドとスキル",
-      "desc": "ドロップダウンから特定のコマンドとスキルを非表示にします。Claudian に関係のない Claude Code の項目を隠すのに便利です。先頭のスラッシュなしで名前を1行に1つ入力してください。",
+      "desc": "ドロップダウンから特定のコマンドとスキルを非表示にします。Sidebar MiMo-Code に関係のない MiMo-Code の項目を隠すのに便利です。先頭のスラッシュなしで名前を1行に1つ入力してください。",
       "placeholder": "commit\nbuild\ntest"
-    },
-    "mcpServers": {
-      "name": "MCP サーバー",
-      "desc": ".claude/mcp.json に保存された Vault レベルの MCP サーバー設定を管理します。コンテキスト保存モードのサーバーは @mention でアクティブにする必要があります。"
-    },
-    "plugins": {
-      "name": "Claude Code プラグイン",
-      "desc": "~/.claude/plugins から検出された Claude Code プラグインを管理します。有効化されたプラグインは Vault ごとに .claude/settings.json に保存されます。"
     },
     "subagents": {
       "name": "サブエージェント",
-      "desc": ".claude/agents/ に保存された Vault レベルのサブエージェントを管理します。各 Markdown ファイルがカスタムエージェントを1つ定義します。",
+      "desc": ".mimocode/agent/ に保存された Vault レベルのサブエージェントを管理します。各 Markdown ファイルがカスタムエージェントを1つ定義します。",
       "noAgents": "サブエージェントが設定されていません。+ をクリックして作成してください。",
       "deleteConfirm": "サブエージェント「{name}」を削除しますか？",
       "saveFailed": "サブエージェントの保存に失敗しました: {message}",
@@ -208,22 +199,10 @@
       }
     },
     "safety": "セキュリティ",
-    "loadUserSettings": {
-      "name": "ユーザーClaude設定を読み込む",
-      "desc": "~/.claude/settings.json を読み込みます。有効にすると、ユーザーの Claude Code 許可ルールがセキュリティモードをバイパスする可能性があります。"
-    },
-    "claudeSafeMode": {
-      "name": "Safe mode",
-      "desc": "Permission mode used when the Safe toggle is active."
-    },
-    "codexSafeMode": {
-      "name": "Safe mode",
-      "desc": "Sandbox mode used when the Safe toggle is active."
-    },
     "environment": "環境",
     "customVariables": {
       "name": "カスタム変数",
-      "desc": "Claude SDKの環境変数（KEY=VALUE形式、1行に1つ）。exportプレフィックス対応。"
+      "desc": "MiMo-Code CLIの環境変数（KEY=VALUE形式、1行に1つ）。exportプレフィックス対応。"
     },
     "envSnippets": {
       "name": "スニペット",
@@ -256,22 +235,10 @@
       "desc": "カスタムモデルのコンテキストウィンドウサイズを設定します。デフォルト（200kトークン）を使用する場合は空欄のままにしてください。",
       "invalid": "無効な形式です。使用：256k、1m、または正確な数値（1000-10000000）。"
     },
-    "enableOpus1M": {
-      "name": "Opus 1Mコンテキストウィンドウ",
-      "desc": "モデルセレクターにOpus 1Mを表示します。Max、Team、Enterpriseプランに含まれます。APIおよびProユーザーは追加使用量が必要です。"
-    },
-    "enableSonnet1M": {
-      "name": "Sonnet 1Mコンテキストウィンドウ",
-      "desc": "モデルセレクターにSonnet 1Mを表示します。Max、Team、Enterpriseプランでは追加使用量が必要です。APIおよびProユーザーは追加使用量が必要です。"
-    },
     "customModels": {
       "name": "Custom models",
-      "desc": "Append additional Claude model IDs to the picker, one per line. Environment model overrides still replace the picker.",
-      "placeholder": "claude-opus-4-6\nclaude-opus-4-6[1m]\nclaude-opus-4-5-20251101"
-    },
-    "enableChrome": {
-      "name": "Chrome拡張機能を有効化",
-      "desc": "claude-in-chrome拡張機能を通じてClaudeがChromeと連携できるようにします。拡張機能のインストールが必要です。セッションの再起動が必要です。"
+      "desc": "Append additional MiMo-Code model IDs to the picker, one per line. Environment model overrides still replace the picker.",
+      "placeholder": "xiaomi/mimo-v2.5-pro-ultraspeed\nmimo/mimo-auto"
     },
     "enableBangBash": {
       "name": "bash モード (!) を有効化",
@@ -282,12 +249,12 @@
     },
     "maxTabs": {
       "name": "最大チャットタブ数",
-      "desc": "同時に開ける最大チャットタブ数（3-10）。各タブは個別の Claude セッションを使用します。",
+      "desc": "同時に開ける最大チャットタブ数（3-10）。各タブは個別の MiMo-Code セッションを使用します。",
       "warning": "5 タブを超えるとパフォーマンスやメモリ使用量に影響する可能性があります。"
     },
     "enableAutoScroll": {
       "name": "ストリーミング中の自動スクロール",
-      "desc": "Claudeが応答をストリーミングしている間、自動的に下にスクロールします。無効にすると上部に留まり、最初から読むことができます。"
+      "desc": "MiMo-Codeが応答をストリーミングしている間、自動的に下にスクロールします。無効にすると上部に留まり、最初から読むことができます。"
     },
     "deferMathRenderingDuringStreaming": {
       "name": "ストリーミング中の数式レンダリングを遅延",
@@ -298,17 +265,17 @@
       "desc": "Write と Edit の diff が最初に表示されるとき、展開した状態で表示します。"
     },
     "chatViewPlacement": {
-      "name": "Claudian を開く場所",
+      "name": "Sidebar MiMo-Code を開く場所",
       "desc": "チャットパネルを作成するときに開く場所を選択します",
       "rightSidebar": "右サイドバー",
       "leftSidebar": "左サイドバー",
       "mainTab": "メインエディタタブ"
     },
     "cliPath": {
-      "name": "Claude CLI パス",
-      "desc": "Claude Code CLI のカスタムパス。空欄で自動検出を使用。",
-      "descWindows": "ネイティブインストーラーの場合は claude.exe を使用。npm/pnpm/yarn やその他のパッケージマネージャーでのインストールの場合は cli-wrapper.cjs パスを使用（claude.cmd ではない）。",
-      "descUnix": "\"which claude\" の出力を貼り付けてください - ネイティブと npm/pnpm/yarn インストールの両方で動作します。",
+      "name": "MiMo-Code CLI パス",
+      "desc": "MiMo-Code CLI のカスタムパス。空欄で自動検出を使用。",
+      "descWindows": "Use the full path to mimo.cmd, for example C:\\Users\\<name>\\AppData\\Roaming\\npm\\mimo.cmd.",
+      "descUnix": "Paste the output of \"which mimo\".",
       "validation": {
         "notExist": "パスが存在しません",
         "isDirectory": "パスはディレクトリでファイルではありません"

@@ -1,7 +1,7 @@
 {
-  "name": "obsidian-mimo",
+  "name": "sidebar-mimocode",
   "version": "1.0.0",
-  "description": "Obsidian MiMo - MiMo-Code CLI Agent embedded in Obsidian sidebar",
+  "description": "Sidebar MiMo-Code - MiMo-Code CLI agent embedded in Obsidian",
   "main": "main.js",
   "engines": {
     "node": ">=24 <25"
@@ -28,6 +28,9 @@
     "ai-agent"
   ],
   "author": "AllenX95",
+  "contributors": [
+    "MiMo Code"
+  ],
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^10.0.1",

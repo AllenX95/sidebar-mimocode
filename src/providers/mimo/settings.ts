@@ -16,15 +16,15 @@ import {
   decodeMimoModelId,
   encodeMimoModelId,
   isMimoModelSelectionId,
-  normalizeMimoThinkingOptionsByModel,
   MIMO_DEFAULT_THINKING_LEVEL,
   type MimoDiscoveredModel,
   type MimoThinkingOptionsByModel,
+  normalizeMimoThinkingOptionsByModel,
   resolveMimoBaseModelRawId,
 } from './models';
 import {
-  normalizeManagedMimoSelectedMode,
   type MimoMode,
+  normalizeManagedMimoSelectedMode,
 } from './modes';
 
 export interface PersistedMimoProviderSettings {
@@ -45,12 +45,12 @@ export interface MimoProviderSettings extends PersistedMimoProviderSettings {
   discoveredModels: MimoDiscoveredModel[];
 }
 
-export const MIMO_DEFAULT_ENVIRONMENT_VARIABLES = 'MIMO_ENABLE_EXA=1';
+export const MIMO_DEFAULT_ENVIRONMENT_VARIABLES = 'MIMOCODE_ENABLE_EXA=1';
 
 export const DEFAULT_MIMO_PROVIDER_SETTINGS: Readonly<PersistedMimoProviderSettings> = Object.freeze({
   cliPath: '',
   cliPathsByHost: {},
-  enabled: false,
+  enabled: true,
   environmentHash: '',
   environmentVariables: MIMO_DEFAULT_ENVIRONMENT_VARIABLES,
   modelAliases: {},

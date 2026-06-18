@@ -59,7 +59,7 @@ export const CHAT_VIEW_PLACEMENTS = [
   'main-tab',
 ] as const;
 
-/** Workspace location used when opening the Claudian chat view. */
+/** Workspace location used when opening the SidebarMimocode chat view. */
 export type ChatViewPlacement = typeof CHAT_VIEW_PLACEMENTS[number];
 
 /** Result from instruction refinement agent query. */
@@ -83,13 +83,13 @@ export type HostnameCliPaths = Record<string, string>;
 export type ProviderConfigMap = Partial<Record<string, Record<string, unknown>>>;
 
 /**
- * Application settings stored in .claudian/claudian-settings.json.
+ * Application settings stored in .sidebar-mimocode/sidebar-mimocode-settings.json.
  *
  * Provider-specific fields (model, thinkingBudget, effortLevel, serviceTier, etc.) use
  * `string` here.  The active provider casts internally when it needs
  * narrower types.
  */
-export interface ClaudianSettings {
+export interface SidebarMimocodeSettings {
   // User preferences
   userName: string;
 

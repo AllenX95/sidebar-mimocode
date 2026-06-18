@@ -7,7 +7,7 @@ import { parsePathEntries, resolveNvmDefaultBin } from './path';
 const isWindows = process.platform === 'win32';
 const PATH_SEPARATOR = isWindows ? ';' : ':';
 const NODE_EXECUTABLE = isWindows ? 'node.exe' : 'node';
-const DEVICE_SETTINGS_STORAGE_KEY = 'claudian.deviceSettingsKey';
+const DEVICE_SETTINGS_STORAGE_KEY = 'sidebar-mimocode.deviceSettingsKey';
 let cachedDeviceSettingsKey: string | null = null;
 
 function getHomeDir(): string {
@@ -268,7 +268,7 @@ export function getMissingNodeError(cliPath: string, enhancedPath?: string): str
     return null;
   }
 
-  return 'Claude Code CLI requires Node.js, but Node was not found on PATH. Install Node.js or use the native Claude Code binary, then restart Obsidian.';
+  return 'MiMo-Code CLI requires Node.js, but Node was not found on PATH. Install Node.js, then restart Obsidian.';
 }
 
 export function getEnhancedPath(additionalPaths?: string, cliPath?: string): string {

@@ -1,5 +1,5 @@
 /**
- * Claudian - Markdown Utilities
+ * SidebarMimocode - Markdown Utilities
  *
  * Markdown manipulation helpers.
  */

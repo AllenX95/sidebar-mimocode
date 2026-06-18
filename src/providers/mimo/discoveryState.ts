@@ -1,13 +1,13 @@
 import { sameDiscoveredModels, sameModes, sameThinkingOptionsByModel } from './internal/compareCollections';
 import {
-  normalizeMimoDiscoveredModels,
-  normalizeMimoThinkingOptionsByModel,
   type MimoDiscoveredModel,
   type MimoThinkingOptionsByModel,
+  normalizeMimoDiscoveredModels,
+  normalizeMimoThinkingOptionsByModel,
 } from './models';
 import {
-  normalizeMimoAvailableModes,
   type MimoMode,
+  normalizeMimoAvailableModes,
 } from './modes';
 
 const MIMO_DISCOVERY_STATE = Symbol('mimoDiscoveryState');

@@ -27,7 +27,7 @@ export interface MimoSqliteReaderDependencies {
 export const MIMO_SQLITE_QUERY_MAX_BUFFER = 100 * 1024 * 1024;
 export const MIMO_MESSAGE_ROW_SQL = buildMimoMessageRowsSql('?');
 
-const MIMO_PART_ROW_SQL = buildMimoPartRowsSql('?');
+export const MIMO_PART_ROW_SQL = buildMimoPartRowsSql('?');
 const MIMO_SQLITE_CHILD_SCRIPT = `
 const { DatabaseSync } = require('node:sqlite');
 const [databasePath, sessionId, messageSql, partSql] = process.argv.slice(1);
@@ -263,6 +263,7 @@ with message_json as (
     json_valid(data) as data_valid
   from message
   where session_id = ${sessionIdExpression}
+    and agent_id = 'main'
 )
 select
   id,
@@ -277,8 +278,12 @@ order by time_created asc, id asc;`.trim();
 
 function buildMimoPartRowsSql(sessionIdExpression: string): string {
   return `
-select id, message_id, data
+select part.id, part.message_id, part.data
 from part
-where session_id = ${sessionIdExpression}
-order by message_id asc, id asc;`.trim();
+inner join message
+  on message.id = part.message_id
+  and message.session_id = part.session_id
+where part.session_id = ${sessionIdExpression}
+  and message.agent_id = 'main'
+order by part.message_id asc, part.id asc;`.trim();
 }

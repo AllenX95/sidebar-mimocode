@@ -1,34 +1,34 @@
 /* Model selector */
-.claudian-model-selector {
+.sidebar-mimocode-model-selector {
   position: relative;
 }
 
-.claudian-model-btn {
+.sidebar-mimocode-model-btn {
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 4px 8px;
   border-radius: 4px;
   cursor: pointer;
-  color: var(--claudian-brand);
+  color: var(--sidebar-mimocode-brand);
   font-size: 12px;
 }
 
-.claudian-model-label {
+.sidebar-mimocode-model-label {
   font-weight: 500;
 }
 
-.claudian-model-chevron {
+.sidebar-mimocode-model-chevron {
   display: flex;
   align-items: center;
 }
 
-.claudian-model-chevron svg {
+.sidebar-mimocode-model-chevron svg {
   width: 12px;
   height: 12px;
 }
 
-.claudian-model-dropdown {
+.sidebar-mimocode-model-dropdown {
   position: absolute;
   bottom: 100%;
   left: 0;
@@ -48,12 +48,12 @@
   transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
-.claudian-model-selector:hover .claudian-model-dropdown {
+.sidebar-mimocode-model-selector:hover .sidebar-mimocode-model-dropdown {
   opacity: 1;
   visibility: visible;
 }
 
-.claudian-model-group {
+.sidebar-mimocode-model-group {
   padding: 3px 8px;
   font-size: 8px;
   font-weight: 600;
@@ -63,18 +63,18 @@
   pointer-events: none;
 }
 
-.claudian-model-group:not(:first-child) {
+.sidebar-mimocode-model-group:not(:first-child) {
   margin-top: 4px;
   border-top: 1px solid var(--background-modifier-border);
   padding-top: 6px;
 }
 
-.claudian-model-provider-icon {
+.sidebar-mimocode-model-provider-icon {
   flex-shrink: 0;
   opacity: 0.7;
 }
 
-.claudian-model-option {
+.sidebar-mimocode-model-option {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -87,13 +87,13 @@
   white-space: nowrap;
 }
 
-.claudian-model-option:hover {
+.sidebar-mimocode-model-option:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.claudian-model-option.selected {
-  background: rgba(var(--claudian-brand-rgb), 0.15);
-  color: var(--claudian-brand);
+.sidebar-mimocode-model-option.selected {
+  background: rgba(var(--sidebar-mimocode-brand-rgb), 0.15);
+  color: var(--sidebar-mimocode-brand);
   font-weight: 500;
 }

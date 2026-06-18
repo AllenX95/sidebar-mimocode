@@ -17,8 +17,8 @@ import {
 import { MimoChatRuntime } from '../runtime/MimoChatRuntime';
 import {
   getMimoProviderSettings,
-  normalizeMimoVisibleModels,
   MIMO_DEFAULT_ENVIRONMENT_VARIABLES,
+  normalizeMimoVisibleModels,
   updateMimoProviderSettings,
 } from '../settings';
 import { MimoAgentSettings } from './MimoAgentSettings';
@@ -62,7 +62,7 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
       .setDesc('Optional absolute path to the MiMo-Code CLI for this computer. Leave empty to use `mimo` from PATH.');
 
     const validationEl = container.createDiv({
-      cls: 'claudian-cli-path-validation claudian-setting-validation claudian-setting-validation-error claudian-hidden',
+      cls: 'sidebar-mimocode-cli-path-validation sidebar-mimocode-setting-validation sidebar-mimocode-setting-validation-error sidebar-mimocode-hidden',
     });
 
     const validatePath = (value: string): string | null => {
@@ -88,16 +88,16 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
       const error = validatePath(value);
       if (error) {
         validationEl.setText(error);
-        validationEl.toggleClass('claudian-hidden', false);
+        validationEl.toggleClass('sidebar-mimocode-hidden', false);
         if (inputEl) {
-          inputEl.toggleClass('claudian-input-error', true);
+          inputEl.toggleClass('sidebar-mimocode-input-error', true);
         }
         return false;
       }
 
-      validationEl.toggleClass('claudian-hidden', true);
+      validationEl.toggleClass('sidebar-mimocode-hidden', true);
       if (inputEl) {
-        inputEl.toggleClass('claudian-input-error', false);
+        inputEl.toggleClass('sidebar-mimocode-input-error', false);
       }
       return true;
     };
@@ -152,7 +152,7 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
           await persistCliPath(value);
         });
 
-      text.inputEl.addClass('claudian-settings-cli-path-input');
+      text.inputEl.addClass('sidebar-mimocode-settings-cli-path-input');
       cliPathInputEl = text.inputEl;
 
       updateCliPathValidation(currentValue, text.inputEl);
@@ -164,34 +164,34 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
       .setName('Visible models')
       .setDesc('Choose which MiMo-Code models appear in the chat selector. Filter by provider or type to search. The current session model stays pinned even if it is not selected here.');
 
-    const pickerEl = container.createDiv({ cls: 'claudian-mimo-model-picker' });
+    const pickerEl = container.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker' });
 
     let searchQuery = '';
     let providerFilter = ALL_PROVIDERS_KEY;
 
-    const summaryEl = pickerEl.createDiv({ cls: 'claudian-mimo-model-picker-summary' });
-    const selectedEl = pickerEl.createDiv({ cls: 'claudian-mimo-model-picker-selected' });
-    const catalogEl = pickerEl.createEl('details', { cls: 'claudian-mimo-model-picker-catalog' });
+    const summaryEl = pickerEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-summary' });
+    const selectedEl = pickerEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-selected' });
+    const catalogEl = pickerEl.createEl('details', { cls: 'sidebar-mimocode-mimo-model-picker-catalog' });
     catalogEl.open = getMimoProviderSettings(settingsBag).visibleModels.length === 0;
     const catalogSummaryEl = catalogEl.createEl('summary', {
-      cls: 'claudian-mimo-model-picker-catalog-summary',
+      cls: 'sidebar-mimocode-mimo-model-picker-catalog-summary',
     });
     catalogSummaryEl.createSpan({
-      cls: 'claudian-mimo-model-picker-catalog-caret',
+      cls: 'sidebar-mimocode-mimo-model-picker-catalog-caret',
       text: '▸',
     });
     catalogSummaryEl.createSpan({
-      cls: 'claudian-mimo-model-picker-catalog-title',
+      cls: 'sidebar-mimocode-mimo-model-picker-catalog-title',
       text: 'Browse models',
     });
     const catalogSummaryCountEl = catalogSummaryEl.createSpan({
-      cls: 'claudian-mimo-model-picker-catalog-count',
+      cls: 'sidebar-mimocode-mimo-model-picker-catalog-count',
     });
 
-    const controlsEl = catalogEl.createDiv({ cls: 'claudian-mimo-model-picker-controls' });
+    const controlsEl = catalogEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-controls' });
 
     const searchInput = controlsEl.createEl('input', {
-      cls: 'claudian-mimo-model-picker-search',
+      cls: 'sidebar-mimocode-mimo-model-picker-search',
       type: 'search',
     });
     searchInput.placeholder = 'Filter by model, provider, or ID…';
@@ -201,14 +201,14 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
     });
 
     const providerSelectEl = controlsEl.createEl('select', {
-      cls: 'claudian-mimo-model-picker-provider',
+      cls: 'sidebar-mimocode-mimo-model-picker-provider',
     });
     providerSelectEl.addEventListener('change', () => {
       providerFilter = providerSelectEl.value;
       renderList();
     });
 
-    const listEl = catalogEl.createDiv({ cls: 'claudian-mimo-model-picker-list' });
+    const listEl = catalogEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-list' });
     let loadingModelCatalog = false;
     let modelCatalogLoadFailed = false;
 
@@ -286,7 +286,7 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
 
       summaryEl.createSpan({ text: 'Visible: ' });
       summaryEl.createSpan({
-        cls: 'claudian-mimo-model-picker-summary-value',
+        cls: 'sidebar-mimocode-mimo-model-picker-summary-value',
         text: String(current.visibleModels.length),
       });
       summaryEl.createSpan({
@@ -306,22 +306,22 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
       selectedEl.empty();
       const current = getMimoProviderSettings(settingsBag);
       if (current.visibleModels.length === 0) {
-        selectedEl.toggleClass('claudian-hidden', true);
+        selectedEl.toggleClass('sidebar-mimocode-hidden', true);
         return;
       }
 
-      selectedEl.toggleClass('claudian-hidden', false);
+      selectedEl.toggleClass('sidebar-mimocode-hidden', false);
       const enrichedByRawId = new Map(
         getEnrichedModels().map((model) => [model.rawId, model] as const),
       );
 
-      const headerEl = selectedEl.createDiv({ cls: 'claudian-mimo-model-picker-selected-header' });
+      const headerEl = selectedEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-selected-header' });
       headerEl.createEl('span', {
-        cls: 'claudian-mimo-model-picker-selected-label',
+        cls: 'sidebar-mimocode-mimo-model-picker-selected-label',
         text: `Selected (${current.visibleModels.length})`,
       });
       const clearAllBtn = headerEl.createEl('button', {
-        cls: 'claudian-mimo-model-picker-selected-clear',
+        cls: 'sidebar-mimocode-mimo-model-picker-selected-clear',
         text: 'Clear all',
       });
       clearAllBtn.setAttribute('aria-label', 'Clear all selected models');
@@ -329,7 +329,7 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
         void persistVisibleModels([]);
       });
 
-      const rowsEl = selectedEl.createDiv({ cls: 'claudian-mimo-model-picker-selected-rows' });
+      const rowsEl = selectedEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-selected-rows' });
 
       for (const rawId of current.visibleModels) {
         const enriched = enrichedByRawId.get(rawId);
@@ -337,44 +337,44 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
           ? `${enriched.providerLabel}/${enriched.modelLabel}`
           : rawId;
 
-        const rowEl = rowsEl.createDiv({ cls: 'claudian-mimo-model-picker-selected-row' });
+        const rowEl = rowsEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-selected-row' });
         if (enriched && !enriched.isAvailable) {
-          rowEl.classList.add('claudian-mimo-model-picker-selected-row--unavailable');
+          rowEl.classList.add('sidebar-mimocode-mimo-model-picker-selected-row--unavailable');
         }
 
-        const infoEl = rowEl.createDiv({ cls: 'claudian-mimo-model-picker-selected-info' });
-        const titleEl = infoEl.createDiv({ cls: 'claudian-mimo-model-picker-selected-title' });
+        const infoEl = rowEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-selected-info' });
+        const titleEl = infoEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-selected-title' });
         if (enriched) {
           titleEl.createEl('span', {
-            cls: 'claudian-mimo-model-picker-selected-badge',
+            cls: 'sidebar-mimocode-mimo-model-picker-selected-badge',
             text: enriched.providerLabel,
           });
           titleEl.createEl('span', {
-            cls: 'claudian-mimo-model-picker-selected-name',
+            cls: 'sidebar-mimocode-mimo-model-picker-selected-name',
             text: enriched.modelLabel,
           });
         } else {
           titleEl.createEl('span', {
-            cls: 'claudian-mimo-model-picker-selected-name',
+            cls: 'sidebar-mimocode-mimo-model-picker-selected-name',
             text: rawId,
           });
         }
 
         if (enriched && !enriched.isAvailable) {
           infoEl.createEl('div', {
-            cls: 'claudian-mimo-model-picker-selected-unavailable',
+            cls: 'sidebar-mimocode-mimo-model-picker-selected-unavailable',
             text: 'Not currently reported by MiMo-Code',
           });
         }
 
         infoEl.createEl('div', {
-          cls: 'claudian-mimo-model-picker-selected-id',
+          cls: 'sidebar-mimocode-mimo-model-picker-selected-id',
           text: rawId,
         });
 
-        const controlsEl = rowEl.createDiv({ cls: 'claudian-mimo-model-picker-selected-controls' });
+        const controlsEl = rowEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-selected-controls' });
         const aliasInput = controlsEl.createEl('input', {
-          cls: 'claudian-mimo-model-picker-selected-alias',
+          cls: 'sidebar-mimocode-mimo-model-picker-selected-alias',
           type: 'text',
         });
         aliasInput.placeholder = defaultLabel;
@@ -413,7 +413,7 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
         });
 
         const removeBtn = controlsEl.createEl('button', {
-          cls: 'claudian-mimo-model-picker-selected-remove',
+          cls: 'sidebar-mimocode-mimo-model-picker-selected-remove',
           text: '×',
         });
         removeBtn.setAttribute('aria-label', `Remove ${defaultLabel}`);
@@ -464,24 +464,24 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
       const filtered = filterModels(enriched);
 
       if (filtered.length === 0) {
-        const emptyEl = listEl.createDiv({ cls: 'claudian-mimo-model-picker-empty' });
+        const emptyEl = listEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-empty' });
         let emptyText = 'No models match your filter.';
         if (loadingModelCatalog) {
           emptyText = 'Loading MiMo-Code model catalog...';
         } else if (modelCatalogLoadFailed) {
           emptyText = 'Could not load the MiMo-Code model catalog. Check the CLI path and login state, then expand this section again.';
         } else if (enriched.length === 0) {
-          emptyText = 'Start MiMo-Code once to load its model catalog. Claudian will then let you pick visible models.';
+          emptyText = 'Start MiMo-Code once to load its model catalog. Sidebar MiMo-Code will then let you pick visible models.';
         }
         emptyEl.setText(emptyText);
         return;
       }
 
       for (const model of filtered) {
-        const rowEl = listEl.createEl('label', { cls: 'claudian-mimo-model-picker-row' });
+        const rowEl = listEl.createEl('label', { cls: 'sidebar-mimocode-mimo-model-picker-row' });
         const isSelected = selectedIds.has(model.rawId);
         if (isSelected) {
-          rowEl.classList.add('claudian-mimo-model-picker-row--selected');
+          rowEl.classList.add('sidebar-mimocode-mimo-model-picker-row--selected');
         }
         rowEl.title = model.rawId;
 
@@ -500,31 +500,31 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
           })();
         });
 
-        const textEl = rowEl.createDiv({ cls: 'claudian-mimo-model-picker-row-text' });
+        const textEl = rowEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-row-text' });
 
-        const headerEl = textEl.createDiv({ cls: 'claudian-mimo-model-picker-row-header' });
+        const headerEl = textEl.createDiv({ cls: 'sidebar-mimocode-mimo-model-picker-row-header' });
         headerEl.createEl('span', {
-          cls: 'claudian-mimo-model-picker-row-name',
+          cls: 'sidebar-mimocode-mimo-model-picker-row-name',
           text: model.modelLabel,
         });
         const badgeEl = headerEl.createEl('span', {
-          cls: 'claudian-mimo-model-picker-row-badge',
+          cls: 'sidebar-mimocode-mimo-model-picker-row-badge',
           text: model.providerLabel,
         });
         if (!model.isAvailable) {
-          badgeEl.classList.add('claudian-mimo-model-picker-row-badge--unavailable');
+          badgeEl.classList.add('sidebar-mimocode-mimo-model-picker-row-badge--unavailable');
           badgeEl.setText('Unavailable');
           badgeEl.title = 'Configured model not currently reported by MiMo-Code';
         }
 
         textEl.createDiv({
-          cls: 'claudian-mimo-model-picker-row-meta',
+          cls: 'sidebar-mimocode-mimo-model-picker-row-meta',
           text: model.rawId,
         });
 
         if (model.description) {
           textEl.createDiv({
-            cls: 'claudian-mimo-model-picker-row-desc',
+            cls: 'sidebar-mimocode-mimo-model-picker-row-desc',
             text: model.description,
           });
         }
@@ -581,10 +581,10 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
 
     new Setting(container).setName('Commands and skills').setHeading();
 
-    const commandsDesc = container.createDiv({ cls: 'claudian-sp-settings-desc' });
+    const commandsDesc = container.createDiv({ cls: 'sidebar-mimocode-sp-settings-desc' });
     commandsDesc.createEl('p', {
       cls: 'setting-item-description',
-      text: 'MiMo-Code can auto-detect vault-level Claude slash commands from .claude/commands/ and skills from .claude/skills/, .codex/skills/, and .agents/skills/. Manage those entries in the Claude or Codex settings tab. This setting only hides entries from the MiMo-Code dropdown.',
+      text: 'MiMo-Code can auto-detect vault-level commands from .opencode/commands/ and skills from .opencode/skills/ and .agents/skills/. This setting only hides entries from the MiMo-Code dropdown.',
     });
 
     context.renderHiddenProviderCommandSetting(container, 'mimo', {
@@ -596,13 +596,13 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
     if (mimoWorkspace?.agentStorage) {
       new Setting(container).setName('Subagents').setHeading();
 
-      const subagentsDesc = container.createDiv({ cls: 'claudian-sp-settings-desc' });
+      const subagentsDesc = container.createDiv({ cls: 'sidebar-mimocode-sp-settings-desc' });
       subagentsDesc.createEl('p', {
         cls: 'setting-item-description',
-        text: 'Manage vault-level MiMo-Code subagents from .mimo/agent/ and legacy .mimo/agents/. New entries are saved as subagent-only files and appear in the @mention menu.',
+        text: 'Manage vault-level MiMo-Code subagents from .mimocode/agent/ and .mimocode/agents/. Legacy .mimo entries remain readable and move to the official path when edited.',
       });
 
-      const subagentsContainer = container.createDiv({ cls: 'claudian-slash-commands-container' });
+      const subagentsContainer = container.createDiv({ cls: 'sidebar-mimocode-slash-commands-container' });
       new MimoAgentSettings(
         subagentsContainer,
         mimoWorkspace.agentStorage,
@@ -620,8 +620,8 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
       scope: 'provider:mimo',
       heading: 'Environment',
       name: 'Environment Variables',
-      desc: 'Extra environment variables passed to MiMo-Code. `MIMO_ENABLE_EXA=1` is enabled by default.',
-      placeholder: `${MIMO_DEFAULT_ENVIRONMENT_VARIABLES}\nMIMO_DB=/path/to/mimo.db`,
+      desc: 'Extra environment variables passed to MiMo-Code. `MIMOCODE_ENABLE_EXA=1` is enabled by default.',
+      placeholder: `${MIMO_DEFAULT_ENVIRONMENT_VARIABLES}\nMIMOCODE_DB=/path/to/mimocode.db`,
       renderCustomContextLimits: (target) => context.renderCustomContextLimits(target, 'mimo'),
     });
   },

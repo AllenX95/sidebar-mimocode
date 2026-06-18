@@ -71,11 +71,11 @@ export class MimoCommandCatalog implements ProviderCommandCatalog {
   }
 
   async saveVaultEntry(_entry: ProviderCommandEntry): Promise<void> {
-    throw new Error('MiMo-Code runtime commands are not editable from Claudian.');
+    throw new Error('MiMo-Code runtime commands are not editable from Sidebar MiMo-Code.');
   }
 
   async deleteVaultEntry(_entry: ProviderCommandEntry): Promise<void> {
-    throw new Error('MiMo-Code runtime commands are not deletable from Claudian.');
+    throw new Error('MiMo-Code runtime commands are not deletable from Sidebar MiMo-Code.');
   }
 
   getDropdownConfig(): ProviderCommandDropdownConfig {

@@ -5,7 +5,7 @@ import type { ChatRuntime } from '../../../core/runtime/ChatRuntime';
 import type { ChatRewindMode } from '../../../core/runtime/types';
 import type { Conversation } from '../../../core/types';
 import { t } from '../../../i18n/i18n';
-import type ClaudianPlugin from '../../../main';
+import type SidebarMimocodePlugin from '../../../main';
 import { confirm } from '../../../shared/modals/ConfirmModal';
 import { extractUserDisplayContent } from '../../../utils/context';
 import type { MessageRenderer } from '../rendering/MessageRenderer';
@@ -31,7 +31,7 @@ export interface ConversationCallbacks {
 }
 
 export interface ConversationControllerDeps {
-  plugin: ClaudianPlugin;
+  plugin: SidebarMimocodePlugin;
   state: ChatState;
   renderer: MessageRenderer;
   subagentManager: SubagentManager;
@@ -155,8 +155,8 @@ export class ConversationController {
       messagesEl.empty();
 
       // Recreate welcome element first (before StatusPanel for consistent ordering)
-      const welcomeEl = messagesEl.createDiv({ cls: 'claudian-welcome' });
-      welcomeEl.createDiv({ cls: 'claudian-welcome-greeting', text: this.getGreeting() });
+      const welcomeEl = messagesEl.createDiv({ cls: 'sidebar-mimocode-welcome' });
+      welcomeEl.createDiv({ cls: 'sidebar-mimocode-welcome-greeting', text: this.getGreeting() });
       this.deps.setWelcomeEl(welcomeEl);
 
       // Remount StatusPanel to restore state for new conversation
@@ -566,14 +566,14 @@ export class ConversationController {
 
     container.empty();
 
-    const dropdownHeader = container.createDiv({ cls: 'claudian-history-header' });
+    const dropdownHeader = container.createDiv({ cls: 'sidebar-mimocode-history-header' });
     dropdownHeader.createSpan({ text: 'Conversations' });
 
-    const list = container.createDiv({ cls: 'claudian-history-list' });
+    const list = container.createDiv({ cls: 'sidebar-mimocode-history-list' });
     const allConversations = plugin.getConversationList();
 
     if (allConversations.length === 0) {
-      list.createDiv({ cls: 'claudian-history-empty', text: 'No conversations' });
+      list.createDiv({ cls: 'sidebar-mimocode-history-empty', text: 'No conversations' });
       return;
     }
 
@@ -591,7 +591,7 @@ export class ConversationController {
       const isOpen = openState === 'open';
       const item = list.createDiv({
         cls: [
-          'claudian-history-item',
+          'sidebar-mimocode-history-item',
           isCurrent ? 'active' : '',
           isOpen ? 'open' : '',
           isRunning ? 'running' : '',
@@ -604,14 +604,14 @@ export class ConversationController {
         item.setAttribute('data-tab-index', String(conversationStatus.tabIndex));
       }
 
-      const iconEl = item.createDiv({ cls: 'claudian-history-item-icon' });
+      const iconEl = item.createDiv({ cls: 'sidebar-mimocode-history-item-icon' });
       setIcon(iconEl, this.getHistoryItemIcon(openState, isRunning));
 
-      const content = item.createDiv({ cls: 'claudian-history-item-content' });
-      const titleEl = content.createDiv({ cls: 'claudian-history-item-title', text: conv.title });
+      const content = item.createDiv({ cls: 'sidebar-mimocode-history-item-content' });
+      const titleEl = content.createDiv({ cls: 'sidebar-mimocode-history-item-title', text: conv.title });
       titleEl.setAttribute('title', conv.title);
       content.createDiv({
-        cls: 'claudian-history-item-date',
+        cls: 'sidebar-mimocode-history-item-date',
         text: this.getHistoryItemStatusText(conversationStatus, conv.lastResponseAt ?? conv.createdAt),
       });
 
@@ -661,15 +661,15 @@ export class ConversationController {
         this.showHistoryContextMenu(item, conv.id, conv.title, isCurrent, options, e);
       });
 
-      const actions = item.createDiv({ cls: 'claudian-history-item-actions' });
+      const actions = item.createDiv({ cls: 'sidebar-mimocode-history-item-actions' });
 
       // Show regenerate button if title generation failed, or loading indicator if pending
       if (conv.titleGenerationStatus === 'pending') {
-        const loadingEl = actions.createEl('span', { cls: 'claudian-action-btn claudian-action-loading' });
+        const loadingEl = actions.createEl('span', { cls: 'sidebar-mimocode-action-btn sidebar-mimocode-action-loading' });
         setIcon(loadingEl, 'loader-2');
         loadingEl.setAttribute('aria-label', 'Generating title...');
       } else if (conv.titleGenerationStatus === 'failed') {
-        const regenerateBtn = actions.createEl('button', { cls: 'claudian-action-btn' });
+        const regenerateBtn = actions.createEl('button', { cls: 'sidebar-mimocode-action-btn' });
         setIcon(regenerateBtn, 'refresh-cw');
         regenerateBtn.setAttribute('aria-label', 'Regenerate title');
         regenerateBtn.addEventListener('click', (e) => {
@@ -683,7 +683,7 @@ export class ConversationController {
 
       if (openState === 'closed' && options.onOpenConversationInNewTab) {
         const openInNewTabBtn = actions.createEl('button', {
-          cls: 'claudian-action-btn claudian-open-new-tab-btn',
+          cls: 'sidebar-mimocode-action-btn sidebar-mimocode-open-new-tab-btn',
         });
         setIcon(openInNewTabBtn, 'square-plus');
         openInNewTabBtn.setAttribute('aria-label', 'Open in new tab');
@@ -699,7 +699,7 @@ export class ConversationController {
         });
       }
 
-      const renameBtn = actions.createEl('button', { cls: 'claudian-action-btn' });
+      const renameBtn = actions.createEl('button', { cls: 'sidebar-mimocode-action-btn' });
       setIcon(renameBtn, 'pencil');
       renameBtn.setAttribute('aria-label', 'Rename');
       renameBtn.addEventListener('click', (e) => {
@@ -707,7 +707,7 @@ export class ConversationController {
         this.showRenameInput(item, conv.id, conv.title);
       });
 
-      const deleteBtn = actions.createEl('button', { cls: 'claudian-action-btn claudian-delete-btn' });
+      const deleteBtn = actions.createEl('button', { cls: 'sidebar-mimocode-action-btn sidebar-mimocode-delete-btn' });
       setIcon(deleteBtn, 'trash-2');
       deleteBtn.setAttribute('aria-label', 'Delete');
       deleteBtn.addEventListener('click', (e) => {
@@ -877,12 +877,12 @@ export class ConversationController {
 
   /** Shows inline rename input for a conversation. */
   private showRenameInput(item: HTMLElement, convId: string, currentTitle: string): void {
-    const titleEl = item.querySelector('.claudian-history-item-title') as HTMLElement;
+    const titleEl = item.querySelector('.sidebar-mimocode-history-item-title') as HTMLElement;
     if (!titleEl) return;
 
     const input = (item.ownerDocument ?? window.document).createElement('input');
     input.type = 'text';
-    input.className = 'claudian-rename-input';
+    input.className = 'sidebar-mimocode-rename-input';
     input.value = currentTitle;
 
     titleEl.replaceWith(input);
@@ -942,7 +942,7 @@ export class ConversationController {
     // Time-specific greetings
     const getTimeGreetings = (): string[] => {
       if (hour >= 5 && hour < 12) {
-        return [personalize('Good morning'), 'Coffee and Claudian time?'];
+        return [personalize('Good morning'), 'Coffee and MiMo-Code time?'];
       } else if (hour >= 12 && hour < 18) {
         return [personalize('Good afternoon'), personalize('Hey there'), personalize("How's it going") + '?'];
       } else if (hour >= 18 && hour < 22) {
@@ -979,9 +979,9 @@ export class ConversationController {
     if (!welcomeEl) return;
 
     if (this.deps.state.messages.length === 0) {
-      welcomeEl.removeClass('claudian-hidden');
+      welcomeEl.removeClass('sidebar-mimocode-hidden');
     } else {
-      welcomeEl.addClass('claudian-hidden');
+      welcomeEl.addClass('sidebar-mimocode-hidden');
     }
   }
 
@@ -999,8 +999,8 @@ export class ConversationController {
     fileCtx?.autoAttachActiveFile();
 
     // Only add greeting if not already present
-    if (!welcomeEl.querySelector('.claudian-welcome-greeting')) {
-      welcomeEl.createDiv({ cls: 'claudian-welcome-greeting', text: this.getGreeting() });
+    if (!welcomeEl.querySelector('.sidebar-mimocode-welcome-greeting')) {
+      welcomeEl.createDiv({ cls: 'sidebar-mimocode-welcome-greeting', text: this.getGreeting() });
     }
 
     this.updateWelcomeVisibility();
@@ -1084,12 +1084,12 @@ export class ConversationController {
   }
 
   // ============================================
-  // History Dropdown Rendering (for ClaudianView)
+  // History Dropdown Rendering (for SidebarMimocodeView)
   // ============================================
 
   /**
    * Renders the history dropdown content to a provided container.
-   * Used by ClaudianView to render the dropdown with custom selection callback.
+   * Used by SidebarMimocodeView to render the dropdown with custom selection callback.
    */
   renderHistoryDropdown(
     container: HTMLElement,

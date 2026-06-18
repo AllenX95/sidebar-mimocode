@@ -20,9 +20,9 @@ import {
 import type { ChatRuntime } from '../../../core/runtime/ChatRuntime';
 import type { AutoTurnResult } from '../../../core/runtime/types';
 import { TOOL_AGENT_OUTPUT } from '../../../core/tools/toolNames';
-import type { ChatMessage, ClaudianSettings, Conversation, StreamChunk } from '../../../core/types';
+import type { ChatMessage, Conversation, SidebarMimocodeSettings, StreamChunk } from '../../../core/types';
 import { t } from '../../../i18n/i18n';
-import type ClaudianPlugin from '../../../main';
+import type SidebarMimocodePlugin from '../../../main';
 import { SlashCommandDropdown } from '../../../shared/components/SlashCommandDropdown';
 import { getEnhancedPath } from '../../../utils/env';
 import { getVaultPath } from '../../../utils/path';
@@ -90,7 +90,7 @@ export function getBlankTabModelOptions(
  * settings-provider's model, which may belong to a different provider.
  */
 function resolveBlankTabModel(
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   providerId?: ProviderId,
 ): string {
   const settings = plugin.settings as unknown as Record<string, unknown>;
@@ -106,7 +106,7 @@ function resolveBlankTabModel(
 }
 
 export interface TabCreateOptions {
-  plugin: ClaudianPlugin;
+  plugin: SidebarMimocodePlugin;
 
   containerEl: HTMLElement;
   conversation?: Conversation;
@@ -125,7 +125,7 @@ export { getTabProviderId } from './providerResolution';
 
 function getTabCapabilities(
   tab: TabProviderContext,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   conversation?: Conversation | null,
 ): ProviderCapabilities {
   const providerId = getTabProviderId(tab, plugin, conversation);
@@ -138,7 +138,7 @@ function getTabCapabilities(
 
 function getTabChatUIConfig(
   tab: TabProviderContext,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   conversation?: Conversation | null,
 ): ProviderChatUIConfig {
   return ProviderRegistry.getChatUIConfig(getTabProviderId(tab, plugin, conversation));
@@ -146,7 +146,7 @@ function getTabChatUIConfig(
 
 function getTabSettingsSnapshot(
   tab: TabProviderContext,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
 ): TabProviderSettings {
   return ProviderSettingsCoordinator.getProviderSettingsSnapshot(
     plugin.settings,
@@ -156,7 +156,7 @@ function getTabSettingsSnapshot(
 
 function getTabPermissionMode(
   tab: TabProviderContext,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
 ): string {
   const permissionMode = getTabSettingsSnapshot(tab, plugin).permissionMode;
   return typeof permissionMode === 'string' && permissionMode
@@ -166,7 +166,7 @@ function getTabPermissionMode(
 
 function getTabHiddenCommands(
   tab: TabProviderContext,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   conversation?: Conversation | null,
 ): Set<string> {
   return getHiddenProviderCommandSet(
@@ -197,7 +197,7 @@ function shouldSendMessageFromExplicitEnterShortcut(e: KeyboardEvent): boolean {
 
 function shouldSendMessageFromEnterKey(
   e: KeyboardEvent,
-  settings: Pick<ClaudianSettings, 'requireCommandOrControlEnterToSend'>,
+  settings: Pick<SidebarMimocodeSettings, 'requireCommandOrControlEnterToSend'>,
 ): boolean {
   if (!isEnterWithoutShiftOrComposition(e)) {
     return false;
@@ -247,7 +247,7 @@ export function sendTabInputMessageFromExplicitEnterShortcut(
 
 function sendTabInputMessageFromEnterKey(
   tab: TabData,
-  settings: Pick<ClaudianSettings, 'requireCommandOrControlEnterToSend'>,
+  settings: Pick<SidebarMimocodeSettings, 'requireCommandOrControlEnterToSend'>,
   e: KeyboardEvent,
 ): boolean {
   if (!shouldSendMessageFromEnterKey(e, settings)) {
@@ -280,7 +280,7 @@ function getProviderMcpManager(providerId: ProviderId) {
 
 function syncSlashCommandDropdownForProvider(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   getProviderCatalogConfig?: () => ProviderCatalogInfo,
   conversation?: Conversation | null,
 ): void {
@@ -303,7 +303,7 @@ function syncSlashCommandDropdownForProvider(
 
 async function updateTabProviderSettings(
   tab: TabProviderContext,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   update: (settings: TabProviderSettings) => void,
 ): Promise<TabProviderSettings> {
   const providerId = getTabProviderId(tab, plugin);
@@ -318,7 +318,7 @@ async function updateTabProviderSettings(
   return snapshot;
 }
 
-function refreshTabProviderUI(tab: TabData, plugin: ClaudianPlugin): void {
+function refreshTabProviderUI(tab: TabData, plugin: SidebarMimocodePlugin): void {
   const capabilities = getTabCapabilities(tab, plugin);
   const permissionMode = getTabPermissionMode(tab, plugin);
   tab.ui.modelSelector?.updateDisplay();
@@ -329,7 +329,7 @@ function refreshTabProviderUI(tab: TabData, plugin: ClaudianPlugin): void {
   tab.ui.permissionToggle?.updateDisplay();
   tab.ui.serviceTierToggle?.updateDisplay();
   tab.dom.inputWrapper.toggleClass(
-    'claudian-input-plan-mode',
+    'sidebar-mimocode-input-plan-mode',
     permissionMode === 'plan' && capabilities.supportsPlanMode,
   );
 }
@@ -338,7 +338,7 @@ function refreshTabProviderUI(tab: TabData, plugin: ClaudianPlugin): void {
  * Hides or disables UI elements that the active provider does not support.
  * Called after toolbar initialization and on provider switches.
  */
-function applyProviderUIGating(tab: TabData, plugin: ClaudianPlugin): void {
+function applyProviderUIGating(tab: TabData, plugin: SidebarMimocodePlugin): void {
   const capabilities = getTabCapabilities(tab, plugin);
   const uiConfig = getTabChatUIConfig(tab, plugin);
   const mcpManager = capabilities.supportsMcpTools
@@ -363,7 +363,7 @@ function applyProviderUIGating(tab: TabData, plugin: ClaudianPlugin): void {
 
 function syncTabProviderServices(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
 ): void {
   tab.services.instructionRefineService?.cancel();
   tab.services.instructionRefineService?.resetConversation();
@@ -373,7 +373,7 @@ function syncTabProviderServices(
   );
 }
 
-function ensureTitleGenerationService(tab: TabData, plugin: ClaudianPlugin): void {
+function ensureTitleGenerationService(tab: TabData, plugin: SidebarMimocodePlugin): void {
   if (!tab.services.titleGenerationService) {
     tab.services.titleGenerationService = ProviderRegistry.createTitleGenerationService(plugin);
   }
@@ -392,7 +392,7 @@ function cleanupTabRuntime(tab: TabData): void {
  * that is now disabled, it falls back to the first enabled provider's default
  * blank-tab model. Refreshes model selector options for all blank tabs.
  */
-export function onProviderAvailabilityChanged(tab: TabData, plugin: ClaudianPlugin): void {
+export function onProviderAvailabilityChanged(tab: TabData, plugin: SidebarMimocodePlugin): void {
   if (tab.lifecycleState !== 'blank') return;
 
   const settingsSnapshot = plugin.settings as unknown as Record<string, unknown>;
@@ -450,7 +450,7 @@ export function createTab(options: TabCreateOptions): TabData {
 
   const id = tabId ?? generateTabId();
 
-  const contentEl = containerEl.createDiv({ cls: 'claudian-tab-content claudian-hidden' });
+  const contentEl = containerEl.createDiv({ cls: 'sidebar-mimocode-tab-content sidebar-mimocode-hidden' });
 
   const state = new ChatState({
     onStreamingStateChanged: onStreamingChanged,
@@ -530,18 +530,18 @@ export function createTab(options: TabCreateOptions): TabData {
  * Builds the DOM structure for a tab.
  */
 function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
-  const messagesWrapperEl = contentEl.createDiv({ cls: 'claudian-messages-wrapper' });
-  const messagesEl = messagesWrapperEl.createDiv({ cls: 'claudian-messages' });
-  const welcomeEl = messagesEl.createDiv({ cls: 'claudian-welcome' });
-  const statusPanelContainerEl = contentEl.createDiv({ cls: 'claudian-status-panel-container' });
-  const inputComposerEl = contentEl.createDiv({ cls: 'claudian-input-composer' });
-  const inputContainerEl = inputComposerEl.createDiv({ cls: 'claudian-input-container' });
-  const queueIndicatorEl = inputContainerEl.createDiv({ cls: 'claudian-input-queue-row' });
-  const navRowEl = inputContainerEl.createDiv({ cls: 'claudian-input-nav-row' });
-  const inputWrapper = inputContainerEl.createDiv({ cls: 'claudian-input-wrapper' });
-  const contextRowEl = inputWrapper.createDiv({ cls: 'claudian-context-row' });
+  const messagesWrapperEl = contentEl.createDiv({ cls: 'sidebar-mimocode-messages-wrapper' });
+  const messagesEl = messagesWrapperEl.createDiv({ cls: 'sidebar-mimocode-messages' });
+  const welcomeEl = messagesEl.createDiv({ cls: 'sidebar-mimocode-welcome' });
+  const statusPanelContainerEl = contentEl.createDiv({ cls: 'sidebar-mimocode-status-panel-container' });
+  const inputComposerEl = contentEl.createDiv({ cls: 'sidebar-mimocode-input-composer' });
+  const inputContainerEl = inputComposerEl.createDiv({ cls: 'sidebar-mimocode-input-container' });
+  const queueIndicatorEl = inputContainerEl.createDiv({ cls: 'sidebar-mimocode-input-queue-row' });
+  const navRowEl = inputContainerEl.createDiv({ cls: 'sidebar-mimocode-input-nav-row' });
+  const inputWrapper = inputContainerEl.createDiv({ cls: 'sidebar-mimocode-input-wrapper' });
+  const contextRowEl = inputWrapper.createDiv({ cls: 'sidebar-mimocode-context-row' });
   const inputEl = inputWrapper.createEl('textarea', {
-    cls: 'claudian-input',
+    cls: 'sidebar-mimocode-input',
     attr: {
       placeholder: 'How can i help you today?',
       rows: '3',
@@ -579,18 +579,18 @@ function buildTabDOM(contentEl: HTMLElement): TabDOMElements {
  */
 export async function initializeTabService(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   conversationOverride?: Conversation | null,
 ): Promise<void>;
 export async function initializeTabService(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   _legacyArg: unknown,
   conversationOverride?: Conversation | null,
 ): Promise<void>;
 export async function initializeTabService(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   argOrOverride?: unknown,
   maybeOverride?: Conversation | null,
 ): Promise<void> {
@@ -677,7 +677,7 @@ function isConversationLike(value: unknown): value is Conversation {
     && Array.isArray((value as Conversation).messages);
 }
 
-function initializeContextManagers(tab: TabData, plugin: ClaudianPlugin): void {
+function initializeContextManagers(tab: TabData, plugin: SidebarMimocodePlugin): void {
   const { dom } = tab;
   const app = plugin.app;
 
@@ -743,7 +743,7 @@ function initializeSlashCommands(
 /**
  * Initializes instruction mode and todo panel for a tab.
  */
-function initializeInstructionAndTodo(tab: TabData, plugin: ClaudianPlugin): void {
+function initializeInstructionAndTodo(tab: TabData, plugin: SidebarMimocodePlugin): void {
   const { dom } = tab;
 
   syncTabProviderServices(tab, plugin);
@@ -801,13 +801,13 @@ function isBangBashEnabled(settings: Record<string, unknown>): boolean {
  */
 function initializeInputToolbar(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   getProviderCatalogConfig?: () => ProviderCatalogInfo,
   onProviderChanged?: (providerId: ProviderId) => void | Promise<void>,
 ): void {
   const { dom } = tab;
 
-  const inputToolbar = dom.inputWrapper.createDiv({ cls: 'claudian-input-toolbar' });
+  const inputToolbar = dom.inputWrapper.createDiv({ cls: 'sidebar-mimocode-input-toolbar' });
 
   // Blank-tab UI config wrapper that returns mixed model options
   const blankTabUIConfigProxy = (): ProviderChatUIConfig => {
@@ -939,7 +939,7 @@ function initializeInputToolbar(
       });
       tab.ui.permissionToggle?.updateDisplay();
       dom.inputWrapper.toggleClass(
-        'claudian-input-plan-mode',
+        'sidebar-mimocode-input-plan-mode',
         mode === 'plan' && getTabCapabilities(tab, plugin).supportsPlanMode,
       );
     },
@@ -994,7 +994,7 @@ export interface InitializeTabUIOptions {
  */
 export function initializeTabUI(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   options: InitializeTabUIOptions = {}
 ): void {
   const { dom, state } = tab;
@@ -1003,11 +1003,11 @@ export function initializeTabUI(
   initializeContextManagers(tab, plugin);
 
   // Selection indicator - add to contextRowEl
-  dom.selectionIndicatorEl = dom.contextRowEl.createDiv({ cls: 'claudian-selection-indicator claudian-hidden' });
+  dom.selectionIndicatorEl = dom.contextRowEl.createDiv({ cls: 'sidebar-mimocode-selection-indicator sidebar-mimocode-hidden' });
 
-  dom.browserIndicatorEl = dom.contextRowEl.createDiv({ cls: 'claudian-browser-selection-indicator claudian-hidden' });
+  dom.browserIndicatorEl = dom.contextRowEl.createDiv({ cls: 'sidebar-mimocode-browser-selection-indicator sidebar-mimocode-hidden' });
 
-  dom.canvasIndicatorEl = dom.contextRowEl.createDiv({ cls: 'claudian-canvas-indicator claudian-hidden' });
+  dom.canvasIndicatorEl = dom.contextRowEl.createDiv({ cls: 'sidebar-mimocode-canvas-indicator sidebar-mimocode-hidden' });
 
   const catalogInfo = options.getProviderCatalogConfig?.() ?? null;
   initializeSlashCommands(
@@ -1084,7 +1084,7 @@ interface ForkSource {
  * Prefers the live service session ID; falls back to persisted conversation metadata.
  * Shows a notice and returns null when no session can be resolved.
  */
-function resolveForkSource(tab: TabData, plugin: ClaudianPlugin): ForkSource | null {
+function resolveForkSource(tab: TabData, plugin: SidebarMimocodePlugin): ForkSource | null {
   const conversation = tab.conversationId
     ? plugin.getConversationSync(tab.conversationId)
     : null;
@@ -1113,7 +1113,7 @@ function resolveForkSource(tab: TabData, plugin: ClaudianPlugin): ForkSource | n
 
 async function handleForkRequest(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   userMessageId: string,
   forkRequestCallback: (forkContext: ForkContext) => Promise<void>,
 ): Promise<void> {
@@ -1164,7 +1164,7 @@ async function handleForkRequest(
 
 async function handleForkAll(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   forkRequestCallback: (forkContext: ForkContext) => Promise<void>,
 ): Promise<void> {
   const { state } = tab;
@@ -1215,7 +1215,7 @@ async function handleForkAll(
 
 export function initializeTabControllers(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   component: Component,
   forkRequestCallback?: (forkContext: ForkContext) => Promise<void>,
   openConversation?: (conversationId: string) => Promise<void>,
@@ -1224,7 +1224,7 @@ export function initializeTabControllers(
 /** @deprecated Legacy 7-arg overload — 4th arg was previously an MCP manager. */
 export function initializeTabControllers(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   component: Component,
   _legacyArg: unknown,
   forkRequestCallback?: (forkContext: ForkContext) => Promise<void>,
@@ -1233,7 +1233,7 @@ export function initializeTabControllers(
 ): void;
 export function initializeTabControllers(
   tab: TabData,
-  plugin: ClaudianPlugin,
+  plugin: SidebarMimocodePlugin,
   component: Component,
   arg4?: unknown,
   arg5?: unknown,
@@ -1477,7 +1477,7 @@ export function initializeTabControllers(
  * Call this after controllers are initialized.
  * Stores cleanup functions in dom.eventCleanups for proper memory management.
  */
-export function wireTabInputEvents(tab: TabData, plugin: ClaudianPlugin): void {
+export function wireTabInputEvents(tab: TabData, plugin: SidebarMimocodePlugin): void {
   const { dom, ui, state, controllers } = tab;
 
   let wasBangBashActive = ui.bangBashModeManager?.isActive() ?? false;
@@ -1606,7 +1606,7 @@ export function wireTabInputEvents(tab: TabData, plugin: ClaudianPlugin): void {
  * Activates a tab (shows it and starts services).
  */
 export function activateTab(tab: TabData): void {
-  tab.dom.contentEl.removeClass('claudian-hidden');
+  tab.dom.contentEl.removeClass('sidebar-mimocode-hidden');
   tab.controllers.selectionController?.start();
   tab.controllers.browserSelectionController?.start();
   tab.controllers.canvasSelectionController?.start();
@@ -1618,7 +1618,7 @@ export function activateTab(tab: TabData): void {
  * Deactivates a tab (hides it and stops services).
  */
 export function deactivateTab(tab: TabData): void {
-  tab.dom.contentEl.addClass('claudian-hidden');
+  tab.dom.contentEl.addClass('sidebar-mimocode-hidden');
   tab.controllers.selectionController?.stop();
   tab.controllers.browserSelectionController?.stop();
   tab.controllers.canvasSelectionController?.stop();
@@ -1681,7 +1681,7 @@ export async function destroyTab(tab: TabData): Promise<void> {
  * Gets the display title for a tab.
  * Uses synchronous access since we only need the title, not messages.
  */
-export function getTabTitle(tab: TabData, plugin: ClaudianPlugin): string {
+export function getTabTitle(tab: TabData, plugin: SidebarMimocodePlugin): string {
   if (tab.conversationId) {
     const conversation = plugin.getConversationSync(tab.conversationId);
     if (conversation?.title) {
@@ -1692,7 +1692,7 @@ export function getTabTitle(tab: TabData, plugin: ClaudianPlugin): string {
 }
 
 /** Shared between Tab.ts and TabManager.ts to avoid duplication. */
-export function setupServiceCallbacks(tab: TabData, plugin: ClaudianPlugin): void {
+export function setupServiceCallbacks(tab: TabData, plugin: SidebarMimocodePlugin): void {
   if (tab.service && tab.controllers.inputController) {
     tab.service.setApprovalCallback(
       async (toolName, input, description, options) =>
@@ -1823,7 +1823,7 @@ async function renderAutoTriggeredTurn(tab: TabData, result: AutoTurnResult): Pr
   if (hasVisibleContent) {
     tab.state.addMessage(assistantMsg);
     const msgEl = tab.renderer?.addMessage?.(assistantMsg);
-    const contentEl = msgEl?.querySelector<HTMLElement>('.claudian-message-content');
+    const contentEl = msgEl?.querySelector<HTMLElement>('.sidebar-mimocode-message-content');
     if (contentEl) {
       if (!previousContentEl) {
         tab.state.toolCallElements.clear();
@@ -1863,7 +1863,7 @@ async function renderAutoTriggeredTurn(tab: TabData, result: AutoTurnResult): Pr
   }
 }
 
-export function updatePlanModeUI(tab: TabData, plugin: ClaudianPlugin, mode: string): void {
+export function updatePlanModeUI(tab: TabData, plugin: SidebarMimocodePlugin, mode: string): void {
   const providerId = getTabProviderId(tab, plugin);
   const snapshot = getTabSettingsSnapshot(tab, plugin);
   const uiConfig = ProviderRegistry.getChatUIConfig(providerId);
@@ -1880,7 +1880,7 @@ export function updatePlanModeUI(tab: TabData, plugin: ClaudianPlugin, mode: str
   void plugin.saveSettings();
   tab.ui.permissionToggle?.updateDisplay();
   tab.dom.inputWrapper.toggleClass(
-    'claudian-input-plan-mode',
+    'sidebar-mimocode-input-plan-mode',
     mode === 'plan' && getTabCapabilities(tab, plugin).supportsPlanMode,
   );
 }

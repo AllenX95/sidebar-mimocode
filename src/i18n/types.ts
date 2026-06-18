@@ -129,14 +129,6 @@ export type TranslationKey =
   | 'settings.hiddenSlashCommands.desc'
   | 'settings.hiddenSlashCommands.placeholder'
 
-  // Settings - MCP Servers
-  | 'settings.mcpServers.name'
-  | 'settings.mcpServers.desc'
-
-  // Settings - Plugins
-  | 'settings.plugins.name'
-  | 'settings.plugins.desc'
-
   // Settings - Subagents
   | 'settings.subagents.name'
   | 'settings.subagents.desc'
@@ -175,12 +167,6 @@ export type TranslationKey =
 
   // Settings - Safety
   | 'settings.safety'
-  | 'settings.loadUserSettings.name'
-  | 'settings.loadUserSettings.desc'
-  | 'settings.claudeSafeMode.name'
-  | 'settings.claudeSafeMode.desc'
-  | 'settings.codexSafeMode.name'
-  | 'settings.codexSafeMode.desc'
   // Settings - Environment
   | 'settings.environment'
   | 'settings.customVariables.name'
@@ -210,15 +196,9 @@ export type TranslationKey =
   | 'settings.customContextLimits.invalid'
 
   // Settings - Advanced
-  | 'settings.enableOpus1M.name'
-  | 'settings.enableOpus1M.desc'
-  | 'settings.enableSonnet1M.name'
-  | 'settings.enableSonnet1M.desc'
   | 'settings.customModels.name'
   | 'settings.customModels.desc'
   | 'settings.customModels.placeholder'
-  | 'settings.enableChrome.name'
-  | 'settings.enableChrome.desc'
   | 'settings.enableBangBash.name'
   | 'settings.enableBangBash.desc'
   | 'settings.enableBangBash.validation.noNode'

@@ -11,8 +11,13 @@ import {
   extractMimoModelVariantValue,
   isMimoModelSelectionId,
   MIMO_DEFAULT_THINKING_LEVEL,
+  MIMO_SYNTHETIC_MODEL_ID,
   resolveMimoBaseModelRawId,
 } from '../models';
+import {
+  migrateMimoEnvironmentVariables,
+  normalizeMimoEnvironment,
+} from '../runtime/MimoEnvironment';
 import {
   getMimoProviderSettings,
   hasLegacyMimoDiscoveryFields,
@@ -28,14 +33,14 @@ interface NormalizedSelection {
 }
 
 const MIMO_ENV_HASH_KEYS = [
-  'MIMO_CONFIG',
-  'MIMO_DB',
-  'MIMO_DISABLE_PROJECT_CONFIG',
+  'MIMOCODE_CONFIG',
+  'MIMOCODE_DB',
+  'MIMOCODE_DISABLE_PROJECT_CONFIG',
   'XDG_DATA_HOME',
 ] as const;
 
 function computeMimoEnvHash(envText: string): string {
-  const envVars = parseEnvironmentVariables(envText || '');
+  const envVars = normalizeMimoEnvironment(parseEnvironmentVariables(envText || ''));
   return MIMO_ENV_HASH_KEYS
     .filter((key) => envVars[key])
     .map((key) => `${key}=${envVars[key]}`)
@@ -86,8 +91,40 @@ export const mimoSettingsReconciler: ProviderSettingsReconciler = {
       updateMimoProviderSettings(settings, {});
     }
 
-    const mimoSettings = getMimoProviderSettings(settings);
     let changed = hadLegacyDiscoveryFields;
+    const environmentMigration = migrateMimoEnvironmentVariables(
+      getMimoProviderSettings(settings).environmentVariables,
+    );
+    if (environmentMigration.changed) {
+      updateMimoProviderSettings(settings, {
+        environmentVariables: environmentMigration.value,
+      });
+      changed = true;
+    }
+
+    if (
+      typeof settings.model !== 'string'
+      || !settings.model.trim()
+      || settings.model === 'haiku'
+    ) {
+      settings.model = MIMO_SYNTHETIC_MODEL_ID;
+      changed = true;
+    }
+    if (settings.titleGenerationModel === 'haiku') {
+      settings.titleGenerationModel = MIMO_SYNTHETIC_MODEL_ID;
+      changed = true;
+    }
+
+    const savedProviderModelRaw = settings.savedProviderModel;
+    if (savedProviderModelRaw && typeof savedProviderModelRaw === 'object' && !Array.isArray(savedProviderModelRaw)) {
+      const savedProviderModel = savedProviderModelRaw as Record<string, unknown>;
+      if (savedProviderModel.mimo === 'haiku') {
+        savedProviderModel.mimo = MIMO_SYNTHETIC_MODEL_ID;
+        changed = true;
+      }
+    }
+
+    const mimoSettings = getMimoProviderSettings(settings);
 
     const normalizeSelection = (value: unknown): NormalizedSelection => {
       if (typeof value !== 'string' || !isMimoModelSelectionId(value)) {
@@ -129,7 +166,6 @@ export const mimoSettingsReconciler: ProviderSettingsReconciler = {
       changed = true;
     }
 
-    const savedProviderModelRaw = settings.savedProviderModel;
     if (savedProviderModelRaw && typeof savedProviderModelRaw === 'object' && !Array.isArray(savedProviderModelRaw)) {
       const savedProviderModel = savedProviderModelRaw as Record<string, unknown>;
       const savedSelection = normalizeSelection(savedProviderModel.mimo);

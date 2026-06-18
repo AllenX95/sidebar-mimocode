@@ -23,17 +23,17 @@ function fireKeyDown(root: any, key: string): void {
 }
 
 function findRoot(container: any): any {
-  return container.querySelector('.claudian-plan-approval-inline');
+  return container.querySelector('.sidebar-mimocode-plan-approval-inline');
 }
 
 function findItems(root: any): any[] {
-  return root.querySelectorAll('claudian-ask-item');
+  return root.querySelectorAll('sidebar-mimocode-ask-item');
 }
 
 describe('InlineExitPlanMode', () => {
   it('resolves with approve-new-session and includes plan content when readable', () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'claudian-'));
-    const plansDir = path.join(tmpDir, '.claude', 'plans');
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'sidebar-mimocode-'));
+    const plansDir = path.join(tmpDir, '.opencode', 'plans');
     fs.mkdirSync(plansDir, { recursive: true });
     const planFilePath = path.join(plansDir, 'plan.md');
     fs.writeFileSync(planFilePath, 'Step 1\nStep 2\n', 'utf8');
@@ -51,7 +51,7 @@ describe('InlineExitPlanMode', () => {
       resolve,
       undefined,
       renderContent,
-      '/.claude/plans/',
+      '/.opencode/plans/',
     );
 
     widget.render();
@@ -59,7 +59,7 @@ describe('InlineExitPlanMode', () => {
     const root = findRoot(container);
     expect(root).toBeTruthy();
     expect(root.getEventListenerCount('keydown')).toBe(1);
-    expect(container.querySelector('.claudian-plan-permissions-list')).toBeTruthy();
+    expect(container.querySelector('.sidebar-mimocode-plan-permissions-list')).toBeTruthy();
     expect(renderContent).toHaveBeenCalled();
 
     fireKeyDown(root, 'Enter');
@@ -78,18 +78,18 @@ describe('InlineExitPlanMode', () => {
 
     const widget = new InlineExitPlanMode(
       container,
-      { planFilePath: '/path/.claude/plans/does-not-exist.md' },
+      { planFilePath: '/path/.opencode/plans/does-not-exist.md' },
       resolve,
       undefined,
       undefined,
-      '/.claude/plans/',
+      '/.opencode/plans/',
     );
 
     widget.render();
 
     const root = findRoot(container);
     expect(root).toBeTruthy();
-    expect(container.querySelector('.claudian-plan-read-error')).toBeTruthy();
+    expect(container.querySelector('.sidebar-mimocode-plan-read-error')).toBeTruthy();
 
     fireKeyDown(root, 'Enter');
     expect(resolve).toHaveBeenCalledWith({
@@ -98,7 +98,7 @@ describe('InlineExitPlanMode', () => {
     });
   });
 
-  it('rejects plan file paths outside .claude/plans/', () => {
+  it('rejects plan file paths outside .opencode/plans/', () => {
     const container = createMockEl();
     const resolve = jest.fn();
 
@@ -108,14 +108,14 @@ describe('InlineExitPlanMode', () => {
       resolve,
       undefined,
       undefined,
-      '/.claude/plans/',
+      '/.opencode/plans/',
     );
 
     widget.render();
 
     const root = findRoot(container);
     expect(root).toBeTruthy();
-    expect(container.querySelector('.claudian-plan-read-error')).toBeTruthy();
+    expect(container.querySelector('.sidebar-mimocode-plan-read-error')).toBeTruthy();
 
     fireKeyDown(root, 'Enter');
     expect(resolve).toHaveBeenCalledWith({
@@ -156,7 +156,7 @@ describe('InlineExitPlanMode', () => {
 
     const items = findItems(root);
     const feedbackRow = items[2];
-    const feedbackInput = feedbackRow.querySelector('claudian-ask-custom-text');
+    const feedbackInput = feedbackRow.querySelector('sidebar-mimocode-ask-custom-text');
 
     expect(resolve).not.toHaveBeenCalled();
 

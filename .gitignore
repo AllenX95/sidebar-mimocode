@@ -91,5 +91,5 @@ dev
 # yarn.lock
 # package-lock.json
 
-.claude/
+.opencode/
 .codex/

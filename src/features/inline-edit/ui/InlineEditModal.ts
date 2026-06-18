@@ -8,7 +8,7 @@ import { getHiddenProviderCommandSet } from '../../../core/providers/commands/hi
 import { ProviderRegistry } from '../../../core/providers/ProviderRegistry';
 import { ProviderWorkspaceRegistry } from '../../../core/providers/ProviderWorkspaceRegistry';
 import { DEFAULT_CHAT_PROVIDER_ID, type InlineEditMode, type InlineEditService, type ProviderId } from '../../../core/providers/types';
-import type ClaudianPlugin from '../../../main';
+import type SidebarMimocodePlugin from '../../../main';
 import { hideSelectionHighlight, showSelectionHighlight } from '../../../shared/components/SelectionHighlight';
 import { SlashCommandDropdown } from '../../../shared/components/SlashCommandDropdown';
 import { MentionDropdownController } from '../../../shared/mention/MentionDropdownController';
@@ -97,7 +97,7 @@ export function buildInlineEditInputDecorations(options: {
   const lineStart = options.doc.lineAt(options.inputPos).from;
   return Decoration.set([
     Decoration.line({
-      class: 'claudian-inline-input-line',
+      class: 'sidebar-mimocode-inline-input-line',
     }).range(lineStart),
     Decoration.widget({
       widget: options.widget,
@@ -203,11 +203,11 @@ function mergeAdjacentDiffOps(ops: DiffOp[]): DiffOp[] {
 function getDiffBlockClass(type: DiffOp['type']): string {
   switch (type) {
     case 'delete':
-      return 'claudian-diff-del';
+      return 'sidebar-mimocode-diff-del';
     case 'insert':
-      return 'claudian-diff-ins';
+      return 'sidebar-mimocode-diff-ins';
     default:
-      return 'claudian-diff-equal';
+      return 'sidebar-mimocode-diff-equal';
   }
 }
 
@@ -255,7 +255,7 @@ export class InlineEditModal {
 
   constructor(
     private app: App,
-    private plugin: ClaudianPlugin,
+    private plugin: SidebarMimocodePlugin,
     private editor: Editor,
     private view: MarkdownView,
     private editContext: InlineEditContext,
@@ -327,7 +327,7 @@ class InlineEditController {
 
   constructor(
     private app: App,
-    private plugin: ClaudianPlugin,
+    private plugin: SidebarMimocodePlugin,
     private editorView: EditorView,
     private editor: Editor,
     editContext: InlineEditContext,
@@ -467,26 +467,26 @@ class InlineEditController {
   createInputDOM(): HTMLElement {
     const ownerDocument = this.getOwnerDocument();
     const container = ownerDocument.createElement('div');
-    container.className = 'claudian-inline-input-container';
+    container.className = 'sidebar-mimocode-inline-input-container';
     this.containerEl = container;
 
     this.agentReplyEl = ownerDocument.createElement('div');
-    this.agentReplyEl.className = 'claudian-inline-agent-reply claudian-hidden';
+    this.agentReplyEl.className = 'sidebar-mimocode-inline-agent-reply sidebar-mimocode-hidden';
     container.appendChild(this.agentReplyEl);
 
     const inputWrap = ownerDocument.createElement('div');
-    inputWrap.className = 'claudian-inline-input-wrap';
+    inputWrap.className = 'sidebar-mimocode-inline-input-wrap';
     container.appendChild(inputWrap);
 
     this.inputEl = ownerDocument.createElement('input');
     this.inputEl.type = 'text';
-    this.inputEl.className = 'claudian-inline-input';
+    this.inputEl.className = 'sidebar-mimocode-inline-input';
     this.inputEl.placeholder = this.mode === 'cursor' ? 'Insert instructions...' : 'Edit instructions...';
     this.inputEl.spellcheck = false;
     inputWrap.appendChild(this.inputEl);
 
     this.spinnerEl = ownerDocument.createElement('div');
-    this.spinnerEl.className = 'claudian-inline-spinner claudian-hidden';
+    this.spinnerEl.className = 'sidebar-mimocode-inline-spinner sidebar-mimocode-hidden';
     inputWrap.appendChild(this.spinnerEl);
 
     const inlineCatalog = ProviderWorkspaceRegistry.getCommandCatalog(this.resolvedProviderId);
@@ -535,14 +535,14 @@ class InlineEditController {
   createDiffPreviewDOM(diffOps: DiffOp[]): HTMLElement {
     const ownerDocument = this.getOwnerDocument();
     const previewEl = ownerDocument.createElement('div');
-    previewEl.className = 'claudian-inline-diff-preview';
+    previewEl.className = 'sidebar-mimocode-inline-diff-preview';
 
     const bodyEl = ownerDocument.createElement('div');
-    bodyEl.className = 'claudian-inline-diff-preview-body markdown-rendered';
+    bodyEl.className = 'sidebar-mimocode-inline-diff-preview-body markdown-rendered';
     previewEl.appendChild(bodyEl);
 
     const actionsEl = ownerDocument.createElement('div');
-    actionsEl.className = 'claudian-inline-preview-actions';
+    actionsEl.className = 'sidebar-mimocode-inline-preview-actions';
     actionsEl.appendChild(this.createPreviewActionButton('Reject', 'reject', () => this.reject()));
     actionsEl.appendChild(this.createPreviewActionButton('Accept', 'accept', () => this.accept()));
     previewEl.appendChild(actionsEl);
@@ -559,7 +559,7 @@ class InlineEditController {
     const ownerDocument = this.getOwnerDocument();
     const button = ownerDocument.createElement('button');
     button.type = 'button';
-    button.className = `claudian-inline-preview-action ${variant}`;
+    button.className = `sidebar-mimocode-inline-preview-action ${variant}`;
     button.textContent = label;
     button.title = variant === 'accept' ? 'Accept (enter)' : 'Reject (esc)';
     button.addEventListener('click', (event) => {
@@ -587,7 +587,7 @@ class InlineEditController {
       if (!document.markdown) continue;
 
       const opEl = this.getOwnerDocument().createElement('div');
-      opEl.className = `claudian-diff-block ${getDiffBlockClass(document.type)}`;
+      opEl.className = `sidebar-mimocode-diff-block ${getDiffBlockClass(document.type)}`;
       container.appendChild(opEl);
       await this.renderMarkdownPreview(opEl, document.markdown);
     }
@@ -618,7 +618,7 @@ class InlineEditController {
     this.removeSelectionListeners();
 
     this.inputEl.disabled = true;
-    this.spinnerEl.removeClass('claudian-hidden');
+    this.spinnerEl.removeClass('sidebar-mimocode-hidden');
 
     const contextFiles = this.resolveContextFilesFromMessage(userMessage);
 
@@ -648,7 +648,7 @@ class InlineEditController {
       }
     }
 
-    this.spinnerEl.addClass('claudian-hidden');
+    this.spinnerEl.addClass('sidebar-mimocode-hidden');
 
     if (result.success) {
       if (result.editedText !== undefined) {
@@ -678,7 +678,7 @@ class InlineEditController {
     const renderVersion = ++this.agentReplyRenderVersion;
     const renderedEl = this.getOwnerDocument().createElement('div');
 
-    replyEl.removeClass('claudian-hidden');
+    replyEl.removeClass('sidebar-mimocode-hidden');
     replyEl.empty();
     void this.renderMarkdownPreview(renderedEl, message).then(() => {
       if (renderVersion !== this.agentReplyRenderVersion || replyEl !== this.agentReplyEl) {

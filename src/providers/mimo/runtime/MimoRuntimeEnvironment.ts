@@ -1,5 +1,6 @@
 import { getRuntimeEnvironmentText } from '../../../core/providers/providerEnvironment';
 import { getEnhancedPath, parseEnvironmentVariables } from '../../../utils/env';
+import { normalizeMimoEnvironment } from './MimoEnvironment';
 
 export function buildMimoRuntimeEnv(
   settings: Record<string, unknown>,
@@ -8,11 +9,14 @@ export function buildMimoRuntimeEnv(
 ): NodeJS.ProcessEnv {
   const envText = getRuntimeEnvironmentText(settings, 'mimo');
   const envVars = parseEnvironmentVariables(envText);
-  return {
+  const runtimeEnv = normalizeMimoEnvironment({
     ...process.env,
     ...envVars,
-    MIMO_DISABLE_CLAUDE_CODE_PROMPT: 'true',
-    ...(databasePathOverride ? { MIMO_DB: databasePathOverride } : {}),
+  });
+  return {
+    ...runtimeEnv,
+    MIMOCODE_DISABLE_CLAUDE_CODE_PROMPT: 'true',
+    ...(databasePathOverride ? { MIMOCODE_DB: databasePathOverride } : {}),
     PATH: getEnhancedPath(envVars.PATH, cliPath || undefined),
   };
 }

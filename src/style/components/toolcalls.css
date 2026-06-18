@@ -1,8 +1,8 @@
-.claudian-tool-call {
+.sidebar-mimocode-tool-call {
   margin: 8px 0;
 }
 
-.claudian-tool-header {
+.sidebar-mimocode-tool-header {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -11,23 +11,23 @@
   overflow: hidden;
 }
 
-.claudian-tool-header:hover {
+.sidebar-mimocode-tool-header:hover {
   opacity: 0.85;
 }
 
-.claudian-tool-icon {
+.sidebar-mimocode-tool-icon {
   display: flex;
   align-items: center;
   color: var(--text-accent);
   flex-shrink: 0;
 }
 
-.claudian-tool-icon svg {
+.sidebar-mimocode-tool-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.claudian-tool-name {
+.sidebar-mimocode-tool-name {
   font-family: var(--font-monospace);
   font-size: 13px;
   font-weight: 400;
@@ -36,7 +36,7 @@
   flex-shrink: 0;
 }
 
-.claudian-tool-summary {
+.sidebar-mimocode-tool-summary {
   font-family: var(--font-monospace);
   font-size: 13px;
   color: var(--text-muted);
@@ -47,15 +47,15 @@
   min-width: 0;
 }
 
-.claudian-tool-summary:empty {
+.sidebar-mimocode-tool-summary:empty {
   display: none;
 }
 
-.claudian-tool-call-bash.expanded .claudian-tool-summary {
+.sidebar-mimocode-tool-call-bash.expanded .sidebar-mimocode-tool-summary {
   display: none;
 }
 
-.claudian-tool-bash-command {
+.sidebar-mimocode-tool-bash-command {
   font-family: var(--font-monospace);
   font-size: 12px;
   line-height: 1.4;
@@ -65,8 +65,8 @@
   padding: 2px 0 4px;
 }
 
-/* Legacy: StatusPanel bash entries still use claudian-tool-label */
-.claudian-tool-label {
+/* Legacy: StatusPanel bash entries still use sidebar-mimocode-tool-label */
+.sidebar-mimocode-tool-label {
   font-family: var(--font-monospace);
   font-size: 13px;
   font-weight: 400;
@@ -76,47 +76,47 @@
   text-overflow: ellipsis;
 }
 
-.claudian-tool-current {
+.sidebar-mimocode-tool-current {
   font-family: var(--font-monospace);
   font-size: 13px;
   color: var(--text-muted);
   white-space: nowrap;
 }
 
-.claudian-tool-current:empty {
+.sidebar-mimocode-tool-current:empty {
   display: none;
 }
 
-.claudian-tool-status {
+.sidebar-mimocode-tool-status {
   display: flex;
   align-items: center;
   flex-shrink: 0;
   margin-left: auto;
 }
 
-.claudian-tool-status svg {
+.sidebar-mimocode-tool-status svg {
   width: 14px;
   height: 14px;
 }
 
-.claudian-tool-status.status-running {
+.sidebar-mimocode-tool-status.status-running {
   color: var(--text-accent);
 }
 
-.claudian-tool-status.status-completed {
+.sidebar-mimocode-tool-status.status-completed {
   color: var(--color-green);
 }
 
-.claudian-tool-status.status-error {
+.sidebar-mimocode-tool-status.status-error {
   color: var(--color-red);
 }
 
-.claudian-tool-status.status-blocked {
+.sidebar-mimocode-tool-status.status-blocked {
   color: var(--color-orange);
 }
 
 /* Tool call content - border style (like thinking block) */
-.claudian-tool-content {
+.sidebar-mimocode-tool-content {
   padding: 4px 0;
   padding-inline-start: 16px;
   margin-inline-start: 7px;
@@ -124,39 +124,39 @@
 }
 
 /* Tool content variants that render inline widgets instead of bordered results */
-.claudian-tool-content-todo,
-.claudian-tool-content-ask {
+.sidebar-mimocode-tool-content-todo,
+.sidebar-mimocode-tool-content-ask {
   border-inline-start: none;
   margin-inline-start: 0;
   padding-inline-start: 0;
 }
 
 /* Expanded content: per-line rendering */
-.claudian-tool-lines {
+.sidebar-mimocode-tool-lines {
   font-family: var(--font-monospace);
   font-size: 12px;
   line-height: 1.4;
   overflow-x: auto;
 }
 
-.claudian-tool-line {
+.sidebar-mimocode-tool-line {
   padding: 1px 0;
   color: var(--text-muted);
   white-space: pre;
 }
 
-.claudian-tool-line-wrap {
+.sidebar-mimocode-tool-line-wrap {
   white-space: pre-wrap;
   word-break: break-word;
 }
 
 /* Hover highlight for file search results */
-.claudian-tool-line.hoverable:hover {
+.sidebar-mimocode-tool-line.hoverable:hover {
   background: var(--background-modifier-hover);
 }
 
 /* Truncation indicator: "... N more lines" */
-.claudian-tool-truncated {
+.sidebar-mimocode-tool-truncated {
   color: var(--text-faint);
   font-style: italic;
   padding: 4px 0;
@@ -165,7 +165,7 @@
 }
 
 /* ToolSearch expanded: icon + tool name rows */
-.claudian-tool-search-item {
+.sidebar-mimocode-tool-search-item {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -175,7 +175,7 @@
   color: var(--text-muted);
 }
 
-.claudian-tool-search-icon {
+.sidebar-mimocode-tool-search-icon {
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -184,13 +184,13 @@
   color: var(--text-faint);
 }
 
-.claudian-tool-search-icon svg {
+.sidebar-mimocode-tool-search-icon svg {
   width: 14px;
   height: 14px;
 }
 
 /* Web search links */
-.claudian-tool-link {
+.sidebar-mimocode-tool-link {
   display: flex;
   align-items: flex-start;
   gap: 6px;
@@ -203,11 +203,11 @@
   line-height: 1.4;
 }
 
-.claudian-tool-link:hover {
+.sidebar-mimocode-tool-link:hover {
   color: var(--text-accent);
 }
 
-.claudian-tool-link-icon {
+.sidebar-mimocode-tool-link-icon {
   flex-shrink: 0;
   width: 12px;
   height: 12px;
@@ -215,19 +215,19 @@
   color: var(--text-faint);
 }
 
-.claudian-tool-link-icon svg {
+.sidebar-mimocode-tool-link-icon svg {
   width: 12px;
   height: 12px;
 }
 
-.claudian-tool-link-title {
+.sidebar-mimocode-tool-link-title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 /* Web search summary section */
-.claudian-tool-web-summary {
+.sidebar-mimocode-tool-web-summary {
   font-family: var(--font-monospace);
   font-size: 12px;
   color: var(--text-muted);
@@ -241,7 +241,7 @@
 }
 
 /* Empty state for file search */
-.claudian-tool-empty {
+.sidebar-mimocode-tool-empty {
   color: var(--text-faint);
   font-style: italic;
   font-family: var(--font-monospace);
@@ -249,12 +249,12 @@
   padding: 4px 0;
 }
 
-.claudian-tool-result-row {
+.sidebar-mimocode-tool-result-row {
   display: flex;
   align-items: flex-start;
 }
 
-.claudian-tool-result-text {
+.sidebar-mimocode-tool-result-text {
   font-family: var(--font-monospace);
   font-size: 12px;
   color: var(--text-muted);
@@ -264,15 +264,15 @@
   flex: 1;
 }
 
-.claudian-tool-result-item {
+.sidebar-mimocode-tool-result-item {
   display: block;
   margin-bottom: 2px;
 }
 
-.claudian-tool-patch-section + .claudian-tool-patch-section {
+.sidebar-mimocode-tool-patch-section + .sidebar-mimocode-tool-patch-section {
   margin-top: 10px;
 }
 
-.claudian-tool-result-item:last-child {
+.sidebar-mimocode-tool-result-item:last-child {
   margin-bottom: 0;
 }

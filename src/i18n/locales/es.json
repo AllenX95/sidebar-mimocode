@@ -70,11 +70,10 @@
     }
   },
   "settings": {
-    "title": "Configuración de Claudian",
+    "title": "Configuración de Sidebar MiMo-Code",
     "tabs": {
       "general": "General",
-      "claude": "Claude",
-      "codex": "Codex"
+      "mimo": "MiMo-Code"
     },
     "display": "Pantalla",
     "conversations": "Conversaciones",
@@ -84,7 +83,7 @@
     "models": "Modelos",
     "experimental": "Experimental",
     "userName": {
-      "name": "¿Cómo debería Claudian llamarte?",
+      "name": "¿Cómo debería Sidebar MiMo-Code llamarte?",
       "desc": "Tu nombre para saludos personalizados (dejar vacío para saludos genéricos)"
     },
     "excludedTags": {
@@ -93,7 +92,7 @@
     },
     "mediaFolder": {
       "name": "Carpeta de medios",
-      "desc": "Carpeta que contiene archivos adjuntos/imagenes. Cuando las notas usan ![[image.jpg]], Claude buscará aquí. Dejar vacío para la raíz del depósito."
+      "desc": "Carpeta que contiene archivos adjuntos/imagenes. Cuando las notas usan ![[image.jpg]], MiMo-Code buscará aquí. Dejar vacío para la raíz del depósito."
     },
     "systemPrompt": {
       "name": "Prompt de sistema personalizado",
@@ -106,7 +105,7 @@
     "titleModel": {
       "name": "Modelo de generación de títulos",
       "desc": "Modelo utilizado para generar automáticamente títulos de conversación.",
-      "auto": "Automático (Haiku)"
+      "auto": "Automático (MiMo-Code)"
     },
     "navMappings": {
       "name": "Mapeos de navegación estilo Vim",
@@ -154,24 +153,16 @@
     },
     "slashCommands": {
       "name": "Comandos y habilidades",
-      "desc": "Administra comandos y habilidades a nivel de vault almacenados en .claude/commands/ y .claude/skills/. Activados por /nombre."
+      "desc": "Administra comandos y habilidades a nivel de vault almacenados en .opencode/commands/ y .opencode/skills/. Activados por /nombre."
     },
     "hiddenSlashCommands": {
       "name": "Comandos y habilidades ocultos",
-      "desc": "Oculta comandos y habilidades específicos del menú desplegable. Útil para ocultar entradas de Claude Code que no son relevantes para Claudian. Ingresa los nombres sin la barra inicial, uno por línea.",
+      "desc": "Oculta comandos y habilidades específicos del menú desplegable. Útil para ocultar entradas de MiMo-Code que no son relevantes para Sidebar MiMo-Code. Ingresa los nombres sin la barra inicial, uno por línea.",
       "placeholder": "commit\nbuild\ntest"
-    },
-    "mcpServers": {
-      "name": "Servidores MCP",
-      "desc": "Administra configuraciones de servidores MCP a nivel de vault almacenadas en .claude/mcp.json. Los servidores con modo de guardado de contexto requieren @mention para activarse."
-    },
-    "plugins": {
-      "name": "Plugins de Claude Code",
-      "desc": "Administra plugins de Claude Code descubiertos desde ~/.claude/plugins. Los plugins habilitados se almacenan por vault en .claude/settings.json."
     },
     "subagents": {
       "name": "Subagentes",
-      "desc": "Administra subagentes a nivel de vault almacenados en .claude/agents/. Cada archivo Markdown define un agente personalizado.",
+      "desc": "Administra subagentes a nivel de vault almacenados en .mimocode/agent/. Cada archivo Markdown define un agente personalizado.",
       "noAgents": "No hay subagentes configurados. Haz clic en + para crear uno.",
       "deleteConfirm": "¿Eliminar el subagente \"{name}\"?",
       "saveFailed": "No se pudo guardar el subagente: {message}",
@@ -208,22 +199,10 @@
       }
     },
     "safety": "Seguridad",
-    "loadUserSettings": {
-      "name": "Cargar configuración de usuario Claude",
-      "desc": "Carga ~/.claude/settings.json. Cuando está habilitado, las reglas de permisos del usuario pueden eludir el modo seguro."
-    },
-    "claudeSafeMode": {
-      "name": "Safe mode",
-      "desc": "Permission mode used when the Safe toggle is active."
-    },
-    "codexSafeMode": {
-      "name": "Safe mode",
-      "desc": "Sandbox mode used when the Safe toggle is active."
-    },
     "environment": "Entorno",
     "customVariables": {
       "name": "Variables personalizadas",
-      "desc": "Variables de entorno para Claude SDK (formato KEY=VALUE, una por línea). Prefijo export soportado."
+      "desc": "Variables de entorno para MiMo-Code CLI (formato KEY=VALUE, una por línea). Prefijo export soportado."
     },
     "envSnippets": {
       "name": "Fragmentos",
@@ -256,22 +235,10 @@
       "desc": "Establezca tamaños de ventana de contexto para sus modelos personalizados. Deje vacío para usar el valor predeterminado (200k tokens).",
       "invalid": "Formato inválido. Use: 256k, 1m o número exacto (1000-10000000)."
     },
-    "enableOpus1M": {
-      "name": "Ventana de contexto Opus 1M",
-      "desc": "Mostrar Opus 1M en el selector de modelos. Incluido en planes Max, Team y Enterprise. Usuarios de API y Pro necesitan uso adicional."
-    },
-    "enableSonnet1M": {
-      "name": "Ventana de contexto Sonnet 1M",
-      "desc": "Mostrar Sonnet 1M en el selector de modelos. Requiere uso adicional en planes Max, Team y Enterprise. Usuarios de API y Pro necesitan uso adicional."
-    },
     "customModels": {
       "name": "Custom models",
-      "desc": "Append additional Claude model IDs to the picker, one per line. Environment model overrides still replace the picker.",
-      "placeholder": "claude-opus-4-6\nclaude-opus-4-6[1m]\nclaude-opus-4-5-20251101"
-    },
-    "enableChrome": {
-      "name": "Habilitar extensión de Chrome",
-      "desc": "Permitir que Claude interactúe con Chrome a través de la extensión claude-in-chrome. Requiere que la extensión esté instalada. Requiere reinicio de sesión."
+      "desc": "Append additional MiMo-Code model IDs to the picker, one per line. Environment model overrides still replace the picker.",
+      "placeholder": "xiaomi/mimo-v2.5-pro-ultraspeed\nmimo/mimo-auto"
     },
     "enableBangBash": {
       "name": "Habilitar modo bash (!)",
@@ -282,12 +249,12 @@
     },
     "maxTabs": {
       "name": "Máximo de pestañas de chat",
-      "desc": "Número máximo de pestañas de chat simultáneas (3-10). Cada pestaña usa una sesión de Claude separada.",
+      "desc": "Número máximo de pestañas de chat simultáneas (3-10). Cada pestaña usa una sesión de MiMo-Code separada.",
       "warning": "Más de 5 pestañas puede afectar el rendimiento y el uso de memoria."
     },
     "enableAutoScroll": {
       "name": "Desplazamiento automático durante streaming",
-      "desc": "Desplazarse automáticamente hacia abajo mientras Claude transmite respuestas. Desactivar para quedarse arriba y leer desde el principio."
+      "desc": "Desplazarse automáticamente hacia abajo mientras MiMo-Code transmite respuestas. Desactivar para quedarse arriba y leer desde el principio."
     },
     "deferMathRenderingDuringStreaming": {
       "name": "Diferir renderizado matemático durante streaming",
@@ -298,17 +265,17 @@
       "desc": "Mostrar los diffs de Write y Edit expandidos cuando aparecen por primera vez."
     },
     "chatViewPlacement": {
-      "name": "Abrir Claudian en",
+      "name": "Abrir Sidebar MiMo-Code en",
       "desc": "Elige dónde se abre el panel de chat cuando se crea",
       "rightSidebar": "Barra lateral derecha",
       "leftSidebar": "Barra lateral izquierda",
       "mainTab": "Pestaña del editor principal"
     },
     "cliPath": {
-      "name": "Ruta CLI Claude",
-      "desc": "Ruta personalizada a Claude Code CLI. Dejar vacío para detección automática.",
-      "descWindows": "Para el instalador nativo, use claude.exe. Para instalaciones con npm/pnpm/yarn u otros gestores de paquetes, use la ruta cli-wrapper.cjs (no claude.cmd).",
-      "descUnix": "Pegue la salida de \"which claude\" — funciona tanto para instalaciones nativas como npm/pnpm/yarn.",
+      "name": "Ruta CLI MiMo-Code",
+      "desc": "Ruta personalizada a MiMo-Code CLI. Dejar vacío para detección automática.",
+      "descWindows": "Use the full path to mimo.cmd, for example C:\\Users\\<name>\\AppData\\Roaming\\npm\\mimo.cmd.",
+      "descUnix": "Paste the output of \"which mimo\".",
       "validation": {
         "notExist": "La ruta no existe",
         "isDirectory": "La ruta es un directorio, no un archivo"

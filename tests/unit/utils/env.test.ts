@@ -1217,7 +1217,7 @@ describe('Obsidian CLI path integration', () => {
 
     const mod = loadWithPlatform('darwin', helperExecPath);
     const result = mod.getEnhancedPath();
-    const segments = result.split(':');
+    const segments = result.split(':').map(segment => segment.replace(/\\/g, '/'));
 
     expect(segments).toContain('/Applications/Obsidian.app/Contents/MacOS');
     expect(segments).not.toContain('/Applications/Obsidian.app/Contents/Frameworks/Obsidian Helper (Renderer).app/Contents/MacOS');
@@ -1231,7 +1231,7 @@ describe('Obsidian CLI path integration', () => {
 
     const mod = loadWithPlatform('linux', appImageExecPath);
     const result = mod.getEnhancedPath();
-    const segments = result.split(':');
+    const segments = result.split(':').map(segment => segment.replace(/\\/g, '/'));
 
     expect(segments).not.toContain(appImageDir);
     expect(segments).toContain('/usr/local/bin');

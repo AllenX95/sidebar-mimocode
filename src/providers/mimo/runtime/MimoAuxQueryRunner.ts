@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import type { AuxQueryConfig, AuxQueryRunner } from '../../../core/auxiliary/AuxQueryRunner';
 import { getRuntimeEnvironmentText } from '../../../core/providers/providerEnvironment';
 import { ProviderSettingsCoordinator } from '../../../core/providers/ProviderSettingsCoordinator';
-import type ClaudianPlugin from '../../../main';
+import type SidebarMimocodePlugin from '../../../main';
 import { getVaultPath } from '../../../utils/path';
 import {
   AcpClientConnection,
@@ -18,6 +18,7 @@ import {
 } from '../../acp';
 import { decodeMimoModelId } from '../models';
 import { mimoChatUIConfig } from '../ui/MimoChatUIConfig';
+import { buildMimoProcessEnvironment } from './MimoEnvironment';
 import {
   type MimoManagedAgentConfig,
   prepareMimoLaunchArtifacts,
@@ -34,8 +35,8 @@ interface MimoAuxQueryRunnerOptions {
 }
 
 const MIMO_AUX_AGENT_IDS: Record<MimoAuxAgentProfile, string> = {
-  passive: 'claudian-aux-passive',
-  readonly: 'claudian-aux-readonly',
+  passive: 'sidebar-mimocode-aux-passive',
+  readonly: 'sidebar-mimocode-aux-readonly',
 };
 
 const MIMO_AUX_READ_PERMISSION = Object.freeze({
@@ -57,7 +58,7 @@ export class MimoAuxQueryRunner implements AuxQueryRunner {
   private transport: AcpJsonRpcTransport | null = null;
 
   constructor(
-    private readonly plugin: ClaudianPlugin,
+    private readonly plugin: SidebarMimocodePlugin,
     private readonly options: MimoAuxQueryRunnerOptions,
   ) {}
 
@@ -245,13 +246,7 @@ export class MimoAuxQueryRunner implements AuxQueryRunner {
     cwd: string;
     runtimeEnv: NodeJS.ProcessEnv;
   }): Promise<void> {
-    const processEnv: NodeJS.ProcessEnv = {
-      ...process.env,
-      ...params.runtimeEnv,
-      MIMO_CONFIG: params.configPath,
-      MIMO_CONFIG_CONTENT: params.configContent,
-      PATH: params.runtimeEnv.PATH,
-    };
+    const processEnv = buildMimoProcessEnvironment(params);
 
     this.process = new AcpSubprocess({
       args: ['acp', `--cwd=${params.cwd}`],
@@ -269,7 +264,7 @@ export class MimoAuxQueryRunner implements AuxQueryRunner {
 
     this.connection = new AcpClientConnection({
       clientInfo: {
-        name: 'claudian-aux',
+        name: 'sidebar-mimocode-aux',
         version: this.plugin.manifest?.version ?? '0.0.0',
       },
       delegate: {
@@ -382,7 +377,7 @@ function buildMimoAuxAgentConfig(profile: MimoAuxAgentProfile): MimoManagedAgent
   if (profile === 'readonly') {
     return {
       definition: {
-        description: 'Internal Claudian read-only agent for MiMo-Code auxiliary tasks.',
+        description: 'Internal Sidebar MiMo-Code read-only agent for auxiliary tasks.',
         mode: 'primary',
         permission: {
           '*': 'deny',
@@ -402,7 +397,7 @@ function buildMimoAuxAgentConfig(profile: MimoAuxAgentProfile): MimoManagedAgent
 
   return {
     definition: {
-      description: 'Internal Claudian no-tool agent for MiMo-Code auxiliary tasks.',
+      description: 'Internal Sidebar MiMo-Code no-tool agent for auxiliary tasks.',
       mode: 'primary',
       permission: {
         '*': 'deny',

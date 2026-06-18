@@ -1,5 +1,5 @@
 /**
- * Claudian - Date Utilities
+ * SidebarMimocode - Date Utilities
  *
  * Date formatting helpers for system prompts.
  */

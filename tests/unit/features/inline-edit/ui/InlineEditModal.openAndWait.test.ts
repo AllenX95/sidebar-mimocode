@@ -186,7 +186,7 @@ describe('InlineEditModal - openAndWait', () => {
     }
   });
 
-  it('uses provider-scoped hidden commands for Codex inline edit dropdowns', async () => {
+  it('uses provider-scoped hidden commands for MiMo-Code inline edit dropdowns', async () => {
     const originalDocument = (global as any).document;
     (global as any).document = {
       body: createMockEl('body'),
@@ -208,14 +208,13 @@ describe('InlineEditModal - openAndWait', () => {
       const plugin = {
         settings: {
           hiddenProviderCommands: {
-            claude: ['commit'],
-            codex: ['analyze'],
+            mimo: ['analyze'],
           },
         },
         getConversationSync: jest.fn().mockReturnValue(null),
         getView: jest.fn().mockReturnValue({
           getActiveTab: jest.fn().mockReturnValue({
-            providerId: 'codex',
+            providerId: 'mimo',
             service: null,
             conversationId: null,
           }),
@@ -1312,8 +1311,8 @@ describe('InlineEditModal - openAndWait', () => {
       const previewEl = widgetRef.createDiffPreviewDOM([
         { type: 'insert', text: 'Updated text' },
       ]);
-      const actionBar = previewEl.querySelector('.claudian-inline-preview-actions');
-      const actionButtons = previewEl.querySelectorAll('.claudian-inline-preview-action');
+      const actionBar = previewEl.querySelector('.sidebar-mimocode-inline-preview-actions');
+      const actionButtons = previewEl.querySelectorAll('.sidebar-mimocode-inline-preview-action');
 
       expect(actionBar).not.toBeNull();
       expect(actionButtons).toHaveLength(2);
@@ -1467,10 +1466,10 @@ describe('InlineEditModal - openAndWait', () => {
         plugin
       );
 
-      const diffBlocks = previewEl.querySelectorAll('.claudian-diff-block');
+      const diffBlocks = previewEl.querySelectorAll('.sidebar-mimocode-diff-block');
       expect(diffBlocks).toHaveLength(2);
-      expect(diffBlocks[0].hasClass('claudian-diff-del')).toBe(true);
-      expect(diffBlocks[1].hasClass('claudian-diff-ins')).toBe(true);
+      expect(diffBlocks[0].hasClass('sidebar-mimocode-diff-del')).toBe(true);
+      expect(diffBlocks[1].hasClass('sidebar-mimocode-diff-ins')).toBe(true);
 
       widgetRef.reject();
       await expect(resultPromise).resolves.toEqual({ decision: 'reject' });

@@ -1,7 +1,5 @@
-export const CLAUDIAN_STORAGE_PATH = '.claudian';
+export const SIDEBAR_MIMOCODE_STORAGE_PATH = '.sidebar-mimocode';
 
-export const LEGACY_CLAUDIAN_SETTINGS_PATH = '.claude/claudian-settings.json';
-export const CLAUDIAN_SETTINGS_PATH = `${CLAUDIAN_STORAGE_PATH}/claudian-settings.json`;
+export const SIDEBAR_MIMOCODE_SETTINGS_PATH = `${SIDEBAR_MIMOCODE_STORAGE_PATH}/sidebar-mimocode-settings.json`;
 
-export const LEGACY_SESSIONS_PATH = '.claude/sessions';
-export const SESSIONS_PATH = `${CLAUDIAN_STORAGE_PATH}/sessions`;
+export const SESSIONS_PATH = `${SIDEBAR_MIMOCODE_STORAGE_PATH}/sessions`;

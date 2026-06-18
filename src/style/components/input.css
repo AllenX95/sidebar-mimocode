@@ -1,37 +1,37 @@
 /* Input area */
-.claudian-input-container {
+.sidebar-mimocode-input-container {
   position: relative;
   padding: 12px 0 0 0;
 }
 
-.claudian-input-footer {
+.sidebar-mimocode-input-footer {
   position: relative;
   flex-shrink: 0;
   padding: 12px 0 0 0;
 }
 
-.claudian-active-input-slot > .claudian-input-composer > .claudian-input-container {
+.sidebar-mimocode-active-input-slot > .sidebar-mimocode-input-composer > .sidebar-mimocode-input-container {
   padding-top: 0;
 }
 
 /* Input wrapper (border container) - flex column so textarea expands when no chips */
 /* Height calculation: context row (36px) + textarea min (60px) + toolbar (38px) + border (2px) = 136px */
-.claudian-input-wrapper {
-  --claudian-input-wrapper-border-color: var(--background-modifier-border);
-  --claudian-input-wrapper-box-shadow: none;
+.sidebar-mimocode-input-wrapper {
+  --sidebar-mimocode-input-wrapper-border-color: var(--background-modifier-border);
+  --sidebar-mimocode-input-wrapper-box-shadow: none;
   position: relative;
   display: flex;
   flex-direction: column;
   min-height: 140px;
-  border: 1px solid var(--claudian-input-wrapper-border-color);
+  border: 1px solid var(--sidebar-mimocode-input-wrapper-border-color);
   border-radius: 6px;
   background: var(--background-primary);
-  box-shadow: var(--claudian-input-wrapper-box-shadow);
+  box-shadow: var(--sidebar-mimocode-input-wrapper-box-shadow);
 }
 
 /* Context row (file chip start, selection indicator end) - inside input wrapper at top */
 /* Collapsed by default; expanded via .has-content class; textarea fills remaining space */
-.claudian-context-row {
+.sidebar-mimocode-context-row {
   display: none;
   align-items: flex-start;
   justify-content: flex-start;
@@ -41,12 +41,12 @@
 }
 
 /* Show context row when it has visible content */
-.claudian-context-row.has-content {
+.sidebar-mimocode-context-row.has-content {
   display: flex;
 }
 
 /* Nav row (tab badges start, action icons end) - above input wrapper */
-.claudian-input-nav-row {
+.sidebar-mimocode-input-nav-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -54,11 +54,11 @@
   min-height: 0;
 }
 
-.claudian-input-nav-row:empty {
+.sidebar-mimocode-input-nav-row:empty {
   display: none;
 }
 
-.claudian-input-nav-content {
+.sidebar-mimocode-input-nav-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -66,7 +66,7 @@
   min-width: 0;
 }
 
-.claudian-input-nav-actions {
+.sidebar-mimocode-input-nav-actions {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -74,7 +74,7 @@
   margin-inline-start: auto;
 }
 
-.claudian-input-nav-btn {
+.sidebar-mimocode-input-nav-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,16 +83,16 @@
   transition: color 0.15s ease;
 }
 
-.claudian-input-nav-btn:hover {
+.sidebar-mimocode-input-nav-btn:hover {
   color: var(--text-normal);
 }
 
-.claudian-input-nav-btn svg {
+.sidebar-mimocode-input-nav-btn svg {
   width: 16px;
   height: 16px;
 }
 
-.claudian-new-tab-btn svg {
+.sidebar-mimocode-new-tab-btn svg {
   width: 16.8px;
   height: 16.8px;
 }
@@ -100,9 +100,9 @@
 /* Selection indicator (shown when text is selected in editor) */
 /* Match file chip height (24px): chip has 16px remove button + 6px padding + 2px border */
 /* Indicator: 12px text + 10px padding (5+5) + 2px border = 24px */
-.claudian-selection-indicator,
-.claudian-browser-selection-indicator,
-.claudian-canvas-indicator {
+.sidebar-mimocode-selection-indicator,
+.sidebar-mimocode-browser-selection-indicator,
+.sidebar-mimocode-canvas-indicator {
   color: #7abaff;
   font-size: 12px;
   line-height: 1;
@@ -120,11 +120,11 @@
   text-overflow: ellipsis;
 }
 
-.claudian-input-wrapper textarea.claudian-input {
+.sidebar-mimocode-input-wrapper textarea.sidebar-mimocode-input {
   width: 100%;
   flex: 1 1 0;
-  min-height: var(--claudian-textarea-min-height, 60px);
-  max-height: var(--claudian-textarea-max-height, none);
+  min-height: var(--sidebar-mimocode-textarea-min-height, 60px);
+  max-height: var(--sidebar-mimocode-textarea-max-height, none);
   resize: none;
   padding: 8px 10px 10px 10px;
   border: none;
@@ -139,20 +139,20 @@
   unicode-bidi: plaintext; /* Proper BiDi text handling for mixed RTL/LTR */
 }
 
-.claudian-input-wrapper textarea.claudian-input:hover,
-.claudian-input-wrapper textarea.claudian-input:focus {
+.sidebar-mimocode-input-wrapper textarea.sidebar-mimocode-input:hover,
+.sidebar-mimocode-input-wrapper textarea.sidebar-mimocode-input:focus {
   outline: none;
   border: none;
   background: transparent;
   box-shadow: none;
 }
 
-.claudian-input-wrapper textarea.claudian-input::placeholder {
+.sidebar-mimocode-input-wrapper textarea.sidebar-mimocode-input::placeholder {
   color: var(--text-muted);
 }
 
 /* Input toolbar */
-.claudian-input-toolbar {
+.sidebar-mimocode-input-toolbar {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -161,13 +161,13 @@
 }
 
 /* File indicator (attached files) */
-.claudian-file-indicator {
+.sidebar-mimocode-file-indicator {
   display: none;
   flex-wrap: wrap;
   gap: 6px;
 }
 
-.claudian-file-chip {
+.sidebar-mimocode-file-chip {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -181,26 +181,26 @@
   cursor: pointer;
 }
 
-.claudian-file-chip-icon {
+.sidebar-mimocode-file-chip-icon {
   display: flex;
   align-items: center;
   color: var(--text-muted);
   flex-shrink: 0;
 }
 
-.claudian-file-chip-icon svg {
+.sidebar-mimocode-file-chip-icon svg {
   width: 12px;
   height: 12px;
 }
 
-.claudian-file-chip-name {
+.sidebar-mimocode-file-chip-name {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--text-normal);
 }
 
-.claudian-file-chip-remove {
+.sidebar-mimocode-file-chip-remove {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -214,17 +214,17 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.claudian-file-chip-remove:hover {
+.sidebar-mimocode-file-chip-remove:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.claudian-file-chip:hover {
+.sidebar-mimocode-file-chip:hover {
   background: var(--background-modifier-hover);
 }
 
 /* Composer queue status row (queued follow-up preview + steer action) */
-.claudian-input-queue-row {
+.sidebar-mimocode-input-queue-row {
   display: none;
   font-size: 12px;
   color: var(--text-muted);
@@ -234,7 +234,7 @@
   padding: 0 2px 8px 2px;
 }
 
-.claudian-queue-indicator-text {
+.sidebar-mimocode-queue-indicator-text {
   min-width: 0;
   flex: 1 1 auto;
   white-space: nowrap;
@@ -242,14 +242,14 @@
   text-overflow: ellipsis;
 }
 
-.claudian-queue-indicator-actions {
+.sidebar-mimocode-queue-indicator-actions {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.claudian-queue-indicator-action {
+.sidebar-mimocode-queue-indicator-action {
   flex: 0 0 auto;
   padding: 1px 8px;
   border: 0;
@@ -259,17 +259,17 @@
   cursor: pointer;
 }
 
-.claudian-queue-indicator-action:hover {
+.sidebar-mimocode-queue-indicator-action:hover {
   text-decoration: underline;
 }
 
-.claudian-queue-indicator-action[disabled] {
+.sidebar-mimocode-queue-indicator-action[disabled] {
   color: var(--text-faint);
   cursor: default;
   text-decoration: none;
 }
 
-.claudian-queue-indicator-icon-action {
+.sidebar-mimocode-queue-indicator-icon-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -284,29 +284,29 @@
   cursor: pointer;
 }
 
-.claudian-queue-indicator-icon-action:hover {
+.sidebar-mimocode-queue-indicator-icon-action:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.claudian-queue-indicator-icon-action svg {
+.sidebar-mimocode-queue-indicator-icon-action svg {
   width: 14px;
   height: 14px;
 }
 
 /* Light blue border when instruction mode is active */
-.claudian-input-wrapper.claudian-input-instruction-mode {
-  --claudian-input-wrapper-border-color: #60a5fa;
-  --claudian-input-wrapper-box-shadow: 0 0 0 1px #60a5fa;
+.sidebar-mimocode-input-wrapper.sidebar-mimocode-input-instruction-mode {
+  --sidebar-mimocode-input-wrapper-border-color: #60a5fa;
+  --sidebar-mimocode-input-wrapper-box-shadow: 0 0 0 1px #60a5fa;
 }
 
 /* Pink border when bash mode is active */
-.claudian-input-wrapper.claudian-input-bang-bash-mode {
-  --claudian-input-wrapper-border-color: #f472b6;
-  --claudian-input-wrapper-box-shadow: 0 0 0 1px #f472b6;
+.sidebar-mimocode-input-wrapper.sidebar-mimocode-input-bang-bash-mode {
+  --sidebar-mimocode-input-wrapper-border-color: #f472b6;
+  --sidebar-mimocode-input-wrapper-box-shadow: 0 0 0 1px #f472b6;
 }
 
 /* Monospace input while in bash mode */
-.claudian-input-wrapper.claudian-input-bang-bash-mode .claudian-input {
+.sidebar-mimocode-input-wrapper.sidebar-mimocode-input-bang-bash-mode .sidebar-mimocode-input {
   font-family: var(--font-monospace);
 }

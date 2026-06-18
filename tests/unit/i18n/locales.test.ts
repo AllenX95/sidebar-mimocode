@@ -125,10 +125,10 @@ describe('locale files', () => {
     }
   });
 
-  it('uses commands-and-skills copy for hidden Claude entries', () => {
+  it('uses commands-and-skills copy for hidden MiMo-Code entries', () => {
     expect(english['settings.hiddenSlashCommands.name']).toBe('Hidden Commands and Skills');
     expect(english['settings.hiddenSlashCommands.desc']).toBe(
-      'Hide specific commands and skills from the dropdown. Useful for hiding Claude Code entries that are not relevant to Claudian. Enter names without the leading slash, one per line.',
+      'Hide specific commands and skills from the dropdown. Useful for hiding MiMo-Code entries that are not relevant to Sidebar MiMo-Code. Enter names without the leading slash, one per line.',
     );
   });
 });

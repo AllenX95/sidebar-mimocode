@@ -26,7 +26,7 @@ import type {
 } from '../../../core/runtime/types';
 import { TOOL_EXIT_PLAN_MODE } from '../../../core/tools/toolNames';
 import type { ApprovalDecision, ChatMessage, ExitPlanModeDecision, StreamChunk } from '../../../core/types';
-import type ClaudianPlugin from '../../../main';
+import type SidebarMimocodePlugin from '../../../main';
 import { ResumeSessionDropdown } from '../../../shared/components/ResumeSessionDropdown';
 import { InstructionModal } from '../../../shared/modals/InstructionConfirmModal';
 import type { BrowserSelectionContext } from '../../../utils/browser';
@@ -73,7 +73,7 @@ function toError(error: unknown): Error {
 }
 
 export interface InputControllerDeps {
-  plugin: ClaudianPlugin;
+  plugin: SidebarMimocodePlugin;
   state: ChatState;
   renderer: MessageRenderer;
   streamController: StreamController;
@@ -280,7 +280,7 @@ export class InputController {
     // Hide welcome message when sending first message
     const welcomeEl = this.deps.getWelcomeEl();
     if (welcomeEl) {
-      welcomeEl.addClass('claudian-hidden');
+      welcomeEl.addClass('sidebar-mimocode-hidden');
     }
 
     fileContextManager?.startSession();
@@ -346,7 +346,7 @@ export class InputController {
 
     streamController.showThinkingIndicator(
       isCompact ? 'Compacting...' : undefined,
-      isCompact ? 'claudian-thinking--compact' : undefined,
+      isCompact ? 'sidebar-mimocode-thinking--compact' : undefined,
     );
     state.responseStartTime = performance.now();
 
@@ -440,7 +440,7 @@ export class InputController {
       if (!wasInvalidated && state.streamGeneration === streamGeneration) {
         const didCancelThisTurn = wasInterrupted || state.cancelRequested;
         if (didCancelThisTurn && !state.pendingNewSessionPlan) {
-          await streamController.appendText('\n\n<span class="claudian-interrupted">Interrupted</span> <span class="claudian-interrupted-hint">· What should Claudian do instead?</span>');
+          await streamController.appendText('\n\n<span class="sidebar-mimocode-interrupted">Interrupted</span> <span class="sidebar-mimocode-interrupted-hint">· What should MiMo-Code do instead?</span>');
         }
         streamController.hideThinkingIndicator();
         state.isStreaming = false;
@@ -460,10 +460,10 @@ export class InputController {
             finalAssistantMsg.durationFlavorWord = flavorWord;
             // Add footer to live message in DOM
             if (state.currentContentEl) {
-              const footerEl = state.currentContentEl.createDiv({ cls: 'claudian-response-footer' });
+              const footerEl = state.currentContentEl.createDiv({ cls: 'sidebar-mimocode-response-footer' });
               footerEl.createSpan({
                 text: `* ${flavorWord} for ${formatDurationMmSs(durationSeconds)}`,
-                cls: 'claudian-baked-duration',
+                cls: 'sidebar-mimocode-baked-duration',
               });
             }
           }
@@ -575,16 +575,16 @@ export class InputController {
     if (visibleQueuedMessage) {
       const isPendingSteerOnly = !state.queuedMessage && !!this.pendingSteerMessage;
       indicatorEl.createSpan({
-        cls: 'claudian-queue-indicator-text',
+        cls: 'sidebar-mimocode-queue-indicator-text',
         text: `${isPendingSteerOnly ? '⌙ Steering: ' : '⌙ Queued: '}${this.getQueuedMessageDisplay(visibleQueuedMessage)}`,
       });
 
       if (state.queuedMessage) {
-        const actionsEl = indicatorEl.createDiv({ cls: 'claudian-queue-indicator-actions' });
+        const actionsEl = indicatorEl.createDiv({ cls: 'sidebar-mimocode-queue-indicator-actions' });
 
         if (this.canSteerQueuedMessage()) {
           const steerButton = actionsEl.createEl('button', {
-            cls: 'claudian-queue-indicator-action',
+            cls: 'sidebar-mimocode-queue-indicator-action',
             text: this.steerInFlight ? 'Steering...' : 'Steer Now',
           });
           steerButton.setAttribute('type', 'button');
@@ -619,13 +619,13 @@ export class InputController {
         });
       }
 
-      indicatorEl.addClass('claudian-visible-flex');
-      indicatorEl.removeClass('claudian-hidden');
+      indicatorEl.addClass('sidebar-mimocode-visible-flex');
+      indicatorEl.removeClass('sidebar-mimocode-hidden');
       return;
     }
 
-    indicatorEl.removeClass('claudian-visible-flex');
-    indicatorEl.addClass('claudian-hidden');
+    indicatorEl.removeClass('sidebar-mimocode-visible-flex');
+    indicatorEl.addClass('sidebar-mimocode-hidden');
   }
 
   clearQueuedMessage(): void {
@@ -784,7 +784,7 @@ export class InputController {
     label: string,
   ): HTMLElement {
     const button = parentEl.createEl('button', {
-      cls: 'claudian-queue-indicator-icon-action',
+      cls: 'sidebar-mimocode-queue-indicator-icon-action',
       attr: {
         'aria-label': label,
         title: label,
@@ -939,7 +939,7 @@ export class InputController {
       });
     } catch {
       this.restoreQueuedMessageAfterSteerFailure(queuedMessage);
-      new Notice('Failed to steer the queued Codex message. It is still available.');
+      new Notice('Failed to steer the queued MiMo-Code message. It is still available.');
     }
   }
 
@@ -968,7 +968,7 @@ export class InputController {
   private activateStreamingAssistantMessage(message: ChatMessage): void {
     const { state, renderer } = this.deps;
     const msgEl = renderer.addMessage(message);
-    const contentEl = msgEl.querySelector<HTMLElement>('.claudian-message-content');
+    const contentEl = msgEl.querySelector<HTMLElement>('.sidebar-mimocode-message-content');
 
     if (!contentEl) {
       return;
@@ -1336,26 +1336,26 @@ export class InputController {
     }
 
     // Build header element, then detach — InlineAskUserQuestion will re-attach it
-    const headerEl = parentEl.createDiv({ cls: 'claudian-ask-approval-info' });
+    const headerEl = parentEl.createDiv({ cls: 'sidebar-mimocode-ask-approval-info' });
     headerEl.remove();
 
-    const toolEl = headerEl.createDiv({ cls: 'claudian-ask-approval-tool' });
-    const iconEl = toolEl.createSpan({ cls: 'claudian-ask-approval-icon' });
+    const toolEl = headerEl.createDiv({ cls: 'sidebar-mimocode-ask-approval-tool' });
+    const iconEl = toolEl.createSpan({ cls: 'sidebar-mimocode-ask-approval-icon' });
     iconEl.setAttribute('aria-hidden', 'true');
     setToolIcon(iconEl, toolName);
-    toolEl.createSpan({ text: toolName, cls: 'claudian-ask-approval-tool-name' });
+    toolEl.createSpan({ text: toolName, cls: 'sidebar-mimocode-ask-approval-tool-name' });
 
     if (approvalOptions?.decisionReason) {
-      headerEl.createDiv({ text: approvalOptions.decisionReason, cls: 'claudian-ask-approval-reason' });
+      headerEl.createDiv({ text: approvalOptions.decisionReason, cls: 'sidebar-mimocode-ask-approval-reason' });
     }
     if (approvalOptions?.blockedPath) {
-      headerEl.createDiv({ text: approvalOptions.blockedPath, cls: 'claudian-ask-approval-blocked-path' });
+      headerEl.createDiv({ text: approvalOptions.blockedPath, cls: 'sidebar-mimocode-ask-approval-blocked-path' });
     }
     if (approvalOptions?.agentID) {
-      headerEl.createDiv({ text: `Agent: ${approvalOptions.agentID}`, cls: 'claudian-ask-approval-agent' });
+      headerEl.createDiv({ text: `Agent: ${approvalOptions.agentID}`, cls: 'sidebar-mimocode-ask-approval-agent' });
     }
 
-    headerEl.createDiv({ text: description, cls: 'claudian-ask-approval-desc' });
+    headerEl.createDiv({ text: description, cls: 'sidebar-mimocode-ask-approval-desc' });
 
     const decisionOptions = approvalOptions?.decisionOptions ?? DEFAULT_APPROVAL_DECISION_OPTIONS;
     const optionDecisionMap = new Map<string, ApprovalDecision>();
@@ -1575,21 +1575,21 @@ export class InputController {
 
   private hideInputContainer(inputContainerEl: HTMLElement): void {
     this.inputContainerHideDepth++;
-    inputContainerEl.addClass('claudian-hidden');
+    inputContainerEl.addClass('sidebar-mimocode-hidden');
   }
 
   private restoreInputContainer(inputContainerEl: HTMLElement): void {
     if (this.inputContainerHideDepth <= 0) return;
     this.inputContainerHideDepth--;
     if (this.inputContainerHideDepth === 0) {
-      inputContainerEl.removeClass('claudian-hidden');
+      inputContainerEl.removeClass('sidebar-mimocode-hidden');
     }
   }
 
   private resetInputContainerVisibility(): void {
     if (this.inputContainerHideDepth > 0) {
       this.inputContainerHideDepth = 0;
-      this.deps.getInputContainerEl().removeClass('claudian-hidden');
+      this.deps.getInputContainerEl().removeClass('sidebar-mimocode-hidden');
     }
   }
 

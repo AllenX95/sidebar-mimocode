@@ -1,18 +1,23 @@
 import { getBuiltInProviderDefaultConfigs } from '@/providers/defaultProviderConfigs';
 
 describe('getBuiltInProviderDefaultConfigs', () => {
-  it('returns fresh built-in provider config objects', () => {
+  it('returns only a fresh MiMo provider config', () => {
     const first = getBuiltInProviderDefaultConfigs();
     const second = getBuiltInProviderDefaultConfigs();
 
-    expect(first).toHaveProperty('claude');
-    expect(first).toHaveProperty('codex');
-    expect(first).toHaveProperty('opencode');
-    expect(first).toHaveProperty('pi');
+    expect(Object.keys(first)).toEqual(['mimo']);
     expect(first).not.toBe(second);
-    expect(first.claude).not.toBe(second.claude);
-    expect(first.codex).not.toBe(second.codex);
-    expect(first.opencode).not.toBe(second.opencode);
-    expect(first.pi).not.toBe(second.pi);
+    expect(first.mimo).not.toBe(second.mimo);
+  });
+
+  it('does not share nested mutable MiMo settings', () => {
+    const first = getBuiltInProviderDefaultConfigs();
+    const second = getBuiltInProviderDefaultConfigs();
+    const firstMimo = first.mimo!;
+    const secondMimo = second.mimo!;
+
+    expect(firstMimo.cliPathsByHost).not.toBe(secondMimo.cliPathsByHost);
+    expect(firstMimo.modelAliases).not.toBe(secondMimo.modelAliases);
+    expect(firstMimo.visibleModels).not.toBe(secondMimo.visibleModels);
   });
 });

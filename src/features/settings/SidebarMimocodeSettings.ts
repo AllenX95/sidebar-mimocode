@@ -11,7 +11,7 @@ import type { ProviderId } from '../../core/providers/types';
 import type { ChatViewPlacement } from '../../core/types/settings';
 import { getAvailableLocales, getLocaleDisplayName, setLocale, t } from '../../i18n/i18n';
 import type { Locale, TranslationKey } from '../../i18n/types';
-import type ClaudianPlugin from '../../main';
+import type SidebarMimocodePlugin from '../../main';
 import { formatContextLimit, parseContextLimit, parseEnvironmentVariables } from '../../utils/env';
 import { buildNavMappingText, parseNavMappings } from './keyboardNavigation';
 import { renderEnvironmentSettingsSection } from './ui/EnvironmentSettingsSection';
@@ -68,7 +68,7 @@ function openHotkeySettings(app: App): void {
       return;
     }
 
-    searchEl.value = 'Claudian';
+    searchEl.value = 'Sidebar MiMo-Code';
     tab.updateHotkeyVisibility?.();
   }, 100);
 }
@@ -93,22 +93,22 @@ function addHotkeySettingRow(
   translationPrefix: string,
 ): void {
   const hotkey = getHotkeyForCommand(app, commandId);
-  const item = containerEl.createDiv({ cls: 'claudian-hotkey-item' });
+  const item = containerEl.createDiv({ cls: 'sidebar-mimocode-hotkey-item' });
   item.createSpan({
-    cls: 'claudian-hotkey-name',
+    cls: 'sidebar-mimocode-hotkey-name',
     text: t(`${translationPrefix}.name` as TranslationKey),
   });
   if (hotkey) {
-    item.createSpan({ cls: 'claudian-hotkey-badge', text: hotkey });
+    item.createSpan({ cls: 'sidebar-mimocode-hotkey-badge', text: hotkey });
   }
   item.addEventListener('click', () => openHotkeySettings(app));
 }
 
-export class ClaudianSettingTab extends PluginSettingTab {
-  plugin: ClaudianPlugin;
+export class SidebarMimocodeSettingTab extends PluginSettingTab {
+  plugin: SidebarMimocodePlugin;
   private activeTab: SettingsTabId = 'general';
 
-  constructor(app: App, plugin: ClaudianPlugin) {
+  constructor(app: App, plugin: SidebarMimocodePlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -116,7 +116,7 @@ export class ClaudianSettingTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
-    containerEl.addClass('claudian-settings');
+    containerEl.addClass('sidebar-mimocode-settings');
 
     setLocale(this.plugin.settings.locale as Locale);
 
@@ -126,7 +126,7 @@ export class ClaudianSettingTab extends PluginSettingTab {
       this.activeTab = 'general';
     }
 
-    const tabBar = containerEl.createDiv({ cls: 'claudian-settings-tabs' });
+    const tabBar = containerEl.createDiv({ cls: 'sidebar-mimocode-settings-tabs' });
     const tabButtons = new Map<SettingsTabId, HTMLButtonElement>();
     const tabContents = new Map<SettingsTabId, HTMLDivElement>();
 
@@ -135,14 +135,14 @@ export class ClaudianSettingTab extends PluginSettingTab {
         ? t('settings.tabs.general' as TranslationKey)
         : ProviderRegistry.getProviderDisplayName(id);
       const button = tabBar.createEl('button', {
-        cls: `claudian-settings-tab${id === this.activeTab ? ' claudian-settings-tab--active' : ''}`,
+        cls: `sidebar-mimocode-settings-tab${id === this.activeTab ? ' sidebar-mimocode-settings-tab--active' : ''}`,
         text: label,
       });
       button.addEventListener('click', () => {
         this.activeTab = id;
         for (const tabId of tabIds) {
-          tabButtons.get(tabId)?.toggleClass('claudian-settings-tab--active', tabId === id);
-          tabContents.get(tabId)?.toggleClass('claudian-settings-tab-content--active', tabId === id);
+          tabButtons.get(tabId)?.toggleClass('sidebar-mimocode-settings-tab--active', tabId === id);
+          tabContents.get(tabId)?.toggleClass('sidebar-mimocode-settings-tab-content--active', tabId === id);
         }
       });
       tabButtons.set(id, button);
@@ -150,7 +150,7 @@ export class ClaudianSettingTab extends PluginSettingTab {
 
     for (const id of tabIds) {
       const content = containerEl.createDiv({
-        cls: `claudian-settings-tab-content${id === this.activeTab ? ' claudian-settings-tab-content--active' : ''}`,
+        cls: `sidebar-mimocode-settings-tab-content${id === this.activeTab ? ' sidebar-mimocode-settings-tab-content--active' : ''}`,
       });
       tabContents.set(id, content);
     }
@@ -212,12 +212,12 @@ export class ClaudianSettingTab extends PluginSettingTab {
       .setDesc(t('settings.maxTabs.desc'));
 
     const maxTabsWarningEl = container.createDiv({
-      cls: 'claudian-max-tabs-warning claudian-setting-validation claudian-setting-validation-warning claudian-hidden',
+      cls: 'sidebar-mimocode-max-tabs-warning sidebar-mimocode-setting-validation sidebar-mimocode-setting-validation-warning sidebar-mimocode-hidden',
     });
     maxTabsWarningEl.setText(t('settings.maxTabs.warning'));
 
     const updateMaxTabsWarning = (value: number): void => {
-      maxTabsWarningEl.toggleClass('claudian-hidden', value <= 5);
+      maxTabsWarningEl.toggleClass('sidebar-mimocode-hidden', value <= 5);
     };
 
     maxTabsSetting.addSlider((slider) => {
@@ -399,7 +399,7 @@ export class ClaudianSettingTab extends PluginSettingTab {
             this.plugin.settings.mediaFolder = value.trim();
             await this.plugin.saveSettings();
           });
-        text.inputEl.addClass('claudian-settings-media-input');
+        text.inputEl.addClass('sidebar-mimocode-settings-media-input');
         text.inputEl.addEventListener('blur', () => {
           void this.restartServiceForPromptChange();
         });
@@ -479,12 +479,12 @@ export class ClaudianSettingTab extends PluginSettingTab {
 
     new Setting(container).setName(t('settings.hotkeys')).setHeading();
 
-    const hotkeyGrid = container.createDiv({ cls: 'claudian-hotkey-grid' });
-    addHotkeySettingRow(hotkeyGrid, this.app, 'claudian:inline-edit', 'settings.inlineEditHotkey');
-    addHotkeySettingRow(hotkeyGrid, this.app, 'claudian:open-view', 'settings.openChatHotkey');
-    addHotkeySettingRow(hotkeyGrid, this.app, 'claudian:new-session', 'settings.newSessionHotkey');
-    addHotkeySettingRow(hotkeyGrid, this.app, 'claudian:new-tab', 'settings.newTabHotkey');
-    addHotkeySettingRow(hotkeyGrid, this.app, 'claudian:close-current-tab', 'settings.closeTabHotkey');
+    const hotkeyGrid = container.createDiv({ cls: 'sidebar-mimocode-hotkey-grid' });
+    addHotkeySettingRow(hotkeyGrid, this.app, 'sidebar-mimocode:inline-edit', 'settings.inlineEditHotkey');
+    addHotkeySettingRow(hotkeyGrid, this.app, 'sidebar-mimocode:open-view', 'settings.openChatHotkey');
+    addHotkeySettingRow(hotkeyGrid, this.app, 'sidebar-mimocode:new-session', 'settings.newSessionHotkey');
+    addHotkeySettingRow(hotkeyGrid, this.app, 'sidebar-mimocode:new-tab', 'settings.newTabHotkey');
+    addHotkeySettingRow(hotkeyGrid, this.app, 'sidebar-mimocode:close-current-tab', 'settings.closeTabHotkey');
 
     // --- Environment ---
 
@@ -546,30 +546,30 @@ export class ClaudianSettingTab extends PluginSettingTab {
       return;
     }
 
-    const headerEl = container.createDiv({ cls: 'claudian-context-limits-header' });
+    const headerEl = container.createDiv({ cls: 'sidebar-mimocode-context-limits-header' });
     headerEl.createSpan({
       text: t('settings.customModelOverrides.name'),
-      cls: 'claudian-context-limits-label',
+      cls: 'sidebar-mimocode-context-limits-label',
     });
 
-    const descEl = container.createDiv({ cls: 'claudian-context-limits-desc' });
+    const descEl = container.createDiv({ cls: 'sidebar-mimocode-context-limits-desc' });
     descEl.setText(t('settings.customModelOverrides.desc'));
 
-    const listEl = container.createDiv({ cls: 'claudian-context-limits-list' });
+    const listEl = container.createDiv({ cls: 'sidebar-mimocode-context-limits-list' });
 
     for (const modelId of uniqueModelIds) {
       const currentValue = this.plugin.settings.customContextLimits?.[modelId];
       const currentAlias = this.plugin.settings.customModelAliases?.[modelId] ?? '';
 
-      const itemEl = listEl.createDiv({ cls: 'claudian-context-limits-item' });
-      const nameEl = itemEl.createDiv({ cls: 'claudian-context-limits-model' });
+      const itemEl = listEl.createDiv({ cls: 'sidebar-mimocode-context-limits-item' });
+      const nameEl = itemEl.createDiv({ cls: 'sidebar-mimocode-context-limits-model' });
       nameEl.setText(modelId);
 
-      const inputWrapper = itemEl.createDiv({ cls: 'claudian-context-limits-input-wrapper' });
+      const inputWrapper = itemEl.createDiv({ cls: 'sidebar-mimocode-context-limits-input-wrapper' });
       const aliasInputEl = inputWrapper.createEl('input', {
         type: 'text',
         placeholder: t('settings.customModelAliases.placeholder'),
-        cls: 'claudian-context-alias-input',
+        cls: 'sidebar-mimocode-context-alias-input',
         value: currentAlias,
       });
       aliasInputEl.setAttribute('aria-label', `Alias for ${modelId}`);
@@ -578,12 +578,12 @@ export class ClaudianSettingTab extends PluginSettingTab {
       const inputEl = inputWrapper.createEl('input', {
         type: 'text',
         placeholder: '200k',
-        cls: 'claudian-context-limits-input',
+        cls: 'sidebar-mimocode-context-limits-input',
         value: currentValue ? formatContextLimit(currentValue) : '',
       });
       inputEl.setAttribute('aria-label', `Context window for ${modelId}`);
 
-      const validationEl = inputWrapper.createDiv({ cls: 'claudian-context-limit-validation claudian-hidden' });
+      const validationEl = inputWrapper.createDiv({ cls: 'sidebar-mimocode-context-limit-validation sidebar-mimocode-hidden' });
 
       const saveAlias = async (): Promise<void> => {
         if (!this.plugin.settings.customModelAliases) {
@@ -618,20 +618,20 @@ export class ClaudianSettingTab extends PluginSettingTab {
 
         if (!trimmed) {
           delete this.plugin.settings.customContextLimits[modelId];
-          validationEl.toggleClass('claudian-hidden', true);
-          inputEl.classList.remove('claudian-input-error');
+          validationEl.toggleClass('sidebar-mimocode-hidden', true);
+          inputEl.classList.remove('sidebar-mimocode-input-error');
         } else {
           const parsed = parseContextLimit(trimmed);
           if (parsed === null) {
             validationEl.setText(t('settings.customContextLimits.invalid'));
-            validationEl.toggleClass('claudian-hidden', false);
-            inputEl.classList.add('claudian-input-error');
+            validationEl.toggleClass('sidebar-mimocode-hidden', false);
+            inputEl.classList.add('sidebar-mimocode-input-error');
             return;
           }
 
           this.plugin.settings.customContextLimits[modelId] = parsed;
-          validationEl.toggleClass('claudian-hidden', true);
-          inputEl.classList.remove('claudian-input-error');
+          validationEl.toggleClass('sidebar-mimocode-hidden', true);
+          inputEl.classList.remove('sidebar-mimocode-input-error');
         }
 
         await this.plugin.saveSettings();

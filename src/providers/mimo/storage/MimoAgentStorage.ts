@@ -8,9 +8,13 @@ import {
   type MimoAgentDefinition,
 } from '../types/agent';
 
-export const MIMO_AGENT_PATH = '.mimo/agent';
-export const MIMO_AGENTS_PATH = '.mimo/agents';
+export const MIMO_AGENT_PATH = '.mimocode/agent';
+export const MIMO_AGENTS_PATH = '.mimocode/agents';
+export const MIMO_LEGACY_AGENT_PATH = '.mimo/agent';
+export const MIMO_LEGACY_AGENTS_PATH = '.mimo/agents';
 const MIMO_AGENT_SCAN_PATHS = [
+  MIMO_LEGACY_AGENTS_PATH,
+  MIMO_LEGACY_AGENT_PATH,
   MIMO_AGENTS_PATH,
   MIMO_AGENT_PATH,
 ] as const;
@@ -50,7 +54,7 @@ export function parseMimoAgentPersistenceKey(
   }
 
   return decoded.endsWith('.md')
-    ? { filePath: `${MIMO_AGENTS_PATH}/${decoded}` }
+    ? { filePath: `${MIMO_LEGACY_AGENTS_PATH}/${decoded}` }
     : null;
 }
 
@@ -105,7 +109,10 @@ export class MimoAgentStorage {
     previous?: MimoAgentDefinition | null,
   ): string {
     if (previous && previous.name === agent.name) {
-      return this.resolveCurrentPath(previous);
+      const currentPath = this.resolveCurrentPath(previous);
+      if (isOfficialAgentFilePath(currentPath)) {
+        return currentPath;
+      }
     }
 
     return `${MIMO_DEFAULT_AGENT_SAVE_PATH}/${agent.name}.md`;
@@ -343,4 +350,9 @@ function normalizeVaultPath(filePath: string): string {
 function isSupportedAgentFilePath(filePath: string): boolean {
   return MIMO_AGENT_SCAN_PATHS.some((rootPath) => filePath.startsWith(`${rootPath}/`))
     && filePath.endsWith('.md');
+}
+
+function isOfficialAgentFilePath(filePath: string): boolean {
+  return [MIMO_AGENT_PATH, MIMO_AGENTS_PATH]
+    .some((rootPath) => filePath.startsWith(`${rootPath}/`));
 }

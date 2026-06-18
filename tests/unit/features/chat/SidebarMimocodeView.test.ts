@@ -1,7 +1,7 @@
 import { createMockEl } from '@test/helpers/mockElement';
 import { Platform, Scope } from 'obsidian';
 
-import { ClaudianView } from '@/features/chat/ClaudianView';
+import { SidebarMimocodeView } from '@/features/chat/SidebarMimocodeView';
 
 const MockScope = Scope as typeof Scope & { instances: Scope[] };
 
@@ -13,7 +13,7 @@ function createViewHarness(options: {
   view: any;
 } {
   const newTabButtonEl = createMockEl();
-  const view = Object.create(ClaudianView.prototype) as any;
+  const view = Object.create(SidebarMimocodeView.prototype) as any;
 
   view.plugin = {
     settings: {},
@@ -29,26 +29,26 @@ function createViewHarness(options: {
   return { newTabButtonEl, view };
 }
 
-describe('ClaudianView tab controls', () => {
+describe('SidebarMimocodeView tab controls', () => {
   it('hides the new-tab button when the tab manager is at capacity', () => {
     const { newTabButtonEl, view } = createViewHarness({ canCreateTab: false });
 
     view.refreshTabControls();
 
-    expect(newTabButtonEl.hasClass('claudian-hidden')).toBe(true);
+    expect(newTabButtonEl.hasClass('sidebar-mimocode-hidden')).toBe(true);
     expect(newTabButtonEl.getAttribute('aria-disabled')).toBe('true');
     expect(newTabButtonEl.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('shows the new-tab button when another tab can be created', () => {
     const { newTabButtonEl, view } = createViewHarness({ canCreateTab: true });
-    newTabButtonEl.addClass('claudian-hidden');
+    newTabButtonEl.addClass('sidebar-mimocode-hidden');
     newTabButtonEl.setAttribute('aria-disabled', 'true');
     newTabButtonEl.setAttribute('aria-hidden', 'true');
 
     view.refreshTabControls();
 
-    expect(newTabButtonEl.hasClass('claudian-hidden')).toBe(false);
+    expect(newTabButtonEl.hasClass('sidebar-mimocode-hidden')).toBe(false);
     expect(newTabButtonEl.getAttribute('aria-disabled')).toBeNull();
     expect(newTabButtonEl.getAttribute('aria-hidden')).toBeNull();
   });
@@ -56,7 +56,7 @@ describe('ClaudianView tab controls', () => {
   it('keeps tab controls in the view-owned input row', () => {
     const navRowContent = createMockEl();
     const inputNavRowHostEl = createMockEl();
-    const view = Object.create(ClaudianView.prototype) as any;
+    const view = Object.create(SidebarMimocodeView.prototype) as any;
 
     view.containerEl = createMockEl();
     view.navRowContent = navRowContent;
@@ -91,7 +91,7 @@ describe('ClaudianView tab controls', () => {
         inputContainerEl: createMockEl(),
       },
     };
-    const view = Object.create(ClaudianView.prototype) as any;
+    const view = Object.create(SidebarMimocodeView.prototype) as any;
 
     view.activeInputSlotEl = activeInputSlotEl;
     view.tabManager = {
@@ -112,16 +112,16 @@ describe('ClaudianView tab controls', () => {
   it('preserves active pending prompt siblings during same-tab input updates', () => {
     const activeInputSlotEl = createMockEl();
     const inputComposerEl = activeInputSlotEl.createDiv();
-    const pendingPromptEl = inputComposerEl.createDiv({ cls: 'claudian-ask-question-inline' });
+    const pendingPromptEl = inputComposerEl.createDiv({ cls: 'sidebar-mimocode-ask-question-inline' });
     const tab = {
       id: 'tab-1',
       dom: {
         contentEl: createMockEl(),
         inputComposerEl,
-        inputContainerEl: inputComposerEl.createDiv({ cls: 'claudian-input-container' }),
+        inputContainerEl: inputComposerEl.createDiv({ cls: 'sidebar-mimocode-input-container' }),
       },
     };
-    const view = Object.create(ClaudianView.prototype) as any;
+    const view = Object.create(SidebarMimocodeView.prototype) as any;
 
     Object.defineProperty(inputComposerEl, 'parentElement', {
       configurable: true,
@@ -143,7 +143,7 @@ describe('ClaudianView tab controls', () => {
   it('clears the stable input slot when no tab is active', () => {
     const activeInputSlotEl = createMockEl();
     const staleInputEl = activeInputSlotEl.createDiv();
-    const view = Object.create(ClaudianView.prototype) as any;
+    const view = Object.create(SidebarMimocodeView.prototype) as any;
 
     view.activeInputTabId = 'tab-1';
     view.activeInputSlotEl = activeInputSlotEl;
@@ -159,7 +159,7 @@ describe('ClaudianView tab controls', () => {
 
   it('toggles the history dropdown when the history button is clicked', () => {
     const historyDropdown = createMockEl();
-    const view = Object.create(ClaudianView.prototype) as any;
+    const view = Object.create(SidebarMimocodeView.prototype) as any;
 
     view.historyDropdown = historyDropdown;
     view.tabManager = {
@@ -176,7 +176,7 @@ describe('ClaudianView tab controls', () => {
   });
 });
 
-describe('ClaudianView Escape handling', () => {
+describe('SidebarMimocodeView Escape handling', () => {
   beforeEach(() => {
     MockScope.instances.length = 0;
   });
@@ -191,7 +191,7 @@ describe('ClaudianView Escape handling', () => {
     const cancelStreaming = jest.fn();
     const eventRefs: unknown[] = [];
     const parentScope = new Scope();
-    const view = Object.create(ClaudianView.prototype) as any;
+    const view = Object.create(SidebarMimocodeView.prototype) as any;
 
     view.app = { scope: parentScope };
     view.containerEl = createMockEl();
@@ -252,7 +252,7 @@ describe('ClaudianView Escape handling', () => {
     });
     const eventRefs: unknown[] = [];
     const parentScope = new Scope();
-    const view = Object.create(ClaudianView.prototype) as any;
+    const view = Object.create(SidebarMimocodeView.prototype) as any;
 
     view.app = { scope: parentScope };
     view.containerEl = createMockEl();
