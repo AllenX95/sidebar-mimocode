@@ -1,6 +1,6 @@
 {
-  "id": "obsi-mimo",
-  "name": "obsi-mimo",
+  "id": "sidebar-mimocode",
+  "name": "sidebar-mimocode",
   "version": "1.0.0",
   "minAppVersion": "1.7.2",
   "description": "Embeds MiMo-Code CLI Agent as an AI collaborator in your vault. Your vault becomes the working directory, giving MiMo-Code capabilities for file reads and writes, search, bash commands, and multi-step workflows.",
