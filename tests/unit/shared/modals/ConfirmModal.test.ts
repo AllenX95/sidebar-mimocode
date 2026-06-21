@@ -2,6 +2,7 @@ import { createMockEl } from '@test/helpers/mockElement';
 
 let lastModalInstance: any;
 let createdButtons: any[] = [];
+let supportsSetDestructive = true;
 
 jest.mock('obsidian', () => {
   const actual = jest.requireActual('obsidian');
@@ -45,12 +46,16 @@ jest.mock('obsidian', () => {
       const btn: any = {
         _onClick: null as null | (() => void),
         setButtonText: jest.fn().mockReturnThis(),
+        setDestructive: jest.fn().mockReturnThis(),
         setWarning: jest.fn().mockReturnThis(),
         onClick: jest.fn((handler: () => void) => {
           btn._onClick = handler;
           return btn;
         }),
       };
+      if (!supportsSetDestructive) {
+        delete btn.setDestructive;
+      }
       createdButtons.push(btn);
       cb(btn);
       return this;
@@ -69,6 +74,7 @@ import { confirm, confirmDelete } from '@/shared/modals/ConfirmModal';
 beforeEach(() => {
   lastModalInstance = null;
   createdButtons = [];
+  supportsSetDestructive = true;
 });
 
 describe('ConfirmModal', () => {
@@ -106,6 +112,23 @@ describe('ConfirmModal', () => {
     confirmBtn._onClick();
 
     await expect(p).resolves.toBe(true);
+  });
+
+  it('uses the destructive button style when the current Obsidian API supports it', () => {
+    void confirmDelete(mockApp, 'Are you sure?');
+
+    const confirmBtn = createdButtons[1];
+    expect(confirmBtn.setDestructive).toHaveBeenCalledTimes(1);
+    expect(confirmBtn.setWarning).not.toHaveBeenCalled();
+  });
+
+  it('falls back to the legacy warning style on older Obsidian versions', () => {
+    supportsSetDestructive = false;
+
+    void confirmDelete(mockApp, 'Are you sure?');
+
+    const confirmBtn = createdButtons[1];
+    expect(confirmBtn.setWarning).toHaveBeenCalledTimes(1);
   });
 });
 

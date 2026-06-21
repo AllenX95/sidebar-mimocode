@@ -114,6 +114,10 @@ export class SidebarMimocodeSettingTab extends PluginSettingTab {
   }
 
   display(): void {
+    this.renderSettings();
+  }
+
+  private renderSettings(): void {
     const { containerEl } = this;
     containerEl.empty();
     containerEl.addClass('sidebar-mimocode-settings');
@@ -199,7 +203,7 @@ export class SidebarMimocodeSettingTab extends PluginSettingTab {
             }
             this.plugin.settings.locale = locale;
             await this.plugin.saveSettings();
-            this.display();
+            this.renderSettings();
           });
       });
 
@@ -224,7 +228,6 @@ export class SidebarMimocodeSettingTab extends PluginSettingTab {
       slider
         .setLimits(3, 10, 1)
         .setValue(this.plugin.settings.maxTabs ?? 3)
-        .setDynamicTooltip()
         .onChange(async (value) => {
           this.plugin.settings.maxTabs = value;
           await this.plugin.saveSettings();
@@ -300,7 +303,7 @@ export class SidebarMimocodeSettingTab extends PluginSettingTab {
           .onChange(async (value) => {
             this.plugin.settings.enableAutoTitleGeneration = value;
             await this.plugin.saveSettings();
-            this.display();
+            this.renderSettings();
           })
       );
 
