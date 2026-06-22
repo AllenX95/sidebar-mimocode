@@ -35,7 +35,6 @@ import { type InlineEditContext, InlineEditModal } from './features/inline-edit/
 import { SidebarMimocodeSettingTab } from './features/settings/SidebarMimocodeSettings';
 import { setLocale } from './i18n/i18n';
 import type { Locale } from './i18n/types';
-import { MIMO_PLAN_MODE_ID, MIMO_SAFE_MODE_ID } from './providers/mimo/modes';
 import { extractUserDisplayContent } from './utils/context';
 import { buildCursorContext } from './utils/editor';
 import { revealWorkspaceLeaf } from './utils/obsidianCompat';
@@ -282,32 +281,6 @@ export default class SidebarMimocodePlugin extends Plugin {
       ...DEFAULT_SIDEBAR_MIMOCODE_SETTINGS,
       ...sidebarMimocode,
     };
-
-    // Plan mode is ephemeral — normalize back to normal on load so the app
-    // doesn't start stuck in plan mode after a restart (prePlanPermissionMode is lost)
-    if (this.settings.permissionMode === 'plan') {
-      this.settings.permissionMode = 'normal';
-    }
-    if (
-      this.settings.savedProviderPermissionMode
-      && typeof this.settings.savedProviderPermissionMode === 'object'
-      && !Array.isArray(this.settings.savedProviderPermissionMode)
-    ) {
-      for (const [providerId, mode] of Object.entries(this.settings.savedProviderPermissionMode)) {
-        if (mode === 'plan') {
-          this.settings.savedProviderPermissionMode[providerId] = 'normal';
-        }
-      }
-    }
-    const mimoConfig = this.settings.providerConfigs?.mimo;
-    if (
-      mimoConfig
-      && typeof mimoConfig === 'object'
-      && !Array.isArray(mimoConfig)
-      && mimoConfig.selectedMode === MIMO_PLAN_MODE_ID
-    ) {
-      mimoConfig.selectedMode = MIMO_SAFE_MODE_ID;
-    }
 
     const didNormalizeProviderSelection = ProviderSettingsCoordinator.normalizeProviderSelection(
       this.settings,

@@ -626,7 +626,7 @@ export class SidebarMimocodeView extends ItemView {
           providerId,
         ).permissionMode as string;
         if (current === 'plan') {
-          const restoreMode = activeTab.state.prePlanPermissionMode ?? 'normal';
+          const restoreMode = activeTab.state.prePlanPermissionMode ?? 'build';
           activeTab.state.prePlanPermissionMode = null;
           updatePlanModeUI(activeTab, this.plugin, restoreMode);
         } else {

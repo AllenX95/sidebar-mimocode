@@ -11,9 +11,8 @@ import { expandHomePath } from '../../../utils/path';
 import {
   MIMO_BUILD_MODE_ID,
   MIMO_PLAN_MODE_ID,
-  MIMO_SAFE_MODE_ID,
-  MIMO_YOLO_MODE_ID,
 } from '../modes';
+import type { MimoPermissionRules } from '../permissions';
 import { resolveMimoDatabasePath } from './MimoPaths';
 
 export interface MimoLaunchArtifacts {
@@ -31,28 +30,6 @@ export interface MimoManagedAgentConfig {
 
 const DEFAULT_MIMO_MANAGED_AGENT_CONFIGS: readonly MimoManagedAgentConfig[] = [
   { id: MIMO_BUILD_MODE_ID },
-  {
-    definition: {
-      mode: 'primary',
-      permission: {
-        plan_enter: 'allow',
-        question: 'allow',
-      },
-    },
-    id: MIMO_YOLO_MODE_ID,
-  },
-  {
-    definition: {
-      mode: 'primary',
-      permission: {
-        plan_enter: 'allow',
-        question: 'allow',
-        bash: 'ask',
-        edit: 'ask',
-      },
-    },
-    id: MIMO_SAFE_MODE_ID,
-  },
   { id: MIMO_PLAN_MODE_ID },
 ];
 
@@ -60,6 +37,7 @@ export interface PrepareMimoLaunchArtifactsParams {
   artifactsSubdir?: string;
   defaultAgentId?: string;
   managedAgents?: readonly MimoManagedAgentConfig[];
+  permissionRules?: MimoPermissionRules;
   runtimeEnv: NodeJS.ProcessEnv;
   settings?: SystemPromptSettings;
   systemPromptKey?: string;
@@ -96,6 +74,7 @@ export async function prepareMimoLaunchArtifacts(
       params.userName ?? params.settings?.userName,
       params.managedAgents,
       params.defaultAgentId,
+      params.permissionRules,
     ),
     null,
     2,
@@ -135,6 +114,7 @@ export function buildMimoManagedConfig(
   userName?: string,
   managedAgents: readonly MimoManagedAgentConfig[] = DEFAULT_MIMO_MANAGED_AGENT_CONFIGS,
   defaultAgentId?: string,
+  permissionRules: MimoPermissionRules = {},
 ): Record<string, unknown> {
   const config: Record<string, unknown> = {
     ...baseConfig,
@@ -142,6 +122,13 @@ export function buildMimoManagedConfig(
       ? baseConfig.$schema
       : 'https://mimo.ai/config.json',
   };
+  if (Object.keys(permissionRules).length > 0) {
+    config.permission = {
+      ...normalizeBasePermission(baseConfig.permission),
+      ...permissionRules,
+    };
+  }
+
   const existingAgents = isPlainObject(baseConfig.agent)
     ? { ...baseConfig.agent }
     : {};
@@ -210,6 +197,13 @@ async function loadMimoBaseConfig(
   } catch {
     return {};
   }
+}
+
+function normalizeBasePermission(value: unknown): Record<string, unknown> {
+  if (value === 'allow' || value === 'ask' || value === 'deny') {
+    return { '*': value };
+  }
+  return isPlainObject(value) ? { ...value } : {};
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {

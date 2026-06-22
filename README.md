@@ -5,7 +5,7 @@ Sidebar MiMo-Code embeds the [MiMo-Code](https://github.com/XiaomiMiMo/MiMo-Code
 ## Features
 
 - Sidebar chat with streaming, cancellation, resume, and native MiMo-Code history reload
-- Safe, YOLO, and Plan modes
+- Native Build and Plan modes with custom MiMo-Code permission rules
 - Inline editing with a diff preview
 - Image attachments, instruction mode (`#`), slash commands, skills, and custom subagents
 - Multiple chat tabs and automatic conversation titles
@@ -43,6 +43,18 @@ Copy `main.js`, `manifest.json`, and `styles.css` to `<your-vault>/.obsidian/plu
 1. Run MiMo-Code once and configure its model provider credentials.
 2. Open Obsidian → Settings → Sidebar MiMo-Code.
 3. Enable MiMo-Code and confirm the detected `mimo` executable.
+
+Custom permission rules can be added under **Settings ? Sidebar MiMo-Code ? MiMo-Code ? Permissions**. They use MiMo-Code's native permission format; later matching patterns take precedence:
+
+```json
+{
+  "bash": {
+    "*": "ask",
+    "git status*": "allow"
+  },
+  "edit": "ask"
+}
+```
 
 Custom subagents created by the plugin are stored under `.mimocode/agent/`. MiMo-Code data is read from its platform data directory, or from `MIMOCODE_DB` when configured.
 

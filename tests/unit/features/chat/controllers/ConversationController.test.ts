@@ -58,7 +58,7 @@ function createMockDeps(overrides: Partial<ConversationControllerDeps> = {}): Co
       settings: {
         userName: '',
         enableAutoTitleGeneration: true,
-        permissionMode: 'yolo',
+        permissionMode: 'build',
       },
     } as any,
     state,

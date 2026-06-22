@@ -5,20 +5,20 @@ export interface MimoMode {
 }
 
 export const MIMO_BUILD_MODE_ID = 'build';
-export const MIMO_YOLO_MODE_ID = 'sidebar-mimocode-yolo';
-export const MIMO_SAFE_MODE_ID = 'sidebar-mimocode-safe';
 export const MIMO_PLAN_MODE_ID = 'plan';
+
+const LEGACY_BUILD_MODE_IDS = new Set([
+  'normal',
+  'yolo',
+  'sidebar-mimocode-safe',
+  'sidebar-mimocode-yolo',
+]);
 
 export const MIMO_FALLBACK_MODES: ReadonlyArray<MimoMode> = Object.freeze([
   {
     description: 'The default agent. Executes tools based on configured permissions.',
-    id: MIMO_YOLO_MODE_ID,
-    name: 'yolo',
-  },
-  {
-    description: 'Safe mode. Asks before shell commands and file edits.',
-    id: MIMO_SAFE_MODE_ID,
-    name: 'safe',
+    id: MIMO_BUILD_MODE_ID,
+    name: MIMO_BUILD_MODE_ID,
   },
   {
     description: 'Plan mode. Disallows all edit tools.',
@@ -27,10 +27,7 @@ export const MIMO_FALLBACK_MODES: ReadonlyArray<MimoMode> = Object.freeze([
   },
 ]);
 
-const MIMO_MANAGED_MODE_IDS = new Set([
-  MIMO_BUILD_MODE_ID,
-  ...MIMO_FALLBACK_MODES.map((mode) => mode.id),
-]);
+const MIMO_MANAGED_MODE_IDS = new Set(MIMO_FALLBACK_MODES.map((mode) => mode.id));
 
 export function normalizeMimoAvailableModes(value: unknown): MimoMode[] {
   if (!Array.isArray(value)) {
@@ -81,9 +78,7 @@ export function getManagedMimoModes(modes: MimoMode[]): MimoMode[] {
   ));
 }
 
-export function normalizeMimoSelectedMode(
-  value: unknown,
-): string {
+export function normalizeMimoSelectedMode(value: unknown): string {
   if (typeof value !== 'string') {
     return '';
   }
@@ -93,7 +88,7 @@ export function normalizeMimoSelectedMode(
     return '';
   }
 
-  return trimmed;
+  return LEGACY_BUILD_MODE_IDS.has(trimmed) ? MIMO_BUILD_MODE_ID : trimmed;
 }
 
 export function normalizeManagedMimoSelectedMode(
@@ -105,12 +100,9 @@ export function normalizeManagedMimoSelectedMode(
     return '';
   }
 
-  const canonicalModeId = normalized === MIMO_BUILD_MODE_ID
-    ? MIMO_YOLO_MODE_ID
-    : normalized;
   const managedModes = getManagedMimoModes(modes);
-  return managedModes.some((mode) => mode.id === canonicalModeId)
-    ? canonicalModeId
+  return managedModes.some((mode) => mode.id === normalized)
+    ? normalized
     : (managedModes[0]?.id ?? '');
 }
 
@@ -118,17 +110,15 @@ export function resolveMimoModeForPermissionMode(
   permissionMode: unknown,
   modes: MimoMode[] = [],
 ): string {
+  const normalized = normalizeMimoSelectedMode(permissionMode);
   const managedModes = getManagedMimoModes(modes);
   const managedModeIds = new Set(managedModes.map((mode) => mode.id));
 
-  if (permissionMode === 'plan' && managedModeIds.has(MIMO_PLAN_MODE_ID)) {
+  if (normalized === MIMO_PLAN_MODE_ID && managedModeIds.has(MIMO_PLAN_MODE_ID)) {
     return MIMO_PLAN_MODE_ID;
   }
-  if (permissionMode === 'normal' && managedModeIds.has(MIMO_SAFE_MODE_ID)) {
-    return MIMO_SAFE_MODE_ID;
-  }
-  if (managedModeIds.has(MIMO_YOLO_MODE_ID)) {
-    return MIMO_YOLO_MODE_ID;
+  if (managedModeIds.has(MIMO_BUILD_MODE_ID)) {
+    return MIMO_BUILD_MODE_ID;
   }
 
   return managedModes[0]?.id ?? '';
@@ -136,15 +126,13 @@ export function resolveMimoModeForPermissionMode(
 
 export function resolvePermissionModeForManagedMimoMode(
   modeId: unknown,
-): 'normal' | 'plan' | 'yolo' | null {
-  if (modeId === MIMO_BUILD_MODE_ID || modeId === MIMO_YOLO_MODE_ID) {
-    return 'yolo';
+): 'build' | 'plan' | null {
+  const normalized = normalizeMimoSelectedMode(modeId);
+  if (normalized === MIMO_BUILD_MODE_ID) {
+    return MIMO_BUILD_MODE_ID;
   }
-  if (modeId === MIMO_SAFE_MODE_ID) {
-    return 'normal';
-  }
-  if (modeId === MIMO_PLAN_MODE_ID) {
-    return 'plan';
+  if (normalized === MIMO_PLAN_MODE_ID) {
+    return MIMO_PLAN_MODE_ID;
   }
   return null;
 }

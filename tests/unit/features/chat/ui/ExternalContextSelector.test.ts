@@ -28,7 +28,7 @@ function createMockCallbacks() {
       thinkingBudget: 'off',
       effortLevel: 'high',
       serviceTier: 'default',
-      permissionMode: 'yolo',
+      permissionMode: 'build',
     }),
     getEnvironmentVariables: jest.fn().mockReturnValue(''),
     getUIConfig: jest.fn().mockReturnValue({

@@ -280,6 +280,7 @@ export class MimoChatRuntime implements ChatRuntime {
     );
     const promptSettings = this.getSystemPromptSettings(cwd);
     const artifacts = await prepareMimoLaunchArtifacts({
+      permissionRules: settings.permissionRules,
       runtimeEnv,
       settings: promptSettings,
       workspaceRoot: cwd,

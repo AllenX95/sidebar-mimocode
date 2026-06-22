@@ -6,7 +6,7 @@ import { MIMO_SYNTHETIC_MODEL_ID } from '../../providers/mimo/models';
 export const DEFAULT_SIDEBAR_MIMOCODE_SETTINGS: SidebarMimocodeSettings = {
   userName: '',
 
-  permissionMode: 'yolo',
+  permissionMode: 'build',
 
   model: MIMO_SYNTHETIC_MODEL_ID,
   thinkingBudget: 'off',

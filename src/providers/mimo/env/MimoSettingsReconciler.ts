@@ -21,6 +21,7 @@ import {
 import {
   getMimoProviderSettings,
   hasLegacyMimoDiscoveryFields,
+  migrateLegacyMimoModeSettings,
   normalizeMimoPreferredThinkingByModel,
   normalizeMimoVisibleModels,
   updateMimoProviderSettings,
@@ -86,12 +87,13 @@ export const mimoSettingsReconciler: ProviderSettingsReconciler = {
   },
 
   normalizeModelVariantSettings(settings: Record<string, unknown>): boolean {
+    const migratedLegacyModes = migrateLegacyMimoModeSettings(settings);
     const hadLegacyDiscoveryFields = hasLegacyMimoDiscoveryFields(settings);
     if (hadLegacyDiscoveryFields) {
       updateMimoProviderSettings(settings, {});
     }
 
-    let changed = hadLegacyDiscoveryFields;
+    let changed = hadLegacyDiscoveryFields || migratedLegacyModes;
     const environmentMigration = migrateMimoEnvironmentVariables(
       getMimoProviderSettings(settings).environmentVariables,
     );

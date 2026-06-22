@@ -161,7 +161,7 @@ function getTabPermissionMode(
   const permissionMode = getTabSettingsSnapshot(tab, plugin).permissionMode;
   return typeof permissionMode === 'string' && permissionMode
     ? permissionMode
-    : 'normal';
+    : 'build';
 }
 
 function getTabHiddenCommands(
@@ -904,11 +904,22 @@ function initializeInputToolbar(
       }
     },
     onModeChange: async (mode: string) => {
+      const currentMode = getTabPermissionMode(tab, plugin);
+      if (mode === 'plan' && currentMode !== 'plan') {
+        tab.state.prePlanPermissionMode = currentMode;
+      } else if (currentMode === 'plan') {
+        tab.state.prePlanPermissionMode = null;
+      }
+
       await updateTabProviderSettings(tab, plugin, (settings) => {
         getTabChatUIConfig(tab, plugin).applyModeSelection?.(mode, settings);
       });
       tab.ui.modeSelector?.updateDisplay();
       tab.ui.modeSelector?.renderOptions();
+      dom.inputWrapper.toggleClass(
+        'sidebar-mimocode-input-plan-mode',
+        mode === 'plan' && getTabCapabilities(tab, plugin).supportsPlanMode,
+      );
     },
     onThinkingBudgetChange: async (budget: string) => {
       await updateTabProviderSettings(tab, plugin, (settings) => {
@@ -1448,7 +1459,7 @@ export function initializeTabControllers(
       : undefined,
     restorePrePlanPermissionModeIfNeeded: () => {
       if (getTabPermissionMode(tab, plugin) === 'plan') {
-        const restoreMode = tab.state.prePlanPermissionMode ?? 'normal';
+        const restoreMode = tab.state.prePlanPermissionMode ?? 'build';
         tab.state.prePlanPermissionMode = null;
         updatePlanModeUI(tab, plugin, restoreMode);
       }
@@ -1714,7 +1725,7 @@ export function setupServiceCallbacks(tab: TabData, plugin: SidebarMimocodePlugi
         if (decision !== null && decision.type !== 'feedback') {
           // Only restore permission mode if still in plan mode — user may have toggled out via Shift+Tab
           if (getTabPermissionMode(tab, plugin) === 'plan') {
-            const restoreMode = tab.state.prePlanPermissionMode ?? 'normal';
+            const restoreMode = tab.state.prePlanPermissionMode ?? 'build';
             tab.state.prePlanPermissionMode = null;
             updatePlanModeUI(tab, plugin, restoreMode);
           }
@@ -1733,11 +1744,7 @@ export function setupServiceCallbacks(tab: TabData, plugin: SidebarMimocodePlugi
     );
     tab.service.setAutoTurnCallback((result: AutoTurnResult) => renderAutoTriggeredTurn(tab, result));
     tab.service.setPermissionModeSyncCallback((sdkMode) => {
-      const mode = sdkMode === 'bypassPermissions' || sdkMode === 'yolo'
-        ? 'yolo'
-        : sdkMode === 'plan'
-        ? 'plan'
-        : 'normal';
+      const mode = sdkMode === 'plan' ? 'plan' : 'build';
       const currentMode = getTabPermissionMode(tab, plugin);
 
       if (currentMode !== mode) {
@@ -1867,7 +1874,9 @@ export function updatePlanModeUI(tab: TabData, plugin: SidebarMimocodePlugin, mo
   const providerId = getTabProviderId(tab, plugin);
   const snapshot = getTabSettingsSnapshot(tab, plugin);
   const uiConfig = ProviderRegistry.getChatUIConfig(providerId);
-  if (uiConfig.applyPermissionMode) {
+  if (uiConfig.applyModeSelection) {
+    uiConfig.applyModeSelection(mode, snapshot);
+  } else if (uiConfig.applyPermissionMode) {
     uiConfig.applyPermissionMode(mode, snapshot);
   } else {
     snapshot.permissionMode = mode;
@@ -1878,6 +1887,7 @@ export function updatePlanModeUI(tab: TabData, plugin: SidebarMimocodePlugin, mo
     snapshot,
   );
   void plugin.saveSettings();
+  tab.ui.modeSelector?.updateDisplay();
   tab.ui.permissionToggle?.updateDisplay();
   tab.dom.inputWrapper.toggleClass(
     'sidebar-mimocode-input-plan-mode',

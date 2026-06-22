@@ -14,6 +14,7 @@ import {
   type MimoDiscoveredModel,
   splitMimoModelLabel,
 } from '../models';
+import { parseMimoPermissionRulesText } from '../permissions';
 import { MimoChatRuntime } from '../runtime/MimoChatRuntime';
 import {
   getMimoProviderSettings,
@@ -157,6 +158,58 @@ export const mimoSettingsTabRenderer: ProviderSettingsTabRenderer = {
 
       updateCliPathValidation(currentValue, text.inputEl);
     });
+
+    new Setting(container).setName('Permissions').setHeading();
+
+    const permissionValidationEl = container.createDiv({
+      cls: 'sidebar-mimocode-setting-validation sidebar-mimocode-setting-validation-error sidebar-mimocode-hidden',
+    });
+    new Setting(container)
+      .setName('Permission rules')
+      .setDesc('Native MiMo-Code permission JSON. Use ask, allow, or deny globally or per command/path pattern. These rules override base configuration entries with the same permission; the last matching pattern wins. Agent-specific rules may override them. Leave empty to use MiMo-Code defaults.')
+      .addTextArea((textArea) => {
+        const initialRules = getMimoProviderSettings(settingsBag).permissionRules;
+        textArea
+          .setPlaceholder(`{
+  "bash": {
+    "*": "ask",
+    "git status*": "allow"
+  },
+  "edit": "ask"
+}`)
+          .setValue(Object.keys(initialRules).length > 0
+            ? JSON.stringify(initialRules, null, 2)
+            : '');
+        textArea.inputEl.rows = 10;
+        textArea.inputEl.addClass('sidebar-mimocode-settings-permission-rules');
+
+        const validate = () => {
+          const result = parseMimoPermissionRulesText(textArea.getValue());
+          permissionValidationEl.toggleClass('sidebar-mimocode-hidden', result.ok);
+          textArea.inputEl.toggleClass('sidebar-mimocode-input-error', !result.ok);
+          permissionValidationEl.setText(result.ok ? '' : result.error);
+          return result;
+        };
+
+        textArea.inputEl.addEventListener('input', validate);
+        textArea.inputEl.addEventListener('blur', () => {
+          const result = validate();
+          if (!result.ok) {
+            return;
+          }
+
+          const currentRules = getMimoProviderSettings(settingsBag).permissionRules;
+          if (JSON.stringify(currentRules) === JSON.stringify(result.value)) {
+            return;
+          }
+
+          void (async () => {
+            updateMimoProviderSettings(settingsBag, { permissionRules: result.value });
+            await context.plugin.saveSettings();
+            await recycleMimoRuntime();
+          })();
+        });
+      });
 
     new Setting(container).setName('Models').setHeading();
 

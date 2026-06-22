@@ -2,7 +2,7 @@
 
 ## Project overview
 
-Sidebar MiMo-Code is an Obsidian desktop plugin that embeds MiMo-Code CLI through its ACP server. MiMo-Code is the only built-in runtime provider. The plugin supports sidebar chat, streaming, cancel/resume, native SQLite history, Plan/Safe/YOLO modes, image attachments, inline edit, instruction mode, commands, skills, and custom subagents.
+Sidebar MiMo-Code is an Obsidian desktop plugin that embeds MiMo-Code CLI through its ACP server. MiMo-Code is the only built-in runtime provider. The plugin supports sidebar chat, streaming, cancel/resume, native SQLite history, native Build/Plan modes, custom MiMo permission rules, image attachments, inline edit, instruction mode, commands, skills, and custom subagents.
 
 Fork and in-app MCP management are intentionally disabled until the runtime and storage contracts are implemented and tested.
 

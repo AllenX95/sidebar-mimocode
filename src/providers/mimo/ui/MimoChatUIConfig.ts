@@ -1,6 +1,5 @@
 import type {
   ProviderChatUIConfig,
-  ProviderPermissionModeToggleConfig,
   ProviderReasoningOption,
   ProviderUIOption,
 } from '../../../core/providers/types';
@@ -15,8 +14,10 @@ import {
   resolveMimoBaseModelRawId,
 } from '../models';
 import {
+  getManagedMimoModes,
+  MIMO_BUILD_MODE_ID,
+  MIMO_PLAN_MODE_ID,
   resolveMimoModeForPermissionMode,
-  resolvePermissionModeForManagedMimoMode,
 } from '../modes';
 import { MimoChatRuntime } from '../runtime/MimoChatRuntime';
 import { getMimoProviderSettings, updateMimoProviderSettings } from '../settings';
@@ -26,14 +27,6 @@ const MIMO_MODELS: ProviderUIOption[] = [
 ];
 const DEFAULT_CONTEXT_WINDOW = 200_000;
 const MIMO_METADATA_WARMUP_DB = ':memory:';
-const MIMO_PERMISSION_MODE_TOGGLE: ProviderPermissionModeToggleConfig = {
-  inactiveValue: 'normal',
-  inactiveLabel: 'Safe',
-  activeValue: 'yolo',
-  activeLabel: 'YOLO',
-  planValue: 'plan',
-  planLabel: 'Plan',
-};
 
 export const mimoChatUIConfig: ProviderChatUIConfig = {
   getModelOptions(settings): ProviderUIOption[] {
@@ -237,32 +230,37 @@ export const mimoChatUIConfig: ProviderChatUIConfig = {
     return new Set<string>();
   },
 
-  getModeSelector(): null {
+  getModeSelector(settings) {
+    const mimoSettings = getMimoProviderSettings(settings);
+    const modes = getManagedMimoModes(mimoSettings.availableModes);
+    return {
+      activeValue: MIMO_PLAN_MODE_ID,
+      label: 'Mode',
+      options: modes.map((mode) => ({
+        description: mode.description,
+        label: mode.id === MIMO_BUILD_MODE_ID ? 'Build' : 'Plan',
+        value: mode.id,
+      })),
+      value: mimoSettings.selectedMode || MIMO_BUILD_MODE_ID,
+    };
+  },
+
+  getPermissionModeToggle(): null {
     return null;
   },
 
-  getPermissionModeToggle(): ProviderPermissionModeToggleConfig {
-    return MIMO_PERMISSION_MODE_TOGGLE;
-  },
-
-  resolvePermissionMode(settings: Record<string, unknown>): string | null {
-    const selectedMode = getMimoProviderSettings(settings).selectedMode;
-    return resolvePermissionModeForManagedMimoMode(selectedMode);
-  },
-
-  applyPermissionMode(value: string, settings: unknown): void {
+  applyModeSelection(value: string, settings: unknown): void {
     if (!settings || typeof settings !== 'object' || Array.isArray(settings)) {
       return;
     }
 
     const settingsBag = settings as Record<string, unknown>;
-    settingsBag.permissionMode = value;
-    updateMimoProviderSettings(settingsBag, {
-      selectedMode: resolveMimoModeForPermissionMode(
-        value,
-        getMimoProviderSettings(settingsBag).availableModes,
-      ),
-    });
+    const selectedMode = resolveMimoModeForPermissionMode(
+      value,
+      getMimoProviderSettings(settingsBag).availableModes,
+    );
+    settingsBag.permissionMode = selectedMode;
+    updateMimoProviderSettings(settingsBag, { selectedMode });
   },
 
   getProviderIcon() {

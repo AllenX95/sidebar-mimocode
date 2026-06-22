@@ -23,7 +23,7 @@ User input
 
 ## Capability Rules
 
-- MiMo-Code supports native history, images, instruction mode, runtime commands, and Plan/Safe/YOLO modes.
+- MiMo-Code supports native history, images, instruction mode, runtime commands, native Build/Plan modes, and custom permission rules.
 - Rewind, fork, turn steering, and in-app MCP tools are currently unsupported and must remain gated by capabilities.
 - Plan-mode transitions and permission requests come from ACP runtime events.
 - Bang-bash bypasses the runtime and must remain explicitly gated by the provider UI configuration.

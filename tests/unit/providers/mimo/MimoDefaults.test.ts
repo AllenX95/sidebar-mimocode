@@ -7,6 +7,10 @@ describe('MiMo defaults and capabilities', () => {
     expect(DEFAULT_SIDEBAR_MIMOCODE_SETTINGS.model).toBe('mimo');
   });
 
+  it('starts in the native build mode', () => {
+    expect(DEFAULT_SIDEBAR_MIMOCODE_SETTINGS.permissionMode).toBe('build');
+  });
+
   it('enables the only built-in provider for a new installation', () => {
     expect(getMimoProviderSettings(DEFAULT_SIDEBAR_MIMOCODE_SETTINGS).enabled).toBe(true);
   });

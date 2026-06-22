@@ -23,9 +23,15 @@ import {
   resolveMimoBaseModelRawId,
 } from './models';
 import {
+  MIMO_BUILD_MODE_ID,
   type MimoMode,
   normalizeManagedMimoSelectedMode,
+  normalizeMimoSelectedMode,
 } from './modes';
+import {
+  type MimoPermissionRules,
+  normalizeMimoPermissionRules,
+} from './permissions';
 
 export interface PersistedMimoProviderSettings {
   cliPath: string;
@@ -34,6 +40,7 @@ export interface PersistedMimoProviderSettings {
   environmentHash: string;
   environmentVariables: string;
   modelAliases: Record<string, string>;
+  permissionRules: MimoPermissionRules;
   preferredThinkingByModel: Record<string, string>;
   selectedMode: string;
   thinkingOptionsByModel: MimoThinkingOptionsByModel;
@@ -54,6 +61,7 @@ export const DEFAULT_MIMO_PROVIDER_SETTINGS: Readonly<PersistedMimoProviderSetti
   environmentHash: '',
   environmentVariables: MIMO_DEFAULT_ENVIRONMENT_VARIABLES,
   modelAliases: {},
+  permissionRules: {},
   preferredThinkingByModel: {},
   selectedMode: '',
   thinkingOptionsByModel: {},
@@ -192,6 +200,7 @@ export function getMimoProviderSettings(
       ?? getProviderEnvironmentVariables(settings, 'mimo')
       ?? DEFAULT_MIMO_PROVIDER_SETTINGS.environmentVariables,
     modelAliases: normalizeMimoModelAliases(config.modelAliases, discoveredModels),
+    permissionRules: normalizeMimoPermissionRules(config.permissionRules),
     preferredThinkingByModel: normalizeMimoPreferredThinkingByModel(
       config.preferredThinkingByModel,
       discoveredModels,
@@ -270,6 +279,7 @@ export function updateMimoProviderSettings(
     cliPathsByHost: nextCliPathsByHost,
     discoveredModels: nextDiscoveredModels,
     modelAliases: nextModelAliases,
+    permissionRules: normalizeMimoPermissionRules(updates.permissionRules ?? current.permissionRules),
     preferredThinkingByModel: normalizeMimoPreferredThinkingByModel(
       updates.preferredThinkingByModel ?? current.preferredThinkingByModel,
       nextDiscoveredModels,
@@ -295,6 +305,7 @@ export function updateMimoProviderSettings(
     environmentHash: next.environmentHash,
     environmentVariables: next.environmentVariables,
     modelAliases: next.modelAliases,
+    permissionRules: next.permissionRules,
     preferredThinkingByModel: next.preferredThinkingByModel,
     selectedMode: next.selectedMode,
     thinkingOptionsByModel: persistedThinkingOptionsByModel,
@@ -302,6 +313,47 @@ export function updateMimoProviderSettings(
   });
 
   return next;
+}
+
+export function migrateLegacyMimoModeSettings(settings: Record<string, unknown>): boolean {
+  let changed = false;
+  const currentPermissionMode = settings.permissionMode;
+  const normalizedPermissionMode = normalizeMimoSelectedMode(currentPermissionMode);
+  if (
+    typeof currentPermissionMode === 'string'
+    && normalizedPermissionMode
+    && normalizedPermissionMode !== currentPermissionMode
+  ) {
+    settings.permissionMode = normalizedPermissionMode;
+    changed = true;
+  }
+
+  const savedModes = settings.savedProviderPermissionMode;
+  if (savedModes && typeof savedModes === 'object' && !Array.isArray(savedModes)) {
+    const savedMimoMode = (savedModes as Record<string, unknown>).mimo;
+    const normalizedSavedMimoMode = normalizeMimoSelectedMode(savedMimoMode);
+    if (normalizedSavedMimoMode && normalizedSavedMimoMode !== savedMimoMode) {
+      (savedModes as Record<string, unknown>).mimo = normalizedSavedMimoMode;
+      changed = true;
+    }
+  }
+
+  const config = getProviderConfig(settings, 'mimo');
+  const selectedMode = config.selectedMode;
+  const normalizedSelectedMode = normalizeMimoSelectedMode(selectedMode);
+  if (
+    typeof selectedMode === 'string'
+    && normalizedSelectedMode
+    && normalizedSelectedMode !== selectedMode
+  ) {
+    setProviderConfig(settings, 'mimo', {
+      ...config,
+      selectedMode: normalizedSelectedMode || MIMO_BUILD_MODE_ID,
+    });
+    changed = true;
+  }
+
+  return changed;
 }
 
 export function hasLegacyMimoDiscoveryFields(settings: Record<string, unknown>): boolean {

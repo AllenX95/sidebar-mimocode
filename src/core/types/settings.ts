@@ -71,7 +71,7 @@ export interface InstructionRefineResult {
 }
 
 /** Permission mode for tool execution. */
-export type PermissionMode = 'yolo' | 'plan' | 'normal';
+export type PermissionMode = string;
 
 /** Scope for environment variable storage and snippets. */
 export type EnvironmentScope = 'shared' | `provider:${string}`;
