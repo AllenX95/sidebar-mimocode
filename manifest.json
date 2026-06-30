@@ -1,7 +1,7 @@
 {
   "id": "sidebar-mimocode",
   "name": "Sidebar MiMo-Code",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "minAppVersion": "1.7.2",
   "description": "Embeds MiMo-Code CLI Agent as an AI collaborator in your vault. Your vault becomes the working directory, giving MiMo-Code capabilities for file reads and writes, search, bash commands, and multi-step workflows.",
   "author": "AllenX95",

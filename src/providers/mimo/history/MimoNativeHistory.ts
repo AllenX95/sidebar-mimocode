@@ -2,7 +2,7 @@ import * as fs from 'node:fs';
 
 import { extractResolvedAnswersFromResultText } from '../../../core/tools/toolInput';
 import { isWriteEditTool, TOOL_ASK_USER_QUESTION } from '../../../core/tools/toolNames';
-import type { ChatMessage, ContentBlock, ToolCallInfo } from '../../../core/types';
+import type { ChatMessage, ContentBlock, Conversation, ToolCallInfo } from '../../../core/types';
 import { extractUserQuery } from '../../../utils/context';
 import { extractDiffData } from '../../../utils/diff';
 import {
@@ -11,19 +11,35 @@ import {
   normalizeMimoToolUseResult,
 } from '../normalization/mimoToolNormalization';
 import { resolveExistingMimoDatabasePath } from '../runtime/MimoPaths';
-import type { MimoProviderState } from '../types';
+import { getMimoState, type MimoProviderState } from '../types';
 import {
   loadMimoSessionRows,
   type StoredRow,
+  type StoredSessionRows,
 } from './MimoSqliteReader';
 
-// Deprecated compatibility surface. New provider history code should use
-// MimoNativeHistory so hydration caching, diagnostics, and row mapping share one seam.
 export { MIMO_MESSAGE_ROW_SQL } from './MimoSqliteReader';
 
-interface StoredMessage {
+export interface MimoStoredMessage {
   info: StoredRow;
   parts: StoredRow[];
+}
+
+export interface MimoNativeHistoryRowReader {
+  loadSessionRows(databasePath: string, sessionId: string): Promise<StoredSessionRows | null>;
+}
+
+export interface MimoNativeHistoryDependencies {
+  fileExists?: (filePath: string) => boolean;
+  now?: () => number;
+  resolveDatabasePath?: (preferredPath?: string | null) => string | null;
+  rowReader?: MimoNativeHistoryRowReader;
+}
+
+export interface MimoNativeHistoryLoadResult {
+  cacheKey: string;
+  cacheable: boolean;
+  messages: ChatMessage[];
 }
 
 interface MimoHydrationDiagnosticContext {
@@ -33,39 +49,131 @@ interface MimoHydrationDiagnosticContext {
 
 const MIMO_HYDRATION_DIAGNOSTIC_ID_PREFIX = 'mimo-hydration-error';
 
+export class MimoNativeHistory {
+  private readonly fileExists: (filePath: string) => boolean;
+  private hydratedKeys = new Map<string, string>();
+  private readonly now: () => number;
+  private readonly resolveDatabasePath: (preferredPath?: string | null) => string | null;
+  private readonly rowReader: MimoNativeHistoryRowReader;
+
+  constructor(dependencies: MimoNativeHistoryDependencies = {}) {
+    this.fileExists = dependencies.fileExists ?? fs.existsSync;
+    this.now = dependencies.now ?? Date.now;
+    this.resolveDatabasePath = dependencies.resolveDatabasePath
+      ?? ((preferredPath) => resolveExistingMimoDatabasePath(preferredPath));
+    this.rowReader = dependencies.rowReader ?? {
+      loadSessionRows: (databasePath, sessionId) => loadMimoSessionRows(databasePath, sessionId),
+    };
+  }
+
+  async hydrateConversationHistory(conversation: Conversation): Promise<void> {
+    const sessionId = conversation.sessionId;
+    if (!sessionId) {
+      this.hydratedKeys.delete(conversation.id);
+      return;
+    }
+
+    const state = getMimoState(conversation.providerState);
+    const hydrationKey = this.buildHydrationKey(sessionId, state);
+    if (
+      conversation.messages.length > 0
+      && this.hydratedKeys.get(conversation.id) === hydrationKey
+    ) {
+      return;
+    }
+
+    const result = await this.loadSessionMessages(sessionId, state);
+    if (result.messages.length === 0) {
+      this.hydratedKeys.delete(conversation.id);
+      return;
+    }
+
+    conversation.messages = result.messages;
+    if (result.cacheable) {
+      this.hydratedKeys.set(conversation.id, result.cacheKey);
+    } else {
+      this.hydratedKeys.delete(conversation.id);
+    }
+  }
+
+  async loadSessionMessages(
+    sessionId: string,
+    providerState?: MimoProviderState,
+  ): Promise<MimoNativeHistoryLoadResult> {
+    const cacheKey = this.buildHydrationKey(sessionId, providerState);
+    const databasePath = this.resolveDatabasePath(providerState?.databasePath);
+    if (
+      !databasePath
+      || databasePath === ':memory:'
+      || !this.fileExists(databasePath)
+    ) {
+      return { cacheKey, cacheable: false, messages: [] };
+    }
+
+    const rows = await this.rowReader.loadSessionRows(databasePath, sessionId);
+    if (!rows) {
+      return {
+        cacheKey,
+        cacheable: false,
+        messages: [createMimoHydrationDiagnosticMessage({
+          databasePath,
+          now: this.now,
+          reason: 'Could not read MiMo-Code session rows from SQLite.',
+          sessionId,
+        })],
+      };
+    }
+
+    return {
+      cacheKey,
+      cacheable: true,
+      messages: mapMimoMessages(
+        hydrateStoredMessages(rows.messageRows, rows.partRows),
+        { databasePath, sessionId },
+        { now: this.now },
+      ),
+    };
+  }
+
+  buildPersistedProviderState(
+    conversation: Conversation,
+  ): Record<string, unknown> | undefined {
+    const state = getMimoState(conversation.providerState);
+    const providerState: MimoProviderState = {
+      ...(state.databasePath ? { databasePath: state.databasePath } : {}),
+    };
+
+    return Object.keys(providerState).length > 0
+      ? providerState as Record<string, unknown>
+      : undefined;
+  }
+
+  private buildHydrationKey(
+    sessionId: string,
+    providerState?: MimoProviderState,
+  ): string {
+    return `${sessionId}::${providerState?.databasePath ?? ''}`;
+  }
+}
+
 export async function loadMimoSessionMessages(
   sessionId: string,
   providerState?: MimoProviderState,
 ): Promise<ChatMessage[]> {
-  const databasePath = resolveExistingMimoDatabasePath(providerState?.databasePath);
-  if (!databasePath || databasePath === ':memory:' || !fs.existsSync(databasePath)) {
-    return [];
-  }
-
-  const rows = await loadMimoSessionRows(databasePath, sessionId);
-  if (!rows) {
-    return [createMimoHydrationDiagnosticMessage({
-      databasePath,
-      reason: 'Could not read MiMo-Code session rows from SQLite.',
-      sessionId,
-    })];
-  }
-
-  return mapMimoMessages(
-    hydrateStoredMessages(rows.messageRows, rows.partRows),
-    { databasePath, sessionId },
-  );
+  return (await new MimoNativeHistory().loadSessionMessages(sessionId, providerState)).messages;
 }
 
 export function mapMimoMessages(
-  messages: StoredMessage[],
+  messages: MimoStoredMessage[],
   context: MimoHydrationDiagnosticContext = {},
+  options: { now?: () => number } = {},
 ): ChatMessage[] {
   const mappedMessages: ChatMessage[] = [];
+  const now = options.now ?? Date.now;
 
   for (const message of messages) {
     try {
-      const mappedMessage = mapStoredMessage(message, context);
+      const mappedMessage = mapStoredMessage(message, context, now);
       if (mappedMessage) {
         mappedMessages.push(mappedMessage);
       }
@@ -73,6 +181,7 @@ export function mapMimoMessages(
       mappedMessages.push(createMimoHydrationDiagnosticMessage({
         ...context,
         messageId: getString(message.info.id) ?? undefined,
+        now,
         reason: formatUnknownError(error),
       }));
     }
@@ -84,7 +193,7 @@ export function mapMimoMessages(
 function hydrateStoredMessages(
   messageRows: StoredRow[],
   partRows: StoredRow[],
-): StoredMessage[] {
+): MimoStoredMessage[] {
   const partsByMessage = new Map<string, StoredRow[]>();
 
   for (const row of partRows) {
@@ -124,8 +233,9 @@ function hydrateStoredMessages(
 }
 
 function mapStoredMessage(
-  message: StoredMessage,
+  message: MimoStoredMessage,
   context: MimoHydrationDiagnosticContext,
+  now: () => number,
 ): ChatMessage | null {
   const role = getString(message.info.role);
   const id = getString(message.info.id);
@@ -136,6 +246,7 @@ function mapStoredMessage(
     return createMimoHydrationDiagnosticMessage({
       ...context,
       messageId: id,
+      now,
       reason: 'MiMo-Code message metadata is not valid JSON.',
     });
   }
@@ -144,7 +255,7 @@ function mapStoredMessage(
   }
 
   const createdAt = getMessageCreatedAt(message.info)
-    ?? Date.now();
+    ?? now();
 
   if (role === 'user') {
     const promptText = extractUserQuery(getJoinedTextParts(message.parts));
@@ -259,6 +370,7 @@ function isInvalidStoredMessageData(info: StoredRow): boolean {
 function createMimoHydrationDiagnosticMessage(params: {
   databasePath?: string;
   messageId?: string;
+  now: () => number;
   reason: string;
   sessionId?: string;
 }): ChatMessage {
@@ -278,7 +390,7 @@ function createMimoHydrationDiagnosticMessage(params: {
     contentBlocks: [{ content, type: 'text' }],
     id: buildMimoHydrationDiagnosticId(params),
     role: 'assistant',
-    timestamp: Date.now(),
+    timestamp: params.now(),
   };
 }
 

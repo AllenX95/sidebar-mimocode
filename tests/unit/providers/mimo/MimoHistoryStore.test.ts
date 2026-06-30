@@ -1,6 +1,6 @@
-import { mapMimoMessages } from '@/providers/mimo/history/MimoHistoryStore';
+import { mapMimoMessages } from '@/providers/mimo/history/MimoNativeHistory';
 
-describe('MimoHistoryStore', () => {
+describe('MimoNativeHistory message mapping', () => {
   it('hydrates ordered user and assistant content from stored rows', () => {
     const messages = mapMimoMessages([
       {

@@ -2,31 +2,25 @@ import * as fs from 'node:fs/promises';
 import * as path from 'node:path';
 
 import type { AuxQueryConfig, AuxQueryRunner } from '../../../core/auxiliary/AuxQueryRunner';
-import { getRuntimeEnvironmentText } from '../../../core/providers/providerEnvironment';
 import { ProviderSettingsCoordinator } from '../../../core/providers/ProviderSettingsCoordinator';
 import type SidebarMimocodePlugin from '../../../main';
 import { getVaultPath } from '../../../utils/path';
 import {
-  AcpClientConnection,
-  AcpJsonRpcTransport,
+  type AcpClientConnection,
   type AcpReadTextFileRequest,
   type AcpRequestPermissionRequest,
   type AcpRequestPermissionResponse,
   AcpSessionUpdateNormalizer,
-  AcpSubprocess,
   extractAcpSessionModelState,
 } from '../../acp';
 import { decodeMimoModelId } from '../models';
 import { mimoChatUIConfig } from '../ui/MimoChatUIConfig';
-import { buildMimoProcessEnvironment } from './MimoEnvironment';
 import {
-  type MimoManagedAgentConfig,
-  prepareMimoLaunchArtifacts,
-} from './MimoLaunchArtifacts';
-import { buildMimoRuntimeEnv } from './MimoRuntimeEnvironment';
-
-type MimoAuxAgentProfile = 'passive' | 'readonly';
-type MimoAuxArtifactPurpose = 'inline' | 'instructions' | 'title-gen';
+  MimoAcpRuntimeHost,
+  type MimoAuxAgentProfile,
+  type MimoAuxArtifactPurpose,
+  resolveMimoAuxAgentId,
+} from './MimoAcpRuntimeHost';
 
 interface MimoAuxQueryRunnerOptions {
   agentProfile: MimoAuxAgentProfile;
@@ -34,33 +28,21 @@ interface MimoAuxQueryRunnerOptions {
   allowReadTextFile?: boolean;
 }
 
-const MIMO_AUX_AGENT_IDS: Record<MimoAuxAgentProfile, string> = {
-  passive: 'sidebar-mimocode-aux-passive',
-  readonly: 'sidebar-mimocode-aux-readonly',
-};
-
-const MIMO_AUX_READ_PERMISSION = Object.freeze({
-  '*': 'allow',
-  '*.env': 'deny',
-  '*.env.*': 'deny',
-  '*.env.example': 'allow',
-});
-
 export class MimoAuxQueryRunner implements AuxQueryRunner {
   private availableModelIds = new Set<string>();
   private connection: AcpClientConnection | null = null;
   private currentModelId: string | null = null;
-  private currentLaunchKey: string | null = null;
-  private process: AcpSubprocess | null = null;
+  private readonly runtimeHost: MimoAcpRuntimeHost;
   private readonly sessionCwds = new Map<string, string>();
   private sessionId: string | null = null;
   private readonly sessionUpdateNormalizer = new AcpSessionUpdateNormalizer();
-  private transport: AcpJsonRpcTransport | null = null;
 
   constructor(
     private readonly plugin: SidebarMimocodePlugin,
     private readonly options: MimoAuxQueryRunnerOptions,
-  ) {}
+  ) {
+    this.runtimeHost = new MimoAcpRuntimeHost(plugin);
+  }
 
   async query(config: AuxQueryConfig, prompt: string): Promise<string> {
     const cwd = getVaultPath(this.plugin.app) ?? process.cwd();
@@ -138,7 +120,7 @@ export class MimoAuxQueryRunner implements AuxQueryRunner {
       return accumulatedText;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'MiMo-Code request failed';
-      const stderr = this.process?.getStderrSnapshot();
+      const stderr = this.runtimeHost.getStderrSnapshot();
       throw new Error(
         stderr ? `${message}\n\n${stderr}` : message,
         error instanceof Error ? { cause: error } : undefined,
@@ -150,65 +132,41 @@ export class MimoAuxQueryRunner implements AuxQueryRunner {
   }
 
   reset(): void {
+    this.resetSessionState();
+    this.connection = null;
+    void this.runtimeHost.shutdown().catch(() => {});
+  }
+
+  private resetSessionState(): void {
     this.availableModelIds.clear();
     this.sessionId = null;
     this.sessionCwds.clear();
     this.currentModelId = null;
-    this.currentLaunchKey = null;
-    this.connection?.dispose();
-    this.connection = null;
-    this.transport?.dispose();
-    this.transport = null;
-    if (this.process) {
-      void this.process.shutdown().catch(() => {});
-    }
-    this.process = null;
     this.sessionUpdateNormalizer.reset();
   }
 
   private async ensureReady(cwd: string, systemPrompt: string): Promise<void> {
-    const resolvedCliPath = this.plugin.getResolvedProviderCliPath('mimo') ?? 'mimo';
-
-    const settings = this.plugin.settings as unknown as Record<string, unknown>;
-    const runtimeEnv = buildMimoRuntimeEnv(settings, resolvedCliPath);
-    const auxAgentId = MIMO_AUX_AGENT_IDS[this.options.agentProfile];
-    const artifacts = await prepareMimoLaunchArtifacts({
-      artifactsSubdir: `mimo/auxiliary/${this.options.artifactPurpose}`,
-      defaultAgentId: auxAgentId,
-      managedAgents: [buildMimoAuxAgentConfig(this.options.agentProfile)],
-      runtimeEnv,
-      systemPromptKey: systemPrompt,
-      systemPromptText: systemPrompt,
-      userName: typeof settings.userName === 'string' ? settings.userName : undefined,
-      workspaceRoot: cwd,
-    });
-    const nextLaunchKey = JSON.stringify({
-      artifactKey: artifacts.launchKey,
-      command: resolvedCliPath,
-      configPath: artifacts.configPath,
-      envText: getRuntimeEnvironmentText(settings, 'mimo'),
-    });
-
-    const shouldRestart = !this.process
-      || !this.transport
-      || !this.connection
-      || !this.process.isAlive()
-      || this.transport.isClosed
-      || this.currentLaunchKey !== nextLaunchKey;
-
-    if (!shouldRestart) {
-      return;
-    }
-
-    this.reset();
-    await this.startProcess({
-      command: resolvedCliPath,
-      configPath: artifacts.configPath,
-      configContent: artifacts.configContent,
+    const started = await this.runtimeHost.ensureStarted({
       cwd,
-      runtimeEnv,
+      delegate: {
+        fileSystem: this.options.allowReadTextFile
+          ? {
+            readTextFile: (request) => this.readTextFile(request),
+          }
+          : undefined,
+        requestPermission: (request) => this.handlePermissionRequest(request),
+      },
+      profile: {
+        agentProfile: this.options.agentProfile,
+        artifactPurpose: this.options.artifactPurpose,
+        kind: 'auxiliary',
+        systemPrompt,
+      },
     });
-    this.currentLaunchKey = nextLaunchKey;
+    if (started.restarted) {
+      this.resetSessionState();
+    }
+    this.connection = started.connection;
   }
 
   private async createSession(cwd: string): Promise<string | null> {
@@ -229,7 +187,7 @@ export class MimoAuxQueryRunner implements AuxQueryRunner {
         configId: 'mode',
         sessionId: response.sessionId,
         type: 'select',
-        value: MIMO_AUX_AGENT_IDS[this.options.agentProfile],
+        value: resolveMimoAuxAgentId(this.options.agentProfile),
       });
       this.sessionId = response.sessionId;
       this.sessionCwds.set(response.sessionId, cwd);
@@ -237,49 +195,6 @@ export class MimoAuxQueryRunner implements AuxQueryRunner {
     } catch {
       return null;
     }
-  }
-
-  private async startProcess(params: {
-    command: string;
-    configPath: string;
-    configContent: string;
-    cwd: string;
-    runtimeEnv: NodeJS.ProcessEnv;
-  }): Promise<void> {
-    const processEnv = buildMimoProcessEnvironment(params);
-
-    this.process = new AcpSubprocess({
-      args: ['acp', `--cwd=${params.cwd}`],
-      command: params.command,
-      cwd: params.cwd,
-      env: processEnv,
-    });
-    this.process.start();
-
-    this.transport = new AcpJsonRpcTransport({
-      input: this.process.stdout,
-      onClose: (listener) => this.process!.onClose(listener),
-      output: this.process.stdin,
-    });
-
-    this.connection = new AcpClientConnection({
-      clientInfo: {
-        name: 'sidebar-mimocode-aux',
-        version: this.plugin.manifest?.version ?? '0.0.0',
-      },
-      delegate: {
-        fileSystem: this.options.allowReadTextFile
-          ? {
-            readTextFile: (request) => this.readTextFile(request),
-          }
-          : undefined,
-        requestPermission: (request) => this.handlePermissionRequest(request),
-      },
-      transport: this.transport,
-    });
-
-    this.transport.start();
-    await this.connection.initialize();
   }
 
   private async readTextFile(
@@ -370,42 +285,6 @@ export class MimoAuxQueryRunner implements AuxQueryRunner {
 
     throw new Error('MiMo-Code aux read access is limited to the current workspace.');
   }
-}
-
-function buildMimoAuxAgentConfig(profile: MimoAuxAgentProfile): MimoManagedAgentConfig {
-  const id = MIMO_AUX_AGENT_IDS[profile];
-  if (profile === 'readonly') {
-    return {
-      definition: {
-        description: 'Internal Sidebar MiMo-Code read-only agent for auxiliary tasks.',
-        mode: 'primary',
-        permission: {
-          '*': 'deny',
-          codesearch: 'allow',
-          external_directory: 'deny',
-          glob: 'allow',
-          grep: 'allow',
-          lsp: 'allow',
-          read: MIMO_AUX_READ_PERMISSION,
-          webfetch: 'allow',
-          websearch: 'allow',
-        },
-      },
-      id,
-    };
-  }
-
-  return {
-    definition: {
-      description: 'Internal Sidebar MiMo-Code no-tool agent for auxiliary tasks.',
-      mode: 'primary',
-      permission: {
-        '*': 'deny',
-        external_directory: 'deny',
-      },
-    },
-    id,
-  };
 }
 
 function selectPermissionOption(
