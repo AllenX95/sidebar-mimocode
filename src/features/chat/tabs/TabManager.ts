@@ -14,19 +14,18 @@ import { t } from '../../../i18n/i18n';
 import type SidebarMimocodePlugin from '../../../main';
 import { chooseForkTarget } from '../../../shared/modals/ForkTargetModal';
 import { revealWorkspaceLeaf } from '../../../utils/obsidianCompat';
+import {
+  activateChatTab,
+  createChatTab,
+  deactivateChatTab,
+  destroyChatTab,
+  ensureChatTabRuntime,
+  initializeChatTab,
+} from './ChatTabLifecycle';
 import { getTabProviderId } from './providerResolution';
 import {
-  activateTab,
-  createTab,
-  deactivateTab,
-  destroyTab,
   type ForkContext,
   getTabTitle,
-  initializeTabControllers,
-  initializeTabService,
-  initializeTabUI,
-  setupServiceCallbacks,
-  wireTabInputEvents,
 } from './Tab';
 import {
   DEFAULT_MAX_TABS,
@@ -174,7 +173,7 @@ export class TabManager implements TabManagerInterface {
       ? undefined
       : (activeTab ? getTabProviderId(activeTab, this.plugin) : undefined);
 
-    const tab = createTab({
+    const tab = createChatTab({
       plugin: this.plugin,
       containerEl: this.containerEl,
       conversation: conversation ?? undefined,
@@ -197,8 +196,9 @@ export class TabManager implements TabManagerInterface {
       },
     });
 
-    // Initialize UI components with provider catalog
-    initializeTabUI(tab, this.plugin, {
+    initializeChatTab(tab, this.plugin, {
+      component: this.view,
+      forkRequestCallback: (forkContext) => this.handleForkRequest(forkContext),
       getProviderCatalogConfig: () => this.getProviderCatalogConfig(tab),
       onProviderChanged: (providerId) => {
         this.callbacks.onTabProviderChanged?.(tab.id, providerId);
@@ -206,19 +206,8 @@ export class TabManager implements TabManagerInterface {
           // Keep provider switching non-blocking even if command warmup fails.
         });
       },
+      openConversation: (conversationId) => this.openConversation(conversationId),
     });
-
-    initializeTabControllers(
-      tab,
-      this.plugin,
-      this.view,
-      (forkContext) => this.handleForkRequest(forkContext),
-      (conversationId) => this.openConversation(conversationId),
-      () => this.getProviderCatalogConfig(tab),
-    );
-
-    // Wire input event handlers
-    wireTabInputEvents(tab, this.plugin);
 
     this.tabs.set(tab.id, tab);
     this.callbacks.onTabCreated?.(tab);
@@ -255,13 +244,13 @@ export class TabManager implements TabManagerInterface {
       if (previousTabId && previousTabId !== tabId) {
         const currentTab = this.tabs.get(previousTabId);
         if (currentTab) {
-          deactivateTab(currentTab);
+          deactivateChatTab(currentTab);
         }
       }
 
       // Activate new tab
       this.activeTabId = tabId;
-      activateTab(tab);
+      activateChatTab(tab);
       this.callbacks.onActiveTabChanged?.(previousTabId, tabId);
 
       // Load conversation if not already loaded
@@ -327,7 +316,7 @@ export class TabManager implements TabManagerInterface {
     const closingIndex = tabIdsBefore.indexOf(tabId);
 
     // Destroy tab resources (async for proper cleanup)
-    await destroyTab(tab);
+    await destroyChatTab(tab);
     this.providerCommandWarmups.delete(tabId);
     this.providerCommandCache.delete(tabId);
     this.tabs.delete(tabId);
@@ -818,8 +807,9 @@ export class TabManager implements TabManagerInterface {
     context: ProviderWarmupContext,
   ): Promise<void> {
     if (!context.runtime || context.runtime.providerId !== providerId || !tab.serviceInitialized) {
-      await initializeTabService(tab, this.plugin, context.conversation);
-      setupServiceCallbacks(tab, this.plugin);
+      await ensureChatTabRuntime(tab, this.plugin, {
+        conversation: context.conversation,
+      });
     }
 
     const runtime = tab.service?.providerId === providerId ? tab.service : null;
@@ -1013,7 +1003,7 @@ export class TabManager implements TabManagerInterface {
     );
 
     // Destroy all tabs in parallel (independent per-tab, must run after saves complete)
-    await Promise.all(Array.from(this.tabs.values()).map(tab => destroyTab(tab)));
+    await Promise.all(Array.from(this.tabs.values()).map(tab => destroyChatTab(tab)));
 
     this.tabs.clear();
     this.activeTabId = null;

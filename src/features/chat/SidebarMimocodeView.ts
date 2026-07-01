@@ -15,10 +15,13 @@ import {
 } from '../../utils/animationFrame';
 import type { HistoryConversationStatus } from './controllers/ConversationController';
 import {
+  refreshChatTabAfterProviderAvailabilityChanged,
+  refreshChatTabProvider,
+  updateChatTabPlanModeUI,
+} from './tabs/ChatTabLifecycle';
+import {
   getTabProviderId,
-  onProviderAvailabilityChanged,
   sendTabInputMessageFromExplicitEnterShortcut,
-  updatePlanModeUI,
 } from './tabs/Tab';
 import { TabBar } from './tabs/TabBar';
 import { TabManager } from './tabs/TabManager';
@@ -103,7 +106,7 @@ export class SidebarMimocodeView extends ItemView {
   /** Refreshes model-dependent UI across all tabs (used after settings/env changes). */
   refreshModelSelector(): void {
     for (const tab of this.tabManager?.getAllTabs() ?? []) {
-      onProviderAvailabilityChanged(tab, this.plugin);
+      refreshChatTabAfterProviderAvailabilityChanged(tab, this.plugin);
       const providerId = getTabProviderId(tab, this.plugin);
       const providerSettings = ProviderSettingsCoordinator.getProviderSettingsSnapshot(
         this.plugin.settings,
@@ -111,7 +114,6 @@ export class SidebarMimocodeView extends ItemView {
       );
       const model = providerSettings.model;
       const uiConfig = ProviderRegistry.getChatUIConfig(providerId);
-      const capabilities = ProviderRegistry.getCapabilities(providerId);
       const contextWindow = uiConfig.getContextWindowSize(
         model,
         providerSettings.customContextLimits,
@@ -122,17 +124,7 @@ export class SidebarMimocodeView extends ItemView {
         tab.state.usage = recalculateUsageForModel(tab.state.usage, model, contextWindow);
       }
 
-      tab.ui.modelSelector?.updateDisplay();
-      tab.ui.modelSelector?.renderOptions();
-      tab.ui.modeSelector?.updateDisplay();
-      tab.ui.modeSelector?.renderOptions();
-      tab.ui.thinkingBudgetSelector?.updateDisplay();
-      tab.ui.permissionToggle?.updateDisplay();
-      tab.ui.serviceTierToggle?.updateDisplay();
-      tab.dom.inputWrapper.toggleClass(
-        'sidebar-mimocode-input-plan-mode',
-        providerSettings.permissionMode === 'plan' && capabilities.supportsPlanMode,
-      );
+      refreshChatTabProvider(tab, this.plugin);
     }
 
     this.tabManager?.primeProviderRuntime();
@@ -628,10 +620,10 @@ export class SidebarMimocodeView extends ItemView {
         if (current === 'plan') {
           const restoreMode = activeTab.state.prePlanPermissionMode ?? 'build';
           activeTab.state.prePlanPermissionMode = null;
-          updatePlanModeUI(activeTab, this.plugin, restoreMode);
+          updateChatTabPlanModeUI(activeTab, this.plugin, restoreMode);
         } else {
           activeTab.state.prePlanPermissionMode = current;
-          updatePlanModeUI(activeTab, this.plugin, 'plan');
+          updateChatTabPlanModeUI(activeTab, this.plugin, 'plan');
         }
       }
     });

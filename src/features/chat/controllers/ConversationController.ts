@@ -11,12 +11,12 @@ import { extractUserDisplayContent } from '../../../utils/context';
 import type { MessageRenderer } from '../rendering/MessageRenderer';
 import { cleanupThinkingBlock } from '../rendering/ThinkingBlockRenderer';
 import { findRewindContext } from '../rewind';
-import type { SubagentManager } from '../services/SubagentManager';
 import type { ChatState } from '../state/ChatState';
 import type { FileContextManager } from '../ui/FileContext';
 import type { ImageContextManager } from '../ui/ImageContext';
 import type { ExternalContextSelector, McpServerSelector } from '../ui/InputToolbar';
 import type { StatusPanel } from '../ui/StatusPanel';
+import type { StreamController } from './StreamController';
 
 function runConversationAction(action: () => Promise<void>, failureMessage: string): void {
   void action().catch(() => {
@@ -34,7 +34,6 @@ export interface ConversationControllerDeps {
   plugin: SidebarMimocodePlugin;
   state: ChatState;
   renderer: MessageRenderer;
-  subagentManager: SubagentManager;
   getHistoryDropdown: () => HTMLElement | null;
   getWelcomeEl: () => HTMLElement | null;
   setWelcomeEl: (el: HTMLElement | null) => void;
@@ -48,6 +47,7 @@ export interface ConversationControllerDeps {
   getTitleGenerationService: () => TitleGenerationService | null;
   getStatusPanel: () => StatusPanel | null;
   getAgentService?: () => ChatRuntime | null;
+  getStreamController?: () => StreamController | null;
   ensureServiceForConversation?: (conversation: Conversation | null) => Promise<void>;
   dismissPendingInlinePrompts?: () => void;
 }
@@ -97,7 +97,7 @@ export class ConversationController {
    * first message is sent. This prevents empty conversations cluttering history.
    */
   async createNew(options: { force?: boolean } = {}): Promise<void> {
-    const { plugin, state, subagentManager } = this.deps;
+    const { plugin, state } = this.deps;
     const force = !!options.force;
     if (state.isStreaming && !force) return;
     if (state.isCreatingConversation) return;
@@ -120,8 +120,11 @@ export class ConversationController {
         await this.save();
       }
 
-      subagentManager.orphanAllActive();
-      subagentManager.clear();
+      const streamController = this.deps.getStreamController?.();
+      if (streamController) {
+        await streamController.orphanAllActiveSubagents();
+        streamController.clearSubagents();
+      }
 
       // Clear streaming state and related DOM references
       cleanupThinkingBlock(state.currentThinkingState);
@@ -243,7 +246,7 @@ export class ConversationController {
 
   /** Switches to a different conversation. */
   async switchTo(id: string): Promise<void> {
-    const { plugin, state, subagentManager } = this.deps;
+    const { plugin, state } = this.deps;
 
     if (id === state.currentConversationId) return;
     if (state.isStreaming) return;
@@ -256,8 +259,11 @@ export class ConversationController {
       this.deps.dismissPendingInlinePrompts?.();
       await this.save();
 
-      subagentManager.orphanAllActive();
-      subagentManager.clear();
+      const streamController = this.deps.getStreamController?.();
+      if (streamController) {
+        await streamController.orphanAllActiveSubagents();
+        streamController.clearSubagents();
+      }
 
       const conversation = await plugin.switchConversation(id);
       if (!conversation) {
