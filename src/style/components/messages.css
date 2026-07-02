@@ -22,24 +22,8 @@
   outline: none;
 }
 
-/* Welcome message - claude.ai style */
 .sidebar-mimocode-welcome {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 20px;
-  min-height: 200px;
-}
-
-.sidebar-mimocode-welcome-greeting {
-  font-family: 'Copernicus', 'Tiempos Headline', 'Tiempos', Georgia, 'Times New Roman', serif;
-  font-size: 28px;
-  font-weight: 300;
-  color: var(--text-muted);
-  letter-spacing: -0.01em;
+  display: none;
 }
 
 .sidebar-mimocode-message {
@@ -141,10 +125,48 @@
   margin-bottom: 0;
 }
 
+.sidebar-mimocode-message-content h1,
+.sidebar-mimocode-message-content h2,
+.sidebar-mimocode-message-content h3,
+.sidebar-mimocode-message-content h4 {
+  margin: 14px 0 8px 0;
+  line-height: 1.22;
+  font-weight: 700;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+
+.sidebar-mimocode-message-content h1:first-child,
+.sidebar-mimocode-message-content h2:first-child,
+.sidebar-mimocode-message-content h3:first-child,
+.sidebar-mimocode-message-content h4:first-child {
+  margin-top: 0;
+}
+
+.sidebar-mimocode-message-content h1 {
+  font-size: 1.45em;
+}
+
+.sidebar-mimocode-message-content h2 {
+  font-size: 1.3em;
+}
+
+.sidebar-mimocode-message-content h3 {
+  font-size: 1.15em;
+}
+
+.sidebar-mimocode-message-content h4 {
+  font-size: 1.05em;
+}
+
 .sidebar-mimocode-message-content ul,
 .sidebar-mimocode-message-content ol {
   margin: 8px 0;
-  padding-inline-start: 20px;
+  padding-inline-start: 18px;
+}
+
+.sidebar-mimocode-message-content li {
+  margin: 4px 0;
 }
 
 /* Full-width tables */

@@ -110,19 +110,19 @@ describe('MessageRenderer', () => {
       { id: 'm1', role: 'assistant', content: '', timestamp: Date.now(), toolCalls: [], contentBlocks: [] },
     ];
 
-    const welcomeEl = renderer.renderMessages(messages, () => 'Hello');
+    const welcomeEl = renderer.renderMessages(messages);
 
     expect(emptySpy).toHaveBeenCalled();
     expect(renderStoredSpy).toHaveBeenCalledTimes(1);
     expect(welcomeEl.hasClass('sidebar-mimocode-welcome')).toBe(true);
-    expect(welcomeEl.children[0].textContent).toBe('Hello');
+    expect(welcomeEl.children).toHaveLength(0);
   });
 
   it('renders empty messages list with just welcome element', () => {
     const { renderer } = createRenderer();
     const renderStoredSpy = jest.spyOn(renderer, 'renderStoredMessage').mockImplementation(() => {});
 
-    const welcomeEl = renderer.renderMessages([], () => 'Welcome!');
+    const welcomeEl = renderer.renderMessages([]);
 
     expect(renderStoredSpy).not.toHaveBeenCalled();
     expect(welcomeEl.hasClass('sidebar-mimocode-welcome')).toBe(true);
@@ -1369,7 +1369,7 @@ describe('MessageRenderer', () => {
       { id: 'a1', role: 'assistant', content: 'Hi there', timestamp: Date.now(), contentBlocks: [{ type: 'text', content: 'Hi there' }] as any },
     ];
 
-    const welcomeEl = renderer.renderMessages(messages, () => 'Good morning!');
+    const welcomeEl = renderer.renderMessages(messages);
 
     expect(welcomeEl).toBeDefined();
     expect(welcomeEl!.hasClass('sidebar-mimocode-welcome')).toBe(true);
@@ -1385,7 +1385,7 @@ describe('MessageRenderer', () => {
       { id: 'u1', role: 'user', content: 'Hello', timestamp: Date.now() },
     ];
 
-    const welcomeEl = renderer.renderMessages(messages, () => 'Hello');
+    const welcomeEl = renderer.renderMessages(messages);
 
     // When messages exist, welcome should be hidden
     expect(welcomeEl).toBeDefined();
@@ -1395,7 +1395,7 @@ describe('MessageRenderer', () => {
     const messagesEl = createMockEl();
     const { renderer } = createRenderer(messagesEl);
 
-    const welcomeEl = renderer.renderMessages([], () => 'Welcome');
+    const welcomeEl = renderer.renderMessages([]);
 
     expect(welcomeEl).toBeDefined();
     expect(welcomeEl!.hasClass('sidebar-mimocode-welcome')).toBe(true);

@@ -1,7 +1,9 @@
 /* Brand & semantic color tokens */
 .sidebar-mimocode-container {
-  --sidebar-mimocode-brand: #D97757;
-  --sidebar-mimocode-brand-rgb: 217, 119, 87;
+  --sidebar-mimocode-brand: #FF6900;
+  --sidebar-mimocode-brand-rgb: 255, 105, 0;
+  --sidebar-mimocode-brand-mimo: #FF6900;
+  --sidebar-mimocode-brand-mimo-rgb: 255, 105, 0;
   --sidebar-mimocode-brand-claude: #D97757;
   --sidebar-mimocode-brand-claude-rgb: 217, 119, 87;
   --sidebar-mimocode-brand-codex: #d0d0d0;
@@ -25,6 +27,11 @@ body.theme-light .sidebar-mimocode-container {
 }
 
 /* Active-provider alias for single-provider surfaces. */
+.sidebar-mimocode-container[data-provider="mimo"] {
+  --sidebar-mimocode-brand: var(--sidebar-mimocode-brand-mimo);
+  --sidebar-mimocode-brand-rgb: var(--sidebar-mimocode-brand-mimo-rgb);
+}
+
 .sidebar-mimocode-container[data-provider="claude"] {
   --sidebar-mimocode-brand: var(--sidebar-mimocode-brand-claude);
   --sidebar-mimocode-brand-rgb: var(--sidebar-mimocode-brand-claude-rgb);

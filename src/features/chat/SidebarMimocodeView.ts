@@ -53,6 +53,8 @@ export class SidebarMimocodeView extends ItemView {
   private newTabButtonEl: HTMLElement | null = null;
 
   // Header elements
+  private headerActionsEl: HTMLElement | null = null;
+  private headerActionsContentEl: HTMLElement | null = null;
   private historyDropdown: HTMLElement | null = null;
 
   // Event refs for cleanup
@@ -264,6 +266,10 @@ export class SidebarMimocodeView extends ItemView {
     this.syncHeaderLogo(DEFAULT_CHAT_PROVIDER_ID);
 
     titleEl.createEl('h4', { text: 'Sidebar MiMo-Code', cls: 'sidebar-mimocode-title-text' });
+
+    this.headerActionsEl = header.createDiv({ cls: 'sidebar-mimocode-header-actions' });
+    this.headerActionsContentEl = this.buildHeaderActionsContent(header.ownerDocument);
+    this.attachHeaderActions();
   }
 
   /**
@@ -288,19 +294,30 @@ export class SidebarMimocodeView extends ItemView {
     });
     fragment.appendChild(this.tabBarContainerEl);
 
-    const navActionsEl = activeDocument.createElement('div');
-    navActionsEl.className = 'sidebar-mimocode-input-nav-actions';
+    const wrapper = activeDocument.createElement('div');
+    wrapper.className = 'sidebar-mimocode-input-nav-content';
+    wrapper.appendChild(fragment);
+    return wrapper;
+  }
 
-    this.newTabButtonEl = navActionsEl.createDiv({ cls: 'sidebar-mimocode-input-nav-btn sidebar-mimocode-new-tab-btn' });
+  private buildHeaderActionsContent(activeDocument: Document): HTMLElement {
+    const actionsEl = activeDocument.createElement('div');
+    actionsEl.className = 'sidebar-mimocode-header-actions-content';
+
+    this.newTabButtonEl = actionsEl.createDiv({
+      cls: 'sidebar-mimocode-header-action-btn sidebar-mimocode-new-tab-btn',
+    });
     setIcon(this.newTabButtonEl, 'square-plus');
     this.newTabButtonEl.setAttribute('aria-label', 'New tab');
+    this.newTabButtonEl.setAttribute('title', 'New tab');
     this.newTabButtonEl.addEventListener('click', () => {
       void this.createNewTab().catch(() => new Notice('Failed to create tab'));
     });
 
-    const newBtn = navActionsEl.createDiv({ cls: 'sidebar-mimocode-input-nav-btn' });
+    const newBtn = actionsEl.createDiv({ cls: 'sidebar-mimocode-header-action-btn' });
     setIcon(newBtn, 'square-pen');
     newBtn.setAttribute('aria-label', 'New conversation');
+    newBtn.setAttribute('title', 'New conversation');
     newBtn.addEventListener('click', () => {
       void (async () => {
         await this.tabManager?.createNewConversation();
@@ -309,10 +326,11 @@ export class SidebarMimocodeView extends ItemView {
     });
 
     // History dropdown
-    const historyContainer = navActionsEl.createDiv({ cls: 'sidebar-mimocode-history-container' });
-    const historyBtn = historyContainer.createDiv({ cls: 'sidebar-mimocode-input-nav-btn' });
+    const historyContainer = actionsEl.createDiv({ cls: 'sidebar-mimocode-history-container' });
+    const historyBtn = historyContainer.createDiv({ cls: 'sidebar-mimocode-header-action-btn' });
     setIcon(historyBtn, 'history');
     historyBtn.setAttribute('aria-label', 'Chat history');
+    historyBtn.setAttribute('title', 'Chat history');
 
     this.historyDropdown = historyContainer.createDiv({ cls: 'sidebar-mimocode-history-menu' });
 
@@ -321,12 +339,13 @@ export class SidebarMimocodeView extends ItemView {
       this.toggleHistoryDropdown();
     });
 
-    fragment.appendChild(navActionsEl);
+    return actionsEl;
+  }
 
-    const wrapper = activeDocument.createElement('div');
-    wrapper.className = 'sidebar-mimocode-input-nav-content';
-    wrapper.appendChild(fragment);
-    return wrapper;
+  private attachHeaderActions(): void {
+    if (!this.headerActionsEl || !this.headerActionsContentEl) return;
+
+    this.headerActionsEl.appendChild(this.headerActionsContentEl);
   }
 
   private buildInputFooter(): void {

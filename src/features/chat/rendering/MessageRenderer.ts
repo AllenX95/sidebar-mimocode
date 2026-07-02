@@ -207,19 +207,14 @@ export class MessageRenderer {
   /**
    * Renders all messages for conversation load/switch.
    * @param messages Array of messages to render
-   * @param getGreeting Function to get greeting text
    * @returns The newly created welcome element
    */
-  renderMessages(
-    messages: ChatMessage[],
-    getGreeting: () => string
-  ): HTMLElement {
+  renderMessages(messages: ChatMessage[]): HTMLElement {
     this.messagesEl.empty();
     this.liveMessageEls.clear();
 
     // Recreate welcome element after clearing
     const newWelcomeEl = this.messagesEl.createDiv({ cls: 'sidebar-mimocode-welcome' });
-    newWelcomeEl.createDiv({ cls: 'sidebar-mimocode-welcome-greeting', text: getGreeting() });
 
     for (let i = 0; i < messages.length; i++) {
       this.renderStoredMessage(messages[i], messages, i);

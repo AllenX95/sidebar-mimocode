@@ -1,12 +1,12 @@
 /* Navigation Sidebar */
 .sidebar-mimocode-nav-sidebar {
     position: absolute;
-    right: 2px;
-    top: 50%;
+    right: 8px;
+    top: 46%;
     transform: translateY(-50%);
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 3px;
     z-index: 100;
     opacity: 0;
     pointer-events: none;
@@ -14,19 +14,19 @@
 }
 
 .sidebar-mimocode-nav-sidebar.visible {
-    opacity: 0.15;
+    opacity: 0.08;
     pointer-events: auto;
 }
 
 .sidebar-mimocode-nav-sidebar.visible:hover {
-    opacity: 1;
+    opacity: 0.9;
 }
 
 .sidebar-mimocode-nav-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 16px;
-    background: var(--background-primary);
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    background: color-mix(in srgb, var(--background-primary) 88%, transparent);
     border: 1px solid var(--background-modifier-border);
     color: var(--text-muted);
     display: flex;
@@ -40,19 +40,19 @@
 .sidebar-mimocode-nav-btn:hover {
     background: var(--background-secondary);
     color: var(--text-normal);
-    transform: scale(1.05);
+    transform: translateX(-1px);
 }
 
 .sidebar-mimocode-nav-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
 }
 
 /* Specific button spacing/grouping if needed */
 .sidebar-mimocode-nav-btn-top {
-    margin-bottom: 4px;
+    margin-bottom: 3px;
 }
 
 .sidebar-mimocode-nav-btn-bottom {
-    margin-top: 4px;
+    margin-top: 3px;
 }

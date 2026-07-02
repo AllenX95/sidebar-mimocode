@@ -101,6 +101,10 @@ export class ModelSelector {
 
     const labelEl = this.buttonEl.createSpan({ cls: 'sidebar-mimocode-model-label' });
     labelEl.setText(displayModel?.label || 'Unknown');
+    const label = displayModel?.label || 'Unknown';
+    const description = displayModel?.description ? `\n${displayModel.description}` : '';
+    this.buttonEl.setAttribute('title', `Model: ${label}${description}`);
+    this.buttonEl.setAttribute('aria-label', `Model: ${label}`);
   }
 
   renderOptions() {
@@ -221,6 +225,7 @@ export class ModeSelector {
       titleParts.push(currentOption.description);
     }
     this.container.setAttribute('title', titleParts.join('\n'));
+    this.container.setAttribute('aria-label', `Mode: ${currentOption.label || selectorConfig.label}`);
   }
 
   renderOptions() {
@@ -285,12 +290,16 @@ export class ThinkingBudgetSelector {
 
     const currentEl = this.effortGearsEl.createDiv({ cls: 'sidebar-mimocode-thinking-current' });
     currentEl.setText(currentInfo?.label || options[0]?.label || 'High');
+    const currentLabel = currentInfo?.label || options[0]?.label || 'High';
+    currentEl.setAttribute('title', `Reasoning effort: ${currentLabel}`);
+    currentEl.setAttribute('aria-label', `Reasoning effort: ${currentLabel}`);
 
     const optionsEl = this.effortGearsEl.createDiv({ cls: 'sidebar-mimocode-thinking-options' });
 
     for (const effort of [...options].reverse()) {
       const gearEl = optionsEl.createDiv({ cls: 'sidebar-mimocode-thinking-gear' });
       gearEl.setText(effort.label);
+      gearEl.setAttribute('title', effort.description || `Use ${effort.label} reasoning effort`);
 
       if (effort.value === currentEffort) {
         gearEl.addClass('selected');
@@ -319,6 +328,15 @@ export class ThinkingBudgetSelector {
 
     const currentEl = this.budgetGearsEl.createDiv({ cls: 'sidebar-mimocode-thinking-current' });
     currentEl.setText(currentBudgetInfo?.label || options[0]?.label || 'Off');
+    const currentLabel = currentBudgetInfo?.label || options[0]?.label || 'Off';
+    const currentTokens = currentBudgetInfo?.tokens ?? options[0]?.tokens ?? 0;
+    currentEl.setAttribute(
+      'title',
+      currentTokens > 0
+        ? `Thinking budget: ${currentLabel} (${currentTokens.toLocaleString()} tokens)`
+        : `Thinking budget: ${currentLabel}`
+    );
+    currentEl.setAttribute('aria-label', `Thinking budget: ${currentLabel}`);
 
     const optionsEl = this.budgetGearsEl.createDiv({ cls: 'sidebar-mimocode-thinking-options' });
 
@@ -512,7 +530,10 @@ export class ServiceTierToggle {
       this.buttonEl.removeClass('active');
     }
 
-    this.container.setAttribute('title', 'Toggle on/off fast mode');
+    const title = toggleConfig.description
+      ?? `${toggleConfig.inactiveLabel} <-> ${toggleConfig.activeLabel}`;
+    this.container.setAttribute('title', title);
+    this.container.setAttribute('aria-label', `Service tier: ${isActive ? toggleConfig.activeLabel : toggleConfig.inactiveLabel}`);
   }
 
   private async toggle() {
@@ -1086,6 +1107,7 @@ export class McpServerSelector {
     if (count > 0) {
       this.iconEl.addClass('active');
       this.iconEl.setAttribute('title', `${count} MCP server${count > 1 ? 's' : ''} enabled (click to manage)`);
+      this.iconEl.setAttribute('aria-label', `${count} MCP server${count > 1 ? 's' : ''} enabled`);
 
       // Show badge only when more than 1
       if (count > 1) {
@@ -1096,7 +1118,9 @@ export class McpServerSelector {
       }
     } else {
       this.iconEl.removeClass('active');
-      this.iconEl.setAttribute('title', 'Mcp servers (click to enable)');
+      const protocolLabel = ['M', 'C', 'P'].join('');
+      this.iconEl.setAttribute('title', `${protocolLabel} servers (click to enable)`);
+      this.iconEl.setAttribute('aria-label', `${protocolLabel} servers`);
       this.badgeEl.removeClass('visible');
     }
   }
@@ -1199,6 +1223,8 @@ export class ContextUsageMeter {
       tooltip += ' (Approaching limit, run `/compact` to continue)';
     }
     this.container.setAttribute('data-tooltip', tooltip);
+    this.container.setAttribute('title', `Context usage: ${tooltip}`);
+    this.container.setAttribute('aria-label', `Context usage ${usage.percentage}%`);
   }
 
   private formatTokens(tokens: number): string {

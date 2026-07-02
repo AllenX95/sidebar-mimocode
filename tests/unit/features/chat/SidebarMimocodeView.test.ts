@@ -53,7 +53,7 @@ describe('SidebarMimocodeView tab controls', () => {
     expect(newTabButtonEl.getAttribute('aria-hidden')).toBeNull();
   });
 
-  it('keeps tab controls in the view-owned input row', () => {
+  it('keeps tab badges in the stable input row', () => {
     const navRowContent = createMockEl();
     const inputNavRowHostEl = createMockEl();
     const view = Object.create(SidebarMimocodeView.prototype) as any;
@@ -71,6 +71,19 @@ describe('SidebarMimocodeView tab controls', () => {
     expect(inputNavRowHostEl.children).toContain(navRowContent);
     expect(view.tabBar.captureScrollPosition).toHaveBeenCalledTimes(1);
     expect(view.tabBar.restoreScrollPosition).toHaveBeenCalledTimes(1);
+  });
+
+  it('attaches header actions to the header action host', () => {
+    const headerActionsEl = createMockEl();
+    const actionsEl = createMockEl();
+    const view = Object.create(SidebarMimocodeView.prototype) as any;
+
+    view.headerActionsEl = headerActionsEl;
+    view.headerActionsContentEl = actionsEl;
+
+    view.attachHeaderActions();
+
+    expect(headerActionsEl.children).toContain(actionsEl);
   });
 
   it('moves only the active tab input into the stable input slot', () => {

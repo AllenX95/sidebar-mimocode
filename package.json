@@ -1,6 +1,6 @@
 {
   "name": "sidebar-mimocode",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Sidebar MiMo-Code - MiMo-Code CLI agent embedded in Obsidian",
   "main": "main.js",
   "engines": {

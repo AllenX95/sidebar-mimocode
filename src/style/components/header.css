@@ -3,6 +3,7 @@
   position: relative;
   display: flex;
   align-items: center;
+  gap: 8px;
   padding: 0 12px 12px 12px;
 }
 
@@ -18,10 +19,55 @@
   margin: 0;
   font-size: 14px;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sidebar-mimocode-logo {
   display: flex;
   align-items: center;
+  flex: 0 0 18px;
   color: var(--sidebar-mimocode-brand);
+}
+
+.sidebar-mimocode-logo svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+}
+
+.sidebar-mimocode-header-actions {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  margin-inline-start: auto;
+}
+
+.sidebar-mimocode-header-actions-content {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sidebar-mimocode-header-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.sidebar-mimocode-header-action-btn:hover {
+  background: var(--background-modifier-hover);
+  color: var(--text-normal);
+}
+
+.sidebar-mimocode-header-action-btn svg {
+  width: 15px;
+  height: 15px;
 }

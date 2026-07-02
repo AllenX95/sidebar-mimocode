@@ -273,6 +273,8 @@ describe('NavigationSidebar', () => {
       expect(buttons[1].getAttribute('aria-label')).toBe('Previous message');
       expect(buttons[2].getAttribute('aria-label')).toBe('Next message');
       expect(buttons[3].getAttribute('aria-label')).toBe('Scroll to bottom');
+      expect(buttons[0].getAttribute('title')).toBe('Scroll to top');
+      expect(buttons[3].getAttribute('title')).toBe('Scroll to bottom');
     });
 
     it('should set correct icons on buttons', () => {

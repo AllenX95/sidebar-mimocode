@@ -40,6 +40,7 @@ export class NavigationSidebar {
     const btn = this.container.createDiv({ cls: `sidebar-mimocode-nav-btn ${cls}` });
     setIcon(btn, icon);
     btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
     return btn;
   }
 

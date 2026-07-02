@@ -4,7 +4,7 @@
 .sidebar-mimocode-tool-header:focus-visible,
 .sidebar-mimocode-thinking-header:focus-visible,
 .sidebar-mimocode-subagent-header:focus-visible,
-.sidebar-mimocode-input-nav-btn:focus-visible,
+.sidebar-mimocode-header-action-btn:focus-visible,
 .sidebar-mimocode-model-btn:focus-visible,
 .sidebar-mimocode-thinking-current:focus-visible {
   outline: 2px solid var(--interactive-accent);

@@ -104,22 +104,24 @@ export const MIMO_PROVIDER_ICON: ProviderIconSvg = {
       tag: 'g',
       attributes: {
         class: 'sidebar-mimocode-provider-icon-variant sidebar-mimocode-provider-icon-variant--light',
-        transform: 'translate(30 0)',
+        'shape-rendering': 'crispEdges',
       },
       children: [
-        { tag: 'path', attributes: { d: 'M180 240H60V120H180V240Z', fill: '#FF6B35' } },
-        { tag: 'path', attributes: { d: 'M180 60H60V240H180V60ZM240 300H0V0H240V300Z', fill: '#211E1E' } },
+        { tag: 'path', attributes: { d: 'M135 30H165V60H135V30ZM75 60H225V90H75V60ZM45 90H255V225H225V255H75V225H45V90Z', fill: '#211E1E' } },
+        { tag: 'path', attributes: { d: 'M75 90H225V210H75V90ZM105 225H195V255H105V225Z', fill: '#FF6900' } },
+        { tag: 'path', attributes: { d: 'M105 125H135V155H105V125ZM165 125H195V155H165V125ZM120 180H180V195H120V180Z', fill: '#211E1E' } },
       ],
     },
     {
       tag: 'g',
       attributes: {
         class: 'sidebar-mimocode-provider-icon-variant sidebar-mimocode-provider-icon-variant--dark',
-        transform: 'translate(30 0)',
+        'shape-rendering': 'crispEdges',
       },
       children: [
-        { tag: 'path', attributes: { d: 'M180 240H60V120H180V240Z', fill: '#FF8C5A' } },
-        { tag: 'path', attributes: { d: 'M180 60H60V240H180V60ZM240 300H0V0H240V300Z', fill: '#F1ECEC' } },
+        { tag: 'path', attributes: { d: 'M135 30H165V60H135V30ZM75 60H225V90H75V60ZM45 90H255V225H225V255H75V225H45V90Z', fill: '#F1ECEC' } },
+        { tag: 'path', attributes: { d: 'M75 90H225V210H75V90ZM105 225H195V255H105V225Z', fill: '#FF6900' } },
+        { tag: 'path', attributes: { d: 'M105 125H135V155H105V125ZM165 125H195V155H165V125ZM120 180H180V195H120V180Z', fill: '#211E1E' } },
       ],
     },
   ],

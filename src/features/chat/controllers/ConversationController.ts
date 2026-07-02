@@ -159,7 +159,6 @@ export class ConversationController {
 
       // Recreate welcome element first (before StatusPanel for consistent ordering)
       const welcomeEl = messagesEl.createDiv({ cls: 'sidebar-mimocode-welcome' });
-      welcomeEl.createDiv({ cls: 'sidebar-mimocode-welcome-greeting', text: this.getGreeting() });
       this.deps.setWelcomeEl(welcomeEl);
 
       // Remount StatusPanel to restore state for new conversation
@@ -188,7 +187,7 @@ export class ConversationController {
   /**
    * Loads the current tab conversation, or starts at entry point if none.
    *
-   * Entry point (no conversation) shows welcome screen without
+   * Entry point (no conversation) shows a textless welcome screen without
    * creating a conversation. Conversation is created lazily on first message.
    */
   async loadActive(): Promise<void> {
@@ -226,10 +225,7 @@ export class ConversationController {
 
       this.deps.getMcpServerSelector()?.clearEnabled();
 
-      const welcomeEl = renderer.renderMessages(
-        [],
-        () => this.getGreeting()
-      );
+      const welcomeEl = renderer.renderMessages([]);
       this.deps.setWelcomeEl(welcomeEl);
       this.updateWelcomeVisibility();
 
@@ -360,7 +356,7 @@ export class ConversationController {
     inputEl.value = userMsg.content;
     inputEl.focus();
 
-    const welcomeEl = renderer.renderMessages(state.messages, () => this.getGreeting());
+    const welcomeEl = renderer.renderMessages(state.messages);
     this.deps.setWelcomeEl(welcomeEl);
     this.updateWelcomeVisibility();
 
@@ -500,10 +496,7 @@ export class ConversationController {
       mcpServerSelector?.clearEnabled();
     }
 
-    const welcomeEl = renderer.renderMessages(
-      state.messages,
-      () => this.getGreeting()
-    );
+    const welcomeEl = renderer.renderMessages(state.messages);
     this.deps.setWelcomeEl(welcomeEl);
   }
 
@@ -919,66 +912,6 @@ export class ConversationController {
     });
   }
 
-  // ============================================
-  // Welcome & Greeting
-  // ============================================
-
-  /** Generates a dynamic greeting based on time/day. */
-  getGreeting(): string {
-    const now = new Date();
-    const hour = now.getHours();
-    const day = now.getDay(); // 0 = Sunday, 6 = Saturday
-    const name = this.deps.plugin.settings.userName?.trim();
-
-    // Helper to optionally personalize a greeting (with fallback for no-name case)
-    const personalize = (base: string, noNameFallback?: string): string =>
-      name ? `${base}, ${name}` : (noNameFallback ?? base);
-
-    // Day-specific greetings (some personalized, some universal)
-    const dayGreetings: Record<number, string[]> = {
-      0: [personalize('Happy Sunday'), 'Sunday session?', 'Welcome to the weekend'],
-      1: [personalize('Happy Monday'), personalize('Back at it', 'Back at it!')],
-      2: [personalize('Happy Tuesday')],
-      3: [personalize('Happy Wednesday')],
-      4: [personalize('Happy Thursday')],
-      5: [personalize('Happy Friday'), personalize('That Friday feeling')],
-      6: [personalize('Happy Saturday', 'Happy Saturday!'), personalize('Welcome to the weekend')],
-    };
-
-    // Time-specific greetings
-    const getTimeGreetings = (): string[] => {
-      if (hour >= 5 && hour < 12) {
-        return [personalize('Good morning'), 'Coffee and MiMo-Code time?'];
-      } else if (hour >= 12 && hour < 18) {
-        return [personalize('Good afternoon'), personalize('Hey there'), personalize("How's it going") + '?'];
-      } else if (hour >= 18 && hour < 22) {
-        return [personalize('Good evening'), personalize('Evening'), personalize('How was your day') + '?'];
-      } else {
-        return ['Hello, night owl', personalize('Evening')];
-      }
-    };
-
-    // General greetings
-    const generalGreetings = [
-      personalize('Hey there'),
-      name ? `Hi ${name}, how are you?` : 'Hi, how are you?',
-      personalize("How's it going") + '?',
-      personalize('Welcome back') + '!',
-      personalize("What's new") + '?',
-      ...(name ? [`${name} returns!`] : []),
-      'You are absolutely right!',
-    ];
-
-    // Combine day + time + general greetings, pick randomly
-    const allGreetings = [
-      ...(dayGreetings[day] || []),
-      ...getTimeGreetings(),
-      ...generalGreetings,
-    ];
-
-    return allGreetings[Math.floor(Math.random() * allGreetings.length)];
-  }
-
   /** Updates welcome element visibility based on message count. */
   updateWelcomeVisibility(): void {
     const welcomeEl = this.deps.getWelcomeEl();
@@ -1003,11 +936,6 @@ export class ConversationController {
     const fileCtx = this.deps.getFileContextManager();
     fileCtx?.resetForNewConversation();
     fileCtx?.autoAttachActiveFile();
-
-    // Only add greeting if not already present
-    if (!welcomeEl.querySelector('.sidebar-mimocode-welcome-greeting')) {
-      welcomeEl.createDiv({ cls: 'sidebar-mimocode-welcome-greeting', text: this.getGreeting() });
-    }
 
     this.updateWelcomeVisibility();
   }

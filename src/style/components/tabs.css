@@ -67,7 +67,11 @@
 }
 
 .sidebar-mimocode-tab-badge-streaming {
-  border-color: var(--sidebar-mimocode-brand, #da7756);
+  border-color: var(--sidebar-mimocode-brand, #FF6900);
+}
+
+.sidebar-mimocode-tab-badge-streaming[data-provider="mimo"] {
+  border-color: var(--sidebar-mimocode-brand-mimo, #FF6900);
 }
 
 .sidebar-mimocode-tab-badge-streaming[data-provider="claude"] {

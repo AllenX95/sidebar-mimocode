@@ -292,20 +292,14 @@ describe('ConversationController', () => {
       expect(() => controllerWithNullWelcome.initializeWelcome()).not.toThrow();
     });
 
-    it('should only add greeting if not already present', () => {
+    it('should leave the welcome state textless', () => {
       const welcomeEl = deps.getWelcomeEl()!;
       const createDivSpy = jest.spyOn(welcomeEl, 'createDiv');
 
-      // First call should add greeting
       controller.initializeWelcome();
-      expect(createDivSpy).toHaveBeenCalledTimes(1);
-
-      // Mock querySelector to return an element (greeting already exists)
-      welcomeEl.querySelector = jest.fn().mockReturnValue(createMockEl());
-
-      // Second call should not add another greeting
-      controller.initializeWelcome();
-      expect(createDivSpy).toHaveBeenCalledTimes(1); // Still 1, not 2
+      expect(createDivSpy).not.toHaveBeenCalledWith(
+        expect.objectContaining({ cls: 'sidebar-mimocode-welcome-greeting' })
+      );
     });
   });
 
@@ -522,7 +516,7 @@ describe('ConversationController', () => {
       expect(fileContextManager.setCurrentNote).not.toHaveBeenCalled();
     });
 
-    it('should call renderer.renderMessages with greeting callback', async () => {
+    it('should call renderer.renderMessages with conversation messages', async () => {
       deps.state.currentConversationId = 'conv-1';
       (deps.plugin.getConversationById as jest.Mock).mockResolvedValue({
         id: 'conv-1',
@@ -532,13 +526,7 @@ describe('ConversationController', () => {
 
       await controller.loadActive();
 
-      expect(deps.renderer.renderMessages).toHaveBeenCalledWith(
-        expect.any(Array),
-        expect.any(Function)
-      );
-
-      const greetingFn = (deps.renderer.renderMessages as jest.Mock).mock.calls[0][1];
-      expect(greetingFn().length).toBeGreaterThan(0);
+      expect(deps.renderer.renderMessages).toHaveBeenCalledWith(expect.any(Array));
     });
   });
 
@@ -575,7 +563,7 @@ describe('ConversationController', () => {
       expect(fileContextManager.setCurrentNote).not.toHaveBeenCalled();
     });
 
-    it('should call renderer.renderMessages with greeting callback on switch', async () => {
+    it('should call renderer.renderMessages with switched conversation messages', async () => {
       deps.state.currentConversationId = 'old-conv';
 
       (deps.plugin.switchConversation as jest.Mock).mockResolvedValue({
@@ -586,13 +574,7 @@ describe('ConversationController', () => {
 
       await controller.switchTo('new-conv');
 
-      expect(deps.renderer.renderMessages).toHaveBeenCalledWith(
-        expect.any(Array),
-        expect.any(Function)
-      );
-
-      const greetingFn = (deps.renderer.renderMessages as jest.Mock).mock.calls[0][1];
-      expect(greetingFn().length).toBeGreaterThan(0);
+      expect(deps.renderer.renderMessages).toHaveBeenCalledWith(expect.any(Array));
     });
   });
 
@@ -1303,31 +1285,6 @@ describe('ConversationController', () => {
     });
   });
 
-  describe('Greeting Time Branches', () => {
-    it.each([
-      { name: 'morning (5-12)', hour: 9, day: 1, patterns: ['morning', 'Coffee'] },
-      { name: 'afternoon (12-18)', hour: 14, day: 2, patterns: ['afternoon'] },
-      { name: 'evening (18-22)', hour: 20, day: 3, patterns: ['evening', 'Evening', 'your day'] },
-      { name: 'night owl (22+)', hour: 23, day: 4, patterns: ['night owl', 'Evening'] },
-      { name: 'early morning night owl (0-4)', hour: 2, day: 0, patterns: ['night owl', 'Evening'] },
-    ])('should include $name greetings', ({ hour, day, patterns }) => {
-      jest.spyOn(Date.prototype, 'getHours').mockReturnValue(hour);
-      jest.spyOn(Date.prototype, 'getDay').mockReturnValue(day);
-
-      const greetings = new Set<string>();
-      for (let i = 0; i < 50; i++) {
-        jest.spyOn(Math, 'random').mockReturnValue(i / 50);
-        greetings.add(controller.getGreeting());
-      }
-
-      const hasTimeBased = [...greetings].some(g =>
-        patterns.some(p => g.includes(p))
-      );
-      expect(hasTimeBased).toBe(true);
-
-      jest.restoreAllMocks();
-    });
-  });
 });
 
 describe('ConversationController - Callbacks', () => {
@@ -2640,10 +2597,7 @@ describe('ConversationController - Rewind', () => {
 
     expect(mockAgentService.rewind).toHaveBeenCalledWith('user-uuid', 'prev-a', 'code-and-conversation');
     expect(truncateSpy).toHaveBeenCalledWith('m2');
-    expect(deps.renderer.renderMessages).toHaveBeenCalledWith(
-      expect.any(Array),
-      expect.any(Function)
-    );
+    expect(deps.renderer.renderMessages).toHaveBeenCalledWith(expect.any(Array));
     expect(deps.plugin.updateConversation).toHaveBeenCalledWith(
       'conv-1',
       expect.objectContaining({ resumeAtMessageId: 'prev-a' })
